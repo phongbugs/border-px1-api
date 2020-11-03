@@ -1,0 +1,190 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "BORDER PX1 API",
+    "description": "BORDER PX1 API demo server",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "localhost:9999",
+  "basePath": "",
+  "tags": [
+    {
+      "name": "BORDER PX1 API",
+      "description": "API for BORDER PX1 API"
+    }
+  ],
+  "schemes": ["http"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "user/login": {
+      "post": {
+        "tags": ["BORDER PX1 API"],
+        "description": "Login access to white label management site",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "body",
+            "required": true,
+            "description": "Username",
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "body",
+            "required": true,
+            "description": "password",
+            "type": "string"
+          },
+          {
+            "name": "rsaPublicKey",
+            "in": "body",
+            "required": true,
+            "description": "RSA public key",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login response",
+            "schema": {
+              "$ref": "#/definitions/loginResponse"
+            }
+          }
+        }
+      }
+    },
+    "authentication/": {
+      "post": {
+        "tags": ["BORDER PX1 API"],
+        "description": "Authentication access to BORDER PX1 by account",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "authenticationData",
+            "in": "body",
+            "required": true,
+            "description": "Username & password were encrypted by RSA at client with mode...",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authentication Response",
+            "schema": {
+              "$ref": "#/definitions/authenticationResponse"
+            }
+          }
+        }
+      }
+    },
+    "/authentication/status": {
+      "get": {
+        "tags": ["BORDER PX1 API"],
+        "summary": "Check status of authentication",
+        "responses": {
+          "200": {
+            "description": "Status of current authentication",
+            "schema": {
+              "$ref": "#/definitions/authenticationStatusResponse"
+            }
+          }
+        }
+      }
+    },
+    "/sites": {
+      "get": {
+        "tags": ["BORDER PX1 API"],
+        "summary": "Get all sites of white label name",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "description": "White label name",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of site data",
+            "schema": {
+              "$ref": "#/definitions/siteResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "authenticationStatusResponse": {
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "boolean"
+        }
+      }
+    },
+    "authenticationResponse": {
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "cookie": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "loginResponse": {
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "token": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    
+    "siteResponse": {
+      "required": ["ID", "Host", "ServerPoolID"],
+      "properties": {
+        "ID": {
+          "type": "number",
+          "uniqueItems": true
+        },
+        "Host": {
+          "type": "string"
+        },
+        "ServerPoolID": {
+          "type": "number"
+        }
+      }
+    },
+    "infoRSA": {
+      "properties": {
+        "p256dh": {
+          "type": "string",
+          "uniqueItems": true
+        },
+        "auth": {
+          "type": "string",
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}
