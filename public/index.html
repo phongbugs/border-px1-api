@@ -1,7 +1,54 @@
+﻿<!DOCTYPE html>
 <html>
-    <head>
-    </head>
-    <body>
-        <h1>BORDER PX1 API</h1>
-    </body>
+
+<head>
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, WLs-scalable=no" /> -->
+	<title>Summary L</title>
+	<link rel="stylesheet" href="extjs/6.2/classic/theme-neptune/resources/theme-neptune-all.css" />
+	<link rel="stylesheet" href="extjs/6.2/packages/ux/classic/neptune/resources/ux-all.css" />
+	<!--<link rel="stylesheet" href="extjs/6.2/packages/charts/classic/neptune/resources/charts-all.css" />-->
+	<!--<link rel="stylesheet" href="../stylesheets/font-awesome.min.css" />-->
+	<script src="extjs/6.2/ext-all.js"></script>
+	<!--<script src="extjs/6.2/packages/ux/classic/ux.js"></script>
+	<script src="extjs/6.2/packages/charts/classic/charts.js"></script>-->
+	<script src="js/jsencrypt.min.js"></script>
+</head>
+
+<body>
+	<div id="app"></div>
+	<script>
+		var borderPx1ApiHost = 'http://localhost:9999',
+			tokenPrivateKey = '-----BEGIN RSA PRIVATE KEY-----MIICXAIBAAKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQABAoGBAIQ04VguKg/uUjeg7AKnMMKsIuSI4g9Ej5U9CFN/UEQiOuiId77IBdT6nm+9nIRO73WCrDMkzrh7tfp3/st+0sCklR6IINTFH1+p9552qSDru6WpbIPsEK70yD6Cb8gfEC8PGQh1LRgzpLFMCGVcixuTRfbL3gXc2ZUmh+xmYMXBAkEA27ubu0MmMko3K/n02EU+Cij/fmlcnqkYblkDQxKJVQ3pmgVCmD4wfm2byT2TwbTPs+Rqp3nVnlR/RNJsDJESYQJBAMeMFTd6wOhB1d93HFxWgAYL/AA3B3znc5TxxxW7mn5v0c/uTR52UefoRfBDxxhqItCeTs+NsB5PIw3r6T95ri8CQHlr/4+IeLf7iOdVNba49KJ6q0y4fkTynhyENag/uwH0MS06UOV+ICANA7Q9wcOd3dTDmSg4zBG1Ear/OFPtaqECQC1gboayNGHcbr0lQd7BkNVPLlwCJ4LAwyjQnjwT8DrmRKjrAMB3mYKJ8DWFxCWKJSaZiURrbOxHhKoqxly31+MCQGDwutUtAE6q8E1hZ/+/tqr4fyG5vFW4EYXbeXcYPM6h+PoSBFSPaG/EAGfNmxPiFRll7ODBoHMHei/XXPlAHKg=-----END RSA PRIVATE KEY-----',
+			log = console.log,
+			loadScript = (pathScript) => {
+				const script = document.createElement('script')
+				script.src = pathScript
+				document.getElementsByTagName('body')[0].appendChild(script)
+			}
+		window.onload = () => {
+			if (isAuthenticated())
+				loadScript('js/gridWL.js')
+			else loadScript('js/loginForm.js')
+		}
+		function isAuthenticated() {
+			let token = localStorage.getItem('token')
+			if (!token) return false
+			var crypt = new JSEncrypt()
+			crypt.setKey(tokenPrivateKey)
+			let decyptedData = crypt.decrypt(token);
+			log(decyptedData)
+			if (decyptedData) {
+				let d1 = new Date().getTime(),
+					d2 = new Date(JSON.parse(decyptedData).expiredDate).getTime()
+				//log(d1)
+				//log(d2)
+				//log((d2 - d1))
+				//log(24 * 3600 * 1000)
+				return (d2 - d1) <= 24 * 3600 * 1000
+			}
+			return false
+		}
+	</script>
+</body>
+
 </html>

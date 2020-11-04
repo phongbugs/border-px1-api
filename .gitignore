@@ -12,5 +12,6 @@ yarn-error.log
 yarn.lock
 .yarnclean
 .vscode
-
+extjs
+public/WLs.json
 package-lock.json

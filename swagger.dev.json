@@ -28,24 +28,10 @@
         "produces": ["application/json"],
         "parameters": [
           {
-            "name": "username",
-            "in": "body",
-            "required": true,
-            "description": "Username",
-            "type": "string"
-          },
-          {
             "name": "password",
             "in": "body",
             "required": true,
             "description": "password",
-            "type": "string"
-          },
-          {
-            "name": "rsaPublicKey",
-            "in": "body",
-            "required": true,
-            "description": "RSA public key",
             "type": "string"
           }
         ],

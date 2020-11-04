@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
+var userRouter = require('./routes/user');
+
 
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -26,6 +28,7 @@ app.use(cors());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/', indexRouter);
+app.use('/user', userRouter);
 
 // catch 404 and forward to error handler
 app.use(function (_, _, next) {
