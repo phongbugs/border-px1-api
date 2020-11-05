@@ -21,7 +21,7 @@
   "consumes": ["application/json"],
   "produces": ["application/json"],
   "paths": {
-    "user/login": {
+    "/user/login": {
       "post": {
         "tags": ["BORDER PX1 API"],
         "description": "Login access to white label management site",
@@ -45,7 +45,7 @@
         }
       }
     },
-    "authentication/": {
+    "/authentication/": {
       "post": {
         "tags": ["BORDER PX1 API"],
         "description": "Authentication access to BORDER PX1 by account",
