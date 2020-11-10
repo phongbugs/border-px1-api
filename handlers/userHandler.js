@@ -11,7 +11,7 @@ function login(req, res) {
         success: true,
         token: crypt.encrypt(
           JSON.stringify({
-            expiredDate: new Date().getTime() + 24 * 3600 * 1000,
+            expiredDate: new Date().getTime() + 1 * 3600 * 1000,
           })
         ),
       });

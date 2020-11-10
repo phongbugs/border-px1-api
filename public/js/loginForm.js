@@ -42,7 +42,7 @@
 									token = action.result.token
 									localStorage.setItem('token', token)
 									document.getElementById('app').innerHTML = '';
-									loadScript('js/gridWL.js')
+									loadScript('js/whitelabelGrid.js')
 								}
 							},
 							failure: function (form, action) {

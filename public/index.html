@@ -31,17 +31,18 @@
 				var crypt = new JSEncrypt()
 				crypt.setKey(tokenPrivateKey)
 				let decyptedData = crypt.decrypt(token);
-				log(decyptedData)
+				log('expiredDate:%s', new Date(JSON.parse(decyptedData).expiredDate))
 				if (decyptedData) {
 					let d1 = new Date().getTime(),
 						d2 = new Date(JSON.parse(decyptedData).expiredDate).getTime()
-					return (d2 - d1) <= 24 * 3600 * 1000
+					log(d1 - d2)
+					return (d1 - d2) <= 0
 				}
 				return false
 			}
 		window.onload = () => {
 			if (isAuthenticated())
-				loadScript('js/gridWL.js')
+				loadScript('js/whitelabelGrid.js')
 			else loadScript('js/loginForm.js')
 		}
 	</script>
