@@ -10,16 +10,18 @@ async function authenticate(req, res) {
     log('authenticationData: %s', authenticationData);
     if (authenticationData) {
       crypt.setPrivateKey(tokenPrivateKey);
-      let decryptedData = crypt.decrypt(authenticationData);
+      let decryptedData = JSON.parse(crypt.decrypt(authenticationData));
       log('decryptedData: %s', decryptedData);
-      let cookie = await crawler.login(
+      let result = await crawler.login(
         decryptedData.username,
         decryptedData.password
       );
-      res.send({
-        success: true,
-        cookie: cookie,
-      });
+      if (result.success)
+        res.send({
+          success: true,
+          cookie: result.cookie.join(';'),
+        });
+      else res.send({ success: false, message: result.message });
     } else
       res.send({ success: false, message: 'Authentication data do not exits' });
   } catch (error) {

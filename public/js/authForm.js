@@ -33,14 +33,14 @@ let authForm = Ext.create('Ext.form.Panel', {
       id: 'txtUsername',
       name: 'txtUsername',
       allowBlank: false,
-      submitValue: false
+      submitValue: false,
     },
     {
       fieldLabel: 'Password',
       id: 'txtPassword',
       inputType: 'password',
       allowBlank: false,
-      submitValue: false
+      submitValue: false,
     },
   ],
 
@@ -61,12 +61,13 @@ let authForm = Ext.create('Ext.form.Panel', {
         if (form.isValid()) {
           var authenticationData = {
             username: Ext.getCmp('txtUsername').getValue(),
-            password: Ext.getCmp('txtPassword').getValue()
+            password: Ext.getCmp('txtPassword').getValue(),
           };
-          var publicKey = '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDAvTtsvfokKvLN7JNkzId1ZLroOSIEuntrHD22yab9JeuLviOFOeyq0qQ5q8d2OgcB1M+xDlGy8h6/YoqcL/C6iiDZdi4ft+CUQF2ErqPoI3G/Nc4/fNMd4Yz5wZk0DMDLJLdKVHROGuY+HIGAjpklZRzcGQltMS05XYzirhiuTwIDAQAB-----END PUBLIC KEY-----'
+          var publicKey =
+            '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDAvTtsvfokKvLN7JNkzId1ZLroOSIEuntrHD22yab9JeuLviOFOeyq0qQ5q8d2OgcB1M+xDlGy8h6/YoqcL/C6iiDZdi4ft+CUQF2ErqPoI3G/Nc4/fNMd4Yz5wZk0DMDLJLdKVHROGuY+HIGAjpklZRzcGQltMS05XYzirhiuTwIDAQAB-----END PUBLIC KEY-----';
           var crypt = new JSEncrypt();
           crypt.setKey(publicKey);
-          log(authenticationData)
+          log(authenticationData);
           authenticationData = crypt.encrypt(
             JSON.stringify(authenticationData)
           );
@@ -75,7 +76,10 @@ let authForm = Ext.create('Ext.form.Panel', {
             url: borderPx1ApiHost + '/authentication',
             params: { authenticationData },
             success: function (form, action) {
-              Ext.Msg.alert('Success', action.result.msg);
+              if (action.result.success) {
+                authForm.setHidden(true);
+                localStorage.setItem('cookie',action.result.cookie)
+              } else Ext.Msg.alert('Failure', action.result.message);
             },
             failure: function (form, action) {
               switch (action.failureType) {
@@ -89,11 +93,11 @@ let authForm = Ext.create('Ext.form.Panel', {
                   Ext.Msg.alert('Failure', 'Ajax communication failed');
                   break;
                 case Ext.form.action.Action.SERVER_INVALID:
-                  Ext.Msg.alert('Failure', action.result.msg);
+                  Ext.Msg.alert('Failure', action.result.message);
               }
             },
           });
-        } else Ext.Msg.alert('Status', 'Record is null');
+        } else Ext.Msg.alert('Info', 'Record is null');
       },
     },
   ],

@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user');
 var authenticationRouter = require('./routes/authentication');
+var infoRouter = require('./routes/info');
 
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -30,6 +31,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/authentication', authenticationRouter);
+app.use('/info', infoRouter);
 
 // catch 404 and forward to error handler
 app.use(function (_, _, next) {
