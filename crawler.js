@@ -346,7 +346,7 @@ async function fetchBackendId(serverId, authenticatedCookie) {
   Message = Utils.Http.Message()
   await sleep(1000)
   let data = {
-    backend_id: serverId,
+    backend_id: +serverId,
   };
   let url = cfg.backendIdUrl;
   log(`|==> Fetch Token: ${url}`);
