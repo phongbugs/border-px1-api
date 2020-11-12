@@ -69,38 +69,31 @@
         }
       }
     },
-    "/authentication/status": {
-      "get": {
-        "tags": ["BORDER PX1 API"],
-        "summary": "Check status of authentication",
-        "responses": {
-          "200": {
-            "description": "Status of current authentication",
-            "schema": {
-              "$ref": "#/definitions/authenticationStatusResponse"
-            }
-          }
+    "/info/backendId/{serverId}": {
+      "parameters": [
+        {
+          "name": "serverId",
+          "in": "path",
+          "required": true,
+          "description": "ID of server",
+          "type": "string"
+        },
+        {
+          "name": "cookie",
+          "in": "body",
+          "required": true,
+          "description": "aunthenticated cookie",
+          "type": "string"
         }
-      }
-    },
-    "/sites": {
+      ],
       "get": {
         "tags": ["BORDER PX1 API"],
-        "summary": "Get all sites of white label name",
-        "parameters": [
-          {
-            "name": "name",
-            "in": "path",
-            "required": true,
-            "description": "White label name",
-            "type": "string"
-          }
-        ],
+        "summary": "Get backendId for browsing page to specific server",
         "responses": {
           "200": {
-            "description": "Array of site data",
+            "description": "Get backendId successfully",
             "schema": {
-              "$ref": "#/definitions/siteResponse"
+              "$ref": "#/definitions/backendIdResponse"
             }
           }
         }
@@ -108,11 +101,14 @@
     }
   },
   "definitions": {
-    "authenticationStatusResponse": {
+    "backendIdResponse": {
       "required": ["status"],
       "properties": {
         "status": {
           "type": "boolean"
+        },
+        "backendId": {
+          "type": "string"
         }
       }
     },
@@ -144,7 +140,6 @@
         }
       }
     },
-    
     "siteResponse": {
       "required": ["ID", "Host", "ServerPoolID"],
       "properties": {
@@ -157,18 +152,6 @@
         },
         "ServerPoolID": {
           "type": "number"
-        }
-      }
-    },
-    "infoRSA": {
-      "properties": {
-        "p256dh": {
-          "type": "string",
-          "uniqueItems": true
-        },
-        "auth": {
-          "type": "string",
-          "uniqueItems": true
         }
       }
     }
