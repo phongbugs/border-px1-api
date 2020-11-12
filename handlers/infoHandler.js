@@ -11,7 +11,7 @@ const log = console.log,
         if (result.success)
           res.send({
             success: true,
-            bakcendId: result.bakcendId,
+            backendId: result.backendId,
           });
         else res.send({ success: false, message: result.message });
       } else res.send({ success: false, message: 'Cookie do not exits' });
