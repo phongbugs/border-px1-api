@@ -1,5 +1,69 @@
 ﻿// Global Data
-let otherServers = [
+let allServers = [
+    { ID: '50', Name: '10.168.106.100' },
+    { ID: '17', Name: '10.168.106.101' },
+    { ID: '19', Name: '10.168.106.102' },
+    { ID: '18', Name: '10.168.106.103' },
+    { ID: '39', Name: '10.168.106.104' },
+    { ID: '48', Name: '10.168.106.105' },
+    { ID: '14', Name: '10.168.106.106' },
+    { ID: '15', Name: '10.168.106.107' },
+    { ID: '16', Name: '10.168.106.108' },
+    { ID: '40', Name: '10.168.106.110' },
+    { ID: '20', Name: '10.168.106.111' },
+    { ID: '21', Name: '10.168.106.112' },
+    { ID: '22', Name: '10.168.106.113' },
+    { ID: '41', Name: '10.168.106.114' },
+    { ID: '42', Name: '10.168.106.115' },
+    { ID: '13', Name: '10.168.106.116' },
+    { ID: '8', Name: '10.168.106.117' },
+    { ID: '9', Name: '10.168.106.118' },
+    { ID: '10', Name: '10.168.106.119' },
+    { ID: '11', Name: '10.168.106.120' },
+    { ID: '12', Name: '10.168.106.121' },
+    { ID: '43', Name: '10.168.106.122' },
+    { ID: '44', Name: '10.168.106.123' },
+    { ID: '45', Name: '10.168.106.124' },
+    { ID: '46', Name: '10.168.106.125' },
+    { ID: '47', Name: '10.168.106.126' },
+    { ID: '54', Name: '10.168.106.167' },
+    { ID: '55', Name: '10.168.106.168' },
+    { ID: '56', Name: '10.168.106.169' },
+    { ID: '57', Name: '10.168.106.170' },
+    { ID: '58', Name: '10.168.106.171' },
+    { ID: '59', Name: '10.168.106.172' },
+    { ID: '60', Name: '10.168.106.173' },
+    { ID: '61', Name: '10.168.106.174' },
+    { ID: '62', Name: '10.168.106.175' },
+    { ID: '72', Name: '10.168.106.177' },
+    { ID: '73', Name: '10.168.106.178' },
+    { ID: '74', Name: '10.168.106.179' },
+    { ID: '23', Name: '10.168.106.67' },
+    { ID: '24', Name: '10.168.106.68' },
+    { ID: '1', Name: '10.168.106.69' },
+    { ID: '25', Name: '10.168.106.70' },
+    { ID: '28', Name: '10.168.106.72' },
+    { ID: '29', Name: '10.168.106.73' },
+    { ID: '30', Name: '10.168.106.74' },
+    { ID: '35', Name: '10.168.106.76' },
+    { ID: '3', Name: '10.168.106.77' },
+    { ID: '5', Name: '10.168.106.78' },
+    { ID: '4', Name: '10.168.106.79' },
+    { ID: '26', Name: '10.168.106.80' },
+    { ID: '31', Name: '10.168.106.82' },
+    { ID: '32', Name: '10.168.106.83' },
+    { ID: '33', Name: '10.168.106.84' },
+    { ID: '36', Name: '10.168.106.85' },
+    { ID: '69', Name: '10.168.106.86' },
+    { ID: '70', Name: '10.168.106.87' },
+    { ID: '71', Name: '10.168.106.88' },
+    { ID: '37', Name: '10.168.106.89' },
+    { ID: '27', Name: '10.168.106.90' },
+    { ID: '34', Name: '10.168.106.92' },
+    { ID: '38', Name: '10.168.106.96' },
+    { ID: '49', Name: '10.168.106.99' },
+  ],
+  otherServers = [
     { ID: '50', Name: '10.168.106.100' },
     { ID: '69', Name: '10.168.106.86' },
     { ID: '70', Name: '10.168.106.87' },
@@ -203,16 +267,16 @@ let otherServers = [
   selectedServerGroupStore = Ext.create('Ext.data.ArrayStore', {
     fields: ['id', 'name'],
     data: [[]],
-  });
-// Global Functions
-function sortAndToList(array) {
-  let strWLs = array
-    .map((record) => record.name)
-    .sort()
-    .toString();
-  console.log(strWLs);
-  return strWLs.split(',').map((e) => [e, e]);
-}
+  }),
+  sortAndToList = (array) => {
+    let strWLs = array
+      .map((record) => record.name)
+      .sort()
+      .toString();
+    console.log(strWLs);
+    return strWLs.split(',').map((e) => [e, e]);
+  },
+  findServerIdByIp = (ip) => allServers.find((server) => server.Name === ip).ID;
 // Global Variables
 let Groups,
   data = [],
@@ -449,7 +513,7 @@ Ext.onReady(function () {
               }
               storeWLs.loadData(data);
               featureGrouping.collapseAll();
-            }
+            } else storeWLs.setGroupField(undefined);
           },
         },
       },
@@ -802,12 +866,30 @@ Ext.onReady(function () {
               var ip = grid.getStore().getAt(recordIndex).get('specificServer');
               Ext.Ajax.request({
                 method: 'POST',
-                url: borderPx1ApiHost + '/info/backendId/169',
+                url:
+                  borderPx1ApiHost + '/info/backendId/' + findServerIdByIp(ip),
                 params: {
                   cookie: localStorage.getItem('cookie'),
                 },
                 success: function (response) {
                   log(response);
+                  let defaultDomain = record.get('defaultDomain'),
+                    whiteLabelName = record.get('name'),
+                    status = record.get('status'),
+                    protocol = Ext.getCmp('cbbProtocol').getValue(),
+                    backendId = JSON.parse(response.responseText).backendId;
+                  if (!defaultDomain) defaultDomain = whiteLabelName + '.com';
+                  if (status === 'testing') {
+                    defaultDomain = whiteLabelName + 'main.playliga.com';
+                    protocol = 'http';
+                  }
+                  let url =
+                    protocol +
+                    '://' +
+                    defaultDomain +
+                    '?bpx-backend-id=' +
+                    backendId;
+                  window.open(url, '_blank');
                 },
                 failure: function (response) {
                   alert(JSON.stringify(response));
