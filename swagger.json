@@ -1,0 +1,162 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "BORDER PX1 API",
+    "description": "BORDER PX1 API demo server",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "border-px1-api",
+  "basePath": "",
+  "tags": [
+    {
+      "name": "BORDER PX1 API",
+      "description": "API for BORDER PX1 API"
+    }
+  ],
+  "schemes": ["https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/user/login": {
+      "parameters": [
+        {
+          "name": "password",
+          "in": "body",
+          "required": true,
+          "description": "password",
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": ["BORDER PX1 API"],
+        "description": "Login white label management site",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Login response",
+            "schema": {
+              "$ref": "#/definitions/loginResponse"
+            }
+          }
+        }
+      }
+    },
+    "/authentication/": {
+      "parameters": [
+        {
+          "name": "authenticationData",
+          "in": "body",
+          "required": true,
+          "description": "A encrypted string of username & password of BORDER PX1(RSA Algorithm)",
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": ["BORDER PX1 API"],
+        "description": "Login BORDER PX1 site by its account",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Authentication Response",
+            "schema": {
+              "$ref": "#/definitions/authenticationResponse"
+            }
+          }
+        }
+      }
+    },
+    "/info/backendId/{serverId}": {
+      "parameters": [
+        {
+          "name": "serverId",
+          "in": "path",
+          "required": true,
+          "description": "ID of server",
+          "type": "string"
+        },
+        {
+          "name": "cookie",
+          "in": "body",
+          "required": true,
+          "description": "aunthenticated cookie",
+          "type": "string"
+        }
+      ],
+      "post": {
+        "tags": ["BORDER PX1 API"],
+        "summary": "Create a backendId for browsing page to specific server",
+        "responses": {
+          "200": {
+            "description": "Get backendId successfully",
+            "schema": {
+              "$ref": "#/definitions/backendIdResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "backendIdResponse": {
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "backendId": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "authenticationResponse": {
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "cookie": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "loginResponse": {
+      "required": ["success"],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "token": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "siteResponse": {
+      "required": ["ID", "Host", "ServerPoolID"],
+      "properties": {
+        "ID": {
+          "type": "number",
+          "uniqueItems": true
+        },
+        "Host": {
+          "type": "string"
+        },
+        "ServerPoolID": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
