@@ -3,7 +3,12 @@
     layout: 'center',
     border: false,
     bodyStyle: 'background:transparent',
-    bodyPadding: '50%',
+	bodyPadding: '50%',
+	listeners:{
+		show:() =>{
+			document.getElementById('loading').innerHTML = ''
+		}
+	},
     items: [
       {
         xtype: 'form',
@@ -49,12 +54,12 @@
                       token = action.result.token;
                       localStorage.setItem('token', token);
                       document.getElementById('app').innerHTML = '';
-                      me.setIconcls('');
+                      me.setIconCls('');
                       loadScript('js/whitelabelGrid.js');
                     }
                   },
                   failure: function (form, action) {
-                    me.setIconcls('');
+                    me.setIconCls('');
                     Ext.Msg.alert('Failed', action.result.message);
                   },
                 });
@@ -64,6 +69,6 @@
         ],
       },
     ],
-    renderTo: 'app',
+    renderTo: 'loginForm',
   });
 });
