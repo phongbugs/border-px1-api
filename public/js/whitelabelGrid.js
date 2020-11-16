@@ -614,13 +614,13 @@ Ext.onReady(function () {
       },
       {
         xtype: 'combo',
-        width: 100,
+        width: 115,
         store: new Ext.data.ArrayStore({
           fields: ['id', 'name'],
           data: [
             ['default', 'Select Col'],
             ['Robots.txt', 'Robots.txt'],
-            ['defaultDomain', 'Default Domain'],
+            ['defaultDomain', 'Default.aspx'],
             ['Main.aspx', 'Main.aspx'],
             ['_Bet/Panel.aspx', 'Panel.aspx'],
             ['Google.html', 'Google.html'],
@@ -677,7 +677,7 @@ Ext.onReady(function () {
               siteType = Ext.getCmp('cbbSiteType').getValue();
             if (!defaultDomain) defaultDomain = name + '.com';
             defaultDomain =
-              siteType === 'member' ? '' : siteType + defaultDomain;
+              siteType === 'member' ? defaultDomain : siteType + defaultDomain;
             let url =
                 Ext.getCmp('cbbProtocol').getValue() +
                 '://' +
@@ -689,13 +689,7 @@ Ext.onReady(function () {
               case 'default':
               case 'defaultDomain':
                 break;
-              case 'Robots.txt':
-              case 'Main.aspx':
-              case '_Bet/Panel.aspx':
-              case 'Google.html':
-              case 'Sitemap.xml':
-              case 'Header.aspx':
-              case '_View/Register.aspx':
+              default:
                 url += columnName;
                 break;
             }
