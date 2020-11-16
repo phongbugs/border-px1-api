@@ -19,3 +19,11 @@ npm start
 - ***cannot unmarshal string into Go struct field*** => backend is implemented by golang
 
 ## Notes
+
+- body parameters swagger io
+
+  ```js
+
+  {"cookie":"borderproxy-deviceId=QZGVvSjXLm6SNU6N2PKS3Q==; Path=/; Expires=Tue, 12 Nov 2120 10:34:12 GMT; HttpOnly,borderproxy-token=Gsaf7dGgs7kSXWVpVJOl5l7SyjuYhio_c9Q8x0PFq5A=; Path=/; Expires=Thu, 19 Nov 2020 10:34:12 GMT; HttpOnly"}
+  
+  ```

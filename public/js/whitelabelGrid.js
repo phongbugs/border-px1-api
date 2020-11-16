@@ -856,7 +856,6 @@ Ext.onReady(function () {
         width: 30,
         tooltip: 'Open link by specific server',
         text: 'O',
-        dataIndex: 'secificServer',
         items: [
           {
             icon:
@@ -872,24 +871,27 @@ Ext.onReady(function () {
                   cookie: localStorage.getItem('cookie'),
                 },
                 success: function (response) {
-                  log(response);
-                  let defaultDomain = record.get('defaultDomain'),
-                    whiteLabelName = record.get('name'),
-                    status = record.get('status'),
-                    protocol = Ext.getCmp('cbbProtocol').getValue(),
-                    backendId = JSON.parse(response.responseText).backendId;
-                  if (!defaultDomain) defaultDomain = whiteLabelName + '.com';
-                  if (status === 'testing') {
-                    defaultDomain = whiteLabelName + 'main.playliga.com';
-                    protocol = 'http';
-                  }
-                  let url =
-                    protocol +
-                    '://' +
-                    defaultDomain +
-                    '?bpx-backend-id=' +
-                    backendId;
-                  window.open(url, '_blank');
+                  //log(response);
+                  let result = JSON.parse(response.responseText);
+                  if (result.success) {
+                    let defaultDomain = record.get('defaultDomain'),
+                      whiteLabelName = record.get('name'),
+                      status = record.get('status'),
+                      protocol = Ext.getCmp('cbbProtocol').getValue(),
+                      backendId = result.backendId;
+                    if (!defaultDomain) defaultDomain = whiteLabelName + '.com';
+                    if (status === 'testing') {
+                      defaultDomain = whiteLabelName + 'main.playliga.com';
+                      protocol = 'http';
+                    }
+                    let url =
+                      protocol +
+                      '://' +
+                      defaultDomain +
+                      '?bpx-backend-id=' +
+                      backendId;
+                    window.open(url, '_blank');
+                  } else alert(result.messsage);
                 },
                 failure: function (response) {
                   alert(JSON.stringify(response));

@@ -22,19 +22,19 @@
   "produces": ["application/json"],
   "paths": {
     "/user/login": {
+      "parameters": [
+        {
+          "name": "password",
+          "in": "body",
+          "required": true,
+          "description": "password",
+          "type": "string"
+        }
+      ],
       "post": {
         "tags": ["BORDER PX1 API"],
-        "description": "Login access to white label management site",
+        "description": "Login white label management site",
         "produces": ["application/json"],
-        "parameters": [
-          {
-            "name": "password",
-            "in": "body",
-            "required": true,
-            "description": "password",
-            "type": "string"
-          }
-        ],
         "responses": {
           "200": {
             "description": "Login response",
@@ -46,19 +46,19 @@
       }
     },
     "/authentication/": {
+      "parameters": [
+        {
+          "name": "authenticationData",
+          "in": "body",
+          "required": true,
+          "description": "A encrypted string of username & password of BORDER PX1(RSA Algorithm)",
+          "type": "string"
+        }
+      ],
       "post": {
         "tags": ["BORDER PX1 API"],
-        "description": "Authentication access to BORDER PX1 by account",
+        "description": "Login BORDER PX1 site by its account",
         "produces": ["application/json"],
-        "parameters": [
-          {
-            "name": "authenticationData",
-            "in": "body",
-            "required": true,
-            "description": "Username & password were encrypted by RSA at client with mode...",
-            "type": "string"
-          }
-        ],
         "responses": {
           "200": {
             "description": "Authentication Response",
@@ -86,9 +86,9 @@
           "type": "string"
         }
       ],
-      "get": {
+      "post": {
         "tags": ["BORDER PX1 API"],
-        "summary": "Get backendId for browsing page to specific server",
+        "summary": "Create a backendId for browsing page to specific server",
         "responses": {
           "200": {
             "description": "Get backendId successfully",
@@ -102,12 +102,15 @@
   },
   "definitions": {
     "backendIdResponse": {
-      "required": ["status"],
+      "required": ["success"],
       "properties": {
-        "status": {
+        "success": {
           "type": "boolean"
         },
         "backendId": {
+          "type": "string"
+        },
+        "message": {
           "type": "string"
         }
       }
