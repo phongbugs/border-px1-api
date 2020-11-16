@@ -117,7 +117,7 @@ let authForm = Ext.create('Ext.form.Panel', {
               JSON.stringify(authenticationData)
             );
             btnAuth = Ext.getCmp('btnAuthenticate');
-            btnAuth.setIcon('img/loading.gif');
+            btnAuth.setIconCls('spinner');
             form.submit({
               clientValidation: true,
               url: borderPx1ApiHost + '/authentication',
@@ -130,7 +130,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                     localStorage.setItem('authUsername', username);
                     localStorage.setItem('authPassword', password);
                   }
-                  btnAuth.setIcon('');
+                  btnAuth.setIconCls('');
                   // countdonw
                   var myCounter = new Countdown({
                     seconds: 1800,
@@ -148,6 +148,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                 } else Ext.Msg.alert('Failure', action.result.message);
               },
               failure: function (form, action) {
+                btnAuth.setIconCls('');
                 switch (action.failureType) {
                   case Ext.form.action.Action.CLIENT_INVALID:
                     Ext.Msg.alert(

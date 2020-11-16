@@ -39,7 +39,7 @@
             handler: function () {
               let me = this;
               var form = this.up('form').getForm();
-              me.setIcon('img/loading.gif');
+              me.setIconCls('spinner');
               if (form.isValid()) {
                 form.submit({
                   success: function (form, action) {
@@ -49,12 +49,12 @@
                       token = action.result.token;
                       localStorage.setItem('token', token);
                       document.getElementById('app').innerHTML = '';
-                      me.setIcon('');
+                      me.setIconcls('');
                       loadScript('js/whitelabelGrid.js');
                     }
                   },
                   failure: function (form, action) {
-                    me.setIcon('');
+                    me.setIconcls('');
                     Ext.Msg.alert('Failed', action.result.message);
                   },
                 });
