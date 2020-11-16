@@ -3,12 +3,8 @@
     layout: 'center',
     border: false,
     bodyStyle: 'background:transparent',
-	bodyPadding: '50%',
-	listeners:{
-		show:() =>{
-			document.getElementById('loading').innerHTML = ''
-		}
-	},
+    bodyPadding: '50%',
+    renderTo: 'app',
     items: [
       {
         xtype: 'form',
@@ -22,6 +18,12 @@
           anchor: '100%',
         },
         defaultType: 'textfield',
+        listeners: {
+          afterrender: () => {
+            var loading = document.getElementById('loading');
+            loading.classList.remove('spinner');
+          },
+        },
         items: [
           {
             inputType: 'password',
@@ -69,6 +71,5 @@
         ],
       },
     ],
-    renderTo: 'loginForm',
   });
 });
