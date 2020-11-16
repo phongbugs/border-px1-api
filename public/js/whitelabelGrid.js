@@ -457,6 +457,27 @@ Ext.onReady(function () {
         },
       },
       {
+        xtype: 'combo',
+        width: 90,
+        store: new Ext.data.ArrayStore({
+          fields: ['id', 'name'],
+          data: [
+            ['mobile.', 'Mobile'],
+            ['member', 'Member'],
+            ['ag.', 'Agent'],
+          ],
+        }),
+        displayField: 'name',
+        valueField: 'id',
+        name: 'cbbSiteType',
+        id: 'cbbSiteType',
+        value: 'member',
+        editable: false,
+        listeners: {
+          change: (_, val) => Ext.getCmp('btnRefresh').fireEvent('click'),
+        },
+      },
+      {
         xtype: 'button',
         id: 'btnRefresh',
         icon:
@@ -652,8 +673,11 @@ Ext.onReady(function () {
           for (let i = startIndex; i <= endIndex; i++) {
             let record = storeWLs.getAt(i),
               defaultDomain = record.get('defaultDomain') || undefined,
-              name = record.get('name');
+              name = record.get('name'),
+              siteType = Ext.getCmp('cbbSiteType').getValue();
             if (!defaultDomain) defaultDomain = name + '.com';
+            defaultDomain =
+              siteType === 'member' ? '' : siteType + defaultDomain;
             let url =
                 Ext.getCmp('cbbProtocol').getValue() +
                 '://' +
@@ -716,10 +740,16 @@ Ext.onReady(function () {
             mobileRedirect = !record.get('mobileRedirect') ? '📵' : '',
             securityQuestion = record.get('securityQuestion') ? '🔒' : '',
             status = record.get('status'),
-            protocol = Ext.getCmp('cbbProtocol').getValue();
+            protocol = Ext.getCmp('cbbProtocol').getValue(),
+            siteType = Ext.getCmp('cbbSiteType').getValue();
           if (!defaultDomain) defaultDomain = val + '.com';
+          defaultDomain =
+            siteType === 'member' ? defaultDomain : siteType + defaultDomain;
           if (status === 'testing') {
-            defaultDomain = val + 'main.playliga.com';
+            defaultDomain =
+              val +
+              (siteType === 'member' ? 'main.' : siteType) +
+              'playliga.com';
             protocol = 'http';
           }
           let oldNames = '';
@@ -729,6 +759,7 @@ Ext.onReady(function () {
               '<del style="color:#fb4848; font-style:italic">' +
               name +
               '</del><br/>';
+          //log('defaultDomain: %s', defaultDomain);
           return (
             Ext.String.format(
               '<a target="_blank" href="{0}://{1}">{2}</a> {3} {4} {5} {6}<br />',
