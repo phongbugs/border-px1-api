@@ -49,7 +49,7 @@ function createJar(cookies, rp, url) {
   let jar = rp.jar();
   cookies.forEach((e, i) => {
     e.split(';').forEach((cookie) => {
-      log(cookie);
+      //log(cookie);
       if (cookie.indexOf('HttpOnly,') > -1)
         cookie = cookie.substr(10, cookie.length);
       jar.setCookie(rp.cookie(cookie.trim()), url);
@@ -58,8 +58,8 @@ function createJar(cookies, rp, url) {
   return jar;
 }
 
-async function login(username, password) {
-  log(`|==> Login: ${cfg.loginUrl}`);
+async function login(username, password, hostBorderPx1) {
+  log(`|==> Login: ${hostBorderPx1}`);
   log(username);
   log(password);
   try {
@@ -69,9 +69,10 @@ async function login(username, password) {
       password: password,
     });
     //log(encryptedForm)
+    cfg.hostBorderPx1 = hostBorderPx1;
     let options = {
       method: 'POST',
-      url: cfg.loginUrl,
+      url: cfg.hostBorderPx1 + cfg.loginPath,
       headers: cfg.headers,
       form: encryptedForm,
       resolveWithFullResponse: true,
@@ -85,7 +86,7 @@ async function login(username, password) {
     let res = await rp(options);
 
     log(res.body);
-    log(res.headers);
+    //log(res.headers);
     let body = JSON.parse(res.body);
     if (body.ErrCode === 0) {
       let cookies = res.headers['set-cookie'];
@@ -343,13 +344,13 @@ async function fetchAllServers(isSkippedValidationCookies) {
 //http://prntscr.com/pngy17
 async function fetchBackendId(serverId, authenticatedCookie) {
   // cookie is available, use ase file
-  Message = Utils.Http.Message()
-  await sleep(1000)
+  Message = Utils.Http.Message();
+  await sleep(1000);
   let data = {
     backend_id: +serverId,
   };
-  let url = cfg.backendIdUrl;
-  log(`|==> Fetch Token: ${url}`);
+  let url = cfg.hostBorderPx1 + cfg.backendIdPath;
+  log(`|==> Fetch BackendId: ${url}`);
   let options = {
     method: 'POST',
     url: url,

@@ -378,6 +378,9 @@ Ext.onReady(function () {
                   : undefined
                 : servers;
           }
+          // icon spniner cols
+          record['specificServerSpinner'] = false;
+          record['remoteDesktopSpinner'] = false;
           data.push(record);
         }
         Groups = storeWLs.getGroups();
@@ -616,7 +619,8 @@ Ext.onReady(function () {
         xtype: 'numberfield',
         id: 'txtStartIndex',
         value: 0,
-        width: 60,
+        width: 30,
+        hideTrigger: true,
         listeners: {
           focus: function (tf, e) {
             tf.setValue('');
@@ -625,9 +629,10 @@ Ext.onReady(function () {
       },
       {
         xtype: 'numberfield',
-        width: 60,
+        width: 40,
         id: 'txtEndIndex',
         value: 0,
+        hideTrigger: true,
         maxValue: 165,
         minValue: 0,
         listeners: {
@@ -736,17 +741,17 @@ Ext.onReady(function () {
             ) + oldNames
           );
         },
-        editor: {
-          completeOnEnter: false,
+        // editor: {
+        //   completeOnEnter: false,
 
-          // If the editor config contains a field property, then
-          // the editor config is used to create the Ext.grid.CellEditor
-          // and the field property is used to create the editing input field.
-          field: {
-            xtype: 'textfield',
-            allowBlank: false,
-          },
-        },
+        //   // If the editor config contains a field property, then
+        //   // the editor config is used to create the Ext.grid.CellEditor
+        //   // and the field property is used to create the editing input field.
+        //   field: {
+        //     xtype: 'textfield',
+        //     allowBlank: false,
+        //   },
+        // },
       },
       {
         text: 'CT',
@@ -858,11 +863,16 @@ Ext.onReady(function () {
         text: 'O',
         items: [
           {
-            icon:
-              'https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png',
+            iconCls: 'openLink',
+            getClass: function (value, meta, record, rowIndex, colIndex) {
+              var isSpinning = record.get('specificServerSpinner');
+              return isSpinning ? 'spinner' : 'openLink';
+            },
             handler: function (grid, rowIndex, colIndex, item, e, record) {
-              var recordIndex = grid.getStore().indexOf(record);
-              var ip = grid.getStore().getAt(recordIndex).get('specificServer');
+              rowIndex = grid.getStore().indexOf(record);
+              record = grid.getStore().getAt(rowIndex);
+              var ip = record.get('specificServer');
+              record.set('specificServerSpinner', true);
               Ext.Ajax.request({
                 method: 'POST',
                 url:
@@ -872,6 +882,7 @@ Ext.onReady(function () {
                 },
                 success: function (response) {
                   //log(response);
+                  record.set('specificServerSpinner', false);
                   let result = JSON.parse(response.responseText);
                   if (result.success) {
                     let defaultDomain = record.get('defaultDomain'),
@@ -909,19 +920,24 @@ Ext.onReady(function () {
         dataIndex: 'servers',
         items: [
           {
-            icon:
-              'https://icons.iconarchive.com/icons/tpdkdesign.net/refresh-cl/16/Network-Remote-Desktop-icon.png',
+            getClass: function (value, meta, record, rowIndex, colIndex) {
+              var isSpinning = record.get('remoteDesktopSpinner');
+              return isSpinning ? 'spinner' : 'remoteDesktop';
+            },
             handler: function (grid, rowIndex, colIndex, item, e, record) {
-              var recordIndex = grid.getStore().indexOf(record);
-              var ip = grid.getStore().getAt(recordIndex).get('specificServer');
+              rowIndex = grid.getStore().indexOf(record);
+              record = grid.getStore().getAt(rowIndex);
+              var ip = record.get('specificServer');
+              record.set('remoteDesktopSpinner', true);
               Ext.Ajax.request({
                 method: 'GET',
                 url: 'http://localhost:3000/remote/' + ip,
                 success: function (response) {
+                  record.set('remoteDesktopSpinner', false);
                   log(response);
                 },
                 failure: function (response) {
-                  alert(JSON.stringify(response));
+                  log(response);
                 },
               });
             },

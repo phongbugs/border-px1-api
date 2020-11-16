@@ -1,0 +1,11 @@
+.spinner {
+  background: url(../img/checking.gif) no-repeat center;
+}
+.openLink {
+  background: url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png)
+    no-repeat center;
+}
+.remoteDesktop {
+  background: url(https://icons.iconarchive.com/icons/tpdkdesign.net/refresh-cl/16/Network-Remote-Desktop-icon.png)
+    no-repeat center;
+}

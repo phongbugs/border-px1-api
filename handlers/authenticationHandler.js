@@ -7,14 +7,15 @@ const JSEncrypt = require('node-jsencrypt'),
 async function authenticate(req, res) {
   try {
     let authenticationData = req.body.authenticationData;
-    log('authenticationData: %s', authenticationData);
+    //log('authenticationData: %s', authenticationData);
     if (authenticationData) {
       crypt.setPrivateKey(tokenPrivateKey);
       let decryptedData = JSON.parse(crypt.decrypt(authenticationData));
-      log('decryptedData: %s', decryptedData);
+      //log('decryptedData: %s', decryptedData);
       let result = await crawler.login(
         decryptedData.username,
-        decryptedData.password
+        decryptedData.password,
+        decryptedData.hostBorderPx1
       );
       if (result.success)
         res.send({

@@ -2,10 +2,9 @@ const log = console.log,
   crawler = require('../crawler'),
   fetchBackendId = async (req, res) => {
     try {
-      log(req.params.serverId);
       let serverId = req.params.serverId,
         cookie = req.body.cookie;
-      log('serverId: %s', serverId);
+      //log('serverId: %s', serverId);
       if (cookie) {
         let result = await crawler.fetchBackendId(serverId, [cookie]);
         if (result.success)
