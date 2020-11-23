@@ -13,7 +13,7 @@ const log = console.log,
             backendId: result.backendId,
           });
         else res.send({ success: false, message: result.message });
-      } else res.send({ success: false, message: 'Cookie do not exits' });
+      } else res.send({ success: false, message: 'Access denied, please login border px1 site' });
     } catch (error) {
       res.send({ success: false, message: error.message });
     }

@@ -13,6 +13,13 @@ npm install
 npm start
 ```
 
+## Todo
+
+- Sync Domains Button
+  - Sync all domain of all WLs
+  - Save to local storage
+  - Encrypt domain json by public key from backend & decrypt private key from front-end
+
 ## Bugs
 
 - Input data number or string, ex 169 and '169'

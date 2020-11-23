@@ -2,14 +2,10 @@ module.exports = {
   loginPath: '/api/admin/login',
   adminPath: '/admin',
   listWLSitepath: '/api/user/list',
-  listWLDomainPath:
-    '/api/domainEdit/list',
-  listWLServerBySitePath:
-    '/api/backend/listSiteAddr',
-  listWLServerPath:
-    '/api/backend/listAddr',
-  listWLNamePath:
-    '/api/accountGroup/list',
+  listWLDomainPath: '/api/domainEdit/list',
+  listWLServerBySitePath: '/api/backend/listSiteAddr',
+  listWLServerPath: '/api/backend/listAddr',
+  listWLNamePath: '/api/accountGroup/list',
   backendIdPath: '/api/domainEdit/token',
   fileCookies: '/cookies.kie',
   fileAESKey: '/aes.key',
