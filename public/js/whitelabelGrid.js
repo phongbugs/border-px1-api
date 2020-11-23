@@ -301,18 +301,20 @@ let Groups,
                 case '10.168.109.6':
                   name = name + ' [Test Server]';
                   break;
-                case '67-68-69':
-                case '92-96-104':
                 //case "77-78-79":
                 case '110-114-115':
-                  name = name + ' [Failed Runbat]';
+                  name = name + ' [Failed CMD(D)]';
                   break;
                 case '116-117-118':
                   name = name + ' [Failed Touchcan]';
                   break;
                 case '119-120-121':
                 case '173-174-175':
-                  name = name + ' [Failed Touchcan & Runbat]';
+                  name = name + ' [Failed Touchcan & CMD]';
+                  break;
+                case '67-68-69':
+                case '92-96-104':
+                  name = name + ' [Failed CMD(B)]';
                   break;
               }
               return (
@@ -917,20 +919,30 @@ Ext.onReady(function () {
                       whiteLabelName = record.get('name'),
                       status = record.get('status'),
                       protocol = Ext.getCmp('cbbProtocol').getValue(),
-                      backendId = result.backendId;
+                      backendId = result.backendId,
+                      siteType = Ext.getCmp('cbbSiteType').getValue();
                     if (!defaultDomain) defaultDomain = whiteLabelName + '.com';
+                    defaultDomain =
+                      siteType === 'member'
+                        ? defaultDomain
+                        : siteType + defaultDomain;
                     if (status === 'testing') {
                       defaultDomain = whiteLabelName + 'main.playliga.com';
                       protocol = 'http';
                     }
-                    let url =
-                      protocol +
-                      '://' +
-                      defaultDomain +
-                      '?bpx-backend-id=' +
-                      backendId;
+                    let columnName = Ext.getCmp('cbbColumn').getValue();
+                    let url = protocol + '://' + defaultDomain + '/';
+                    switch (columnName) {
+                      case 'default':
+                      case 'defaultDomain':
+                        break;
+                      default:
+                        url += columnName;
+                        break;
+                    }
+                    url += '?bpx-backend-id=' + backendId;
                     window.open(url, '_blank');
-                  } else alert(result.messsage);
+                  } else alert(result.message);
                 },
                 failure: function (response) {
                   alert(JSON.stringify(response));

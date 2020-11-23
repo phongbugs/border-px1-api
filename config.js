@@ -1,16 +1,15 @@
 module.exports = {
-  homeUrl: 'https://net-ga.admin.12365.bpx-cdn.cloud/',
   loginPath: '/api/admin/login',
-  adminUrl: 'https://net-ga.admin.12365.bpx-cdn.cloud/admin',
-  listWLSiteUrl: 'https://net-ga.admin.12365.bpx-cdn.cloud/api/user/list',
-  listWLDomainUrl:
-    'https://net-ga.admin.12365.bpx-cdn.cloud/api/domainEdit/list',
-  listWLServerBySiteUrl:
-    'https://net-ga.admin.12365.bpx-cdn.cloud/api/backend/listSiteAddr',
-  listWLServerUrl:
-    'https://net-ga.admin.12365.bpx-cdn.cloud/api/backend/listAddr',
-  listWLNameUrl:
-    'https://net-ga.admin.12365.bpx-cdn.cloud/api/accountGroup/list',
+  adminPath: '/admin',
+  listWLSitepath: '/api/user/list',
+  listWLDomainPath:
+    '/api/domainEdit/list',
+  listWLServerBySitePath:
+    '/api/backend/listSiteAddr',
+  listWLServerPath:
+    '/api/backend/listAddr',
+  listWLNamePath:
+    '/api/accountGroup/list',
   backendIdPath: '/api/domainEdit/token',
   fileCookies: '/cookies.kie',
   fileAESKey: '/aes.key',
