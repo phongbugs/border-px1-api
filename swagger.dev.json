@@ -69,6 +69,30 @@
         }
       }
     },
+    "/authentication/status": {
+      "parameters": [
+        {
+          "name": "cookie",
+          "in": "query",
+          "required": true,
+          "description": "The latest browser's cookies",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": ["BORDER PX1 API"],
+        "description": "Check whether has cookie been expired yet",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Status of cookie",
+            "schema": {
+              "$ref": "#/definitions/authenticationStatusResponse"
+            }
+          }
+        }
+      }
+    },
     "/info/backendId/{serverId}": {
       "parameters": [
         {
@@ -126,6 +150,14 @@
         },
         "message": {
           "type": "string"
+        }
+      }
+    },
+    "authenticationStatusResponse": {
+      "required": ["status"],
+      "properties": {
+        "success": {
+          "type": "boolean"
         }
       }
     },

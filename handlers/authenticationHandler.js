@@ -1,3 +1,5 @@
+const { cookie } = require('request');
+
 const JSEncrypt = require('node-jsencrypt'),
   crypt = new JSEncrypt(),
   log = console.log,
@@ -17,17 +19,29 @@ async function authenticate(req, res) {
         decryptedData.password,
         decryptedData.hostBorderPx1
       );
-      if (result.success)
+      if (result.success) {
+        let cookie = result.cookie.join(';');
+        global.cookie = cookie;
         res.send({
           success: true,
-          cookie: result.cookie.join(';'),
+          cookie: cookie,
         });
-      else res.send({ success: false, message: result.message });
+      } else res.send({ success: false, message: result.message });
     } else
       res.send({ success: false, message: 'Authentication data do not exits' });
   } catch (error) {
     res.send({ success: false, message: error.message });
   }
 }
+async function isAuthenticated(req, res) {
+  try {
+    let cookie = req.query.cookie;
+    if (cookie) {
+      res.send({ success: global.cookie === cookie });
+    } else res.send({ success: false, message: "Cookie data doesn't exist" });
+  } catch (error) {
+    res.send({ success: false, message: error.message });
+  }
+}
 
-module.exports = { authenticate };
+module.exports = { authenticate, isAuthenticated };

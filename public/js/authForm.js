@@ -18,6 +18,36 @@ let authForm = Ext.create('Ext.form.Panel', {
   layout: 'anchor',
   hidden: true,
   listeners: {
+    afterrender: () => {
+      Ext.Ajax.request({
+        method: 'GET',
+        url: borderPx1ApiHost + '/authentication/status',
+        params: { cookie: localStorage.getItem('cookie') },
+        success: function (response) {
+          let result = JSON.parse(response.responseText);
+          if (result.success) {
+            var myCounter = new Countdown({
+              seconds: localStorage.getItem('authTime'),
+              onUpdateStatus: function (time) {
+                Ext.getCmp('btnOpenAuthForm').setText(
+                  convertTimeToMinutesAndSeconds(time)
+                );
+                localStorage.setItem('authTime', time);
+              },
+              onCounterEnd: function () {
+                authForm.setHidden(false);
+                Ext.getCmp('btnAuthenticate').fireEvent('click');
+              },
+            });
+            myCounter.start();
+          }
+        },
+        failure: function (response) {
+          Ext.Msg.alert('Failure', "Remote Desktop Cli Service doesn't start");
+          record.set('remoteDesktopSpinner', false);
+        },
+      });
+    },
     show: () => {
       Ext.getCmp('txtUsername').setValue(
         localStorage.getItem('authUsername') || ''
@@ -138,6 +168,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                       Ext.getCmp('btnOpenAuthForm').setText(
                         convertTimeToMinutesAndSeconds(time)
                       );
+                      localStorage.setItem('authTime', time);
                     },
                     onCounterEnd: function () {
                       authForm.setHidden(false);

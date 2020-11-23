@@ -974,10 +974,13 @@ Ext.onReady(function () {
                 url: 'http://localhost:3000/remote/' + ip,
                 success: function (response) {
                   record.set('remoteDesktopSpinner', false);
-                  log(response);
                 },
                 failure: function (response) {
-                  log(response);
+                  Ext.Msg.alert(
+                    'Failure',
+                    'Remote Desktop Cli Service doesn\'t start'
+                  );
+                  record.set('remoteDesktopSpinner', false);
                 },
               });
             },
