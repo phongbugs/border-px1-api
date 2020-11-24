@@ -47,6 +47,7 @@
               let me = this;
               var form = this.up('form').getForm();
               me.setIconCls('spinner');
+              me.disable();
               if (form.isValid()) {
                 form.submit({
                   success: function (form, action) {
@@ -57,11 +58,13 @@
                       localStorage.setItem('token', token);
                       document.getElementById('app').innerHTML = '';
                       me.setIconCls('');
+                      me.enable();
                       loadScript('js/whitelabelGrid.js');
                     }
                   },
                   failure: function (form, action) {
                     me.setIconCls('');
+                    me.enable();
                     Ext.Msg.alert('Failed', action.result.message);
                   },
                 });
