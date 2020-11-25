@@ -113,7 +113,7 @@ let authForm = Ext.create('Ext.form.Panel', {
       xtype: 'checkbox',
       id: 'ckbRememberMe',
       submitValue: false,
-      value: true,
+      value: false,
     },
   ],
 

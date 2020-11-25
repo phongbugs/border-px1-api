@@ -1,5 +1,6 @@
 ﻿Ext.onReady(() => {
   var loginForm = Ext.create('Ext.Panel', {
+    id: 'loginForm',
     layout: 'center',
     border: false,
     bodyStyle: 'background:transparent',
@@ -11,7 +12,7 @@
         bodyStyle: 'background:transparent',
         title: 'Type Password',
         bodyPadding: 15,
-        width: 170,
+        width: 190,
         url: borderPx1ApiHost + '/user/login',
         layout: 'anchor',
         frame: true,
@@ -38,6 +39,8 @@
         buttons: [
           {
             text: 'Reset',
+            icon:
+              'https://icons.iconarchive.com/icons/double-j-design/ravenna-3d/16/Reload-icon.png',
             handler: function () {
               this.up('form').getForm().reset();
             },
@@ -46,6 +49,8 @@
             text: 'Login',
             formBind: true,
             disabled: true,
+            icon:
+              'https://icons.iconarchive.com/icons/custom-icon-design/flatastic-8/16/Keys-icon.png',
             handler: function () {
               let me = this;
               var form = this.up('form').getForm();
