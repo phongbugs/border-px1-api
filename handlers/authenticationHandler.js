@@ -22,9 +22,9 @@ async function authenticate(req, res) {
       if (result.success) {
         let cookie = result.cookie.join(';');
         global.cookie = cookie;
+        res.cookie('border-px1', cookie);
         res.send({
           success: true,
-          cookie: cookie,
         });
       } else res.send({ success: false, message: result.message });
     } else
@@ -35,7 +35,7 @@ async function authenticate(req, res) {
 }
 async function isAuthenticated(req, res) {
   try {
-    let cookie = req.query.cookie;
+    let cookie = req.cookies['border-px1'];
     if (cookie) {
       res.send({ success: global.cookie === cookie });
     } else res.send({ success: false, message: "Cookie data doesn't exist" });
