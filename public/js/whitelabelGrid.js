@@ -329,6 +329,7 @@ let Groups,
 Ext.onReady(function () {
   // prevent browser call loadScript('js/gridWL.js') at console log
   if (!isAuthenticated()) return;
+  Ext.tip.QuickTipManager.init();
   Ext.define('WL', {
     extend: 'Ext.data.Model',
     fields: [
@@ -787,6 +788,7 @@ Ext.onReady(function () {
         text: 'CT',
         width: 50,
         dataIndex: 'compType',
+        tooltip: 'Comptype',
       },
       {
         text: 'Prefix',
@@ -870,6 +872,7 @@ Ext.onReady(function () {
         text: 'H/D Number',
         width: 100,
         dataIndex: 'headerNumber',
+        tooltip: 'Header/Default number',
         renderer: (val, _, record) => val + '/' + record.get('defaultNumber'),
         hidden: false,
       },
