@@ -260,7 +260,7 @@ async function fetchDomainsBySiteId(siteId, authenticatedCookie) {
     let data = {
       siteId: siteId,
     };
-    let url = cfg.listWLDomainUrl;
+    let url = cfg.hostBorderPx1 + cfg.listWLDomainPath;
     log(`|==> Fetch Domains: ${url}`);
     let options = {
       method: 'POST',

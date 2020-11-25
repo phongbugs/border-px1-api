@@ -29,8 +29,9 @@ const log = console.log,
     try {
       let siteName = req.params.siteName,
         siteId = sites.find((site) => site.name === siteName).id,
-        cookie = req.cookies;
+        cookie = req.cookies['border-px1'];
       log(siteName);
+      log(siteId);
       log(cookie);
       if (cookie) {
         let result = await crawler.fetchDomainsBySiteId(siteId, [cookie]);

@@ -1,5 +1,5 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.0",
   "info": {
     "version": "1.0.0",
     "title": "BORDER PX1 API",
@@ -9,184 +9,325 @@
       "url": "https://opensource.org/licenses/MIT"
     }
   },
-  "host": "border-px1-api",
-  "basePath": "",
   "tags": [
     {
       "name": "BORDER PX1 API",
       "description": "API for BORDER PX1 API"
     }
   ],
-  "schemes": ["https"],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
+  "servers": [
+    {
+      "url": "http://localhost:9000",
+      "description": "Development server"
+    },
+    {
+      "url": "https://border-px1-api.herokuapp.com",
+      "description": "Production server (uses live data)"
+    }
+  ],
   "paths": {
     "/user/login": {
-      "parameters": [
-        {
-          "name": "password",
-          "in": "body",
-          "required": true,
-          "description": "password",
-          "type": "string"
-        }
-      ],
       "post": {
-        "tags": ["BORDER PX1 API"],
+        "tags": [
+          "BORDER PX1 API"
+        ],
+        "summary": "Login to White Labels Management site",
         "description": "Login white label management site",
-        "produces": ["application/json"],
+        "requestBody": {
+          "description": "the password use to login border-px1-api",
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "password"
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Login response",
-            "schema": {
-              "$ref": "#/definitions/loginResponse"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/loginResponse"
+                }
+              }
             }
           }
         }
       }
     },
     "/authentication/": {
-      "parameters": [
-        {
-          "name": "authenticationData",
-          "in": "body",
-          "required": true,
-          "description": "A encrypted string of username & password of BORDER PX1(RSA Algorithm)",
-          "type": "string"
-        }
-      ],
       "post": {
-        "tags": ["BORDER PX1 API"],
+        "tags": [
+          "BORDER PX1 API"
+        ],
+        "summary": "Authenticate to BORDER-PX1 site",
         "description": "Login BORDER PX1 site by its account",
-        "produces": ["application/json"],
+        "requestBody": {
+          "description": "A encrypted string from username & password & url of BORDER PX1(encrypted RSA algorithm)",
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "authenticationData": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "authenticationData"
+                ]
+              }
+            }
+          }
+        },
+        "security": [],
         "responses": {
           "200": {
-            "description": "Authentication Response",
-            "schema": {
-              "$ref": "#/definitions/authenticationResponse"
+            "description": "Authentiaction successfully",
+            "headers": {
+              "Set-Cookie": {
+                "schema": {
+                  "type": "string",
+                  "example": "border-px1=abcde12345; Path=/; HttpOnly"
+                },
+                "description": "a cookie string of border-px1"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/authenticationResponse"
+                }
+              }
             }
           }
         }
       }
     },
     "/authentication/status": {
-      "parameters": [
-        {
-          "name": "cookie",
-          "in": "query",
-          "required": true,
-          "description": "The latest browser's cookies",
-          "type": "string"
-        }
-      ],
       "get": {
-        "tags": ["BORDER PX1 API"],
+        "tags": [
+          "BORDER PX1 API"
+        ],
+        "summary": "Check whether has cookie been expired yet",
         "description": "Check whether has cookie been expired yet",
-        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "border-px1",
+            "in": "cookie",
+            "required": true,
+            "description": "The authenticated cookie",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Status of cookie",
-            "schema": {
-              "$ref": "#/definitions/authenticationStatusResponse"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/authenticationStatusResponse"
+                }
+              }
             }
           }
         }
       }
     },
     "/info/backendId/{serverId}": {
-      "parameters": [
-        {
-          "name": "serverId",
-          "in": "path",
-          "required": true,
-          "description": "ID of server",
-          "type": "string"
-        },
-        {
-          "name": "cookie",
-          "in": "body",
-          "required": true,
-          "description": "aunthenticated cookie",
-          "type": "string"
-        }
-      ],
       "post": {
-        "tags": ["BORDER PX1 API"],
+        "tags": [
+          "BORDER PX1 API"
+        ],
         "summary": "Create a backendId for browsing page to specific server",
+        "parameters": [
+          {
+            "name": "serverId",
+            "in": "path",
+            "required": true,
+            "description": "ID of server",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "border-px1",
+            "in": "cookie",
+            "required": true,
+            "description": "aunthenticated cookie",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get backendId successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backendIdResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/info/domains/{siteName}": {
+      "get": {
+        "tags": [
+          "BORDER PX1 API"
+        ],
+        "summary": "Get all domains name of site name",
+        "parameters": [
+          {
+            "name": "siteName",
+            "in": "path",
+            "required": true,
+            "description": "Name of site\n Ex:\n- Agent : ag.winning228.bpx\n- Mobile: mo.winning228.bpx\n- Member: winning228.bpx",
             "schema": {
-              "$ref": "#/definitions/backendIdResponse"
+              "type": "string"
+            }
+          },
+          {
+            "name": "cookie",
+            "in": "cookie",
+            "required": true,
+            "description": "aunthenticated cookie",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get domains successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/domainResponse"
+                }
+              }
             }
           }
         }
       }
     }
   },
-  "definitions": {
-    "backendIdResponse": {
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "backendId": {
-          "type": "string"
-        },
-        "message": {
-          "type": "string"
+  "components": {
+    "schemas": {
+      "backendIdResponse": {
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "backendId": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
         }
-      }
-    },
-    "authenticationResponse": {
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "cookie": {
-          "type": "string"
-        },
-        "message": {
-          "type": "string"
+      },
+      "authenticationResponse": {
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
         }
-      }
-    },
-    "authenticationStatusResponse": {
-      "required": ["status"],
-      "properties": {
-        "success": {
-          "type": "boolean"
+      },
+      "authenticationStatusResponse": {
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          }
         }
-      }
-    },
-    "loginResponse": {
-      "required": ["success"],
-      "properties": {
-        "success": {
-          "type": "boolean"
-        },
-        "token": {
-          "type": "string"
-        },
-        "message": {
-          "type": "string"
+      },
+      "authenticatedCookieResponse": {
+        "required": [
+          "border-px1"
+        ],
+        "properties": {
+          "border-px1": {
+            "type": "string"
+          }
         }
-      }
-    },
-    "siteResponse": {
-      "required": ["ID", "Host", "ServerPoolID"],
-      "properties": {
-        "ID": {
-          "type": "number",
-          "uniqueItems": true
-        },
-        "Host": {
-          "type": "string"
-        },
-        "ServerPoolID": {
-          "type": "number"
+      },
+      "loginResponse": {
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "token": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "domainResponse": {
+        "required": [
+          "ID",
+          "Domain",
+          "LastUpdate"
+        ],
+        "properties": {
+          "ID": {
+            "type": "number",
+            "uniqueItems": true
+          },
+          "Domain": {
+            "type": "string"
+          },
+          "EnableWWW": {
+            "type": "number"
+          },
+          "RootValid": {
+            "type": "number"
+          },
+          "HTTPS": {
+            "type": "number"
+          },
+          "LastUpdate": {
+            "type": "string"
+          },
+          "ServerTime": {
+            "type": "string"
+          },
+          "LastChecked": {
+            "type": "string"
+          }
         }
       }
     }

@@ -15,7 +15,7 @@ const cors = require('cors');
 var app = express();
 
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocumentFileName = app.get('env') === 'development' ? './swagger.dev.json' : './swagger.json';
+const swaggerDocumentFileName = './swagger.json';
 const swaggerDocument = require(swaggerDocumentFileName);
 
 app.use(logger('dev'));
