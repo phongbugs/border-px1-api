@@ -18,12 +18,15 @@ npm start
 - Sync Domains Button
   - Sync all domain of all WLs
   - Save to local storage
+    - Item localstorage is WL name
+      - Ex: 'HABANA' : 'sda2fed32311154252'
   - Encrypt domain json by public key from backend & decrypt private key from front-end
 
 ## Bugs
 
 - Input data number or string, ex 169 and '169'
 - ***cannot unmarshal string into Go struct field*** => backend is implemented by golang
+- Session expired error a(4)(wait session refresh)
 
 ## Notes
 
