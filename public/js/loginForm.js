@@ -14,16 +14,19 @@
         width: 170,
         url: borderPx1ApiHost + '/user/login',
         layout: 'anchor',
+        frame: true,
         defaults: {
           anchor: '100%',
         },
-        defaultType: 'textfield',
+        icon:
+          'https://icons.iconarchive.com/icons/hopstarter/soft-scraps/16/Lock-Unlock-icon.png',
         listeners: {
           afterrender: () => {
             var loading = document.getElementById('loading');
             loading.classList.remove('spinner');
           },
         },
+        defaultType: 'textfield',
         items: [
           {
             inputType: 'password',
