@@ -253,9 +253,10 @@ async function fetchSites(nameWhiteLabel, isSkippedValidationCookies) {
   return sites;
 }
 
-async function fetchDomainsBySiteId(siteId, isSkippedValidationCookies) {
+async function fetchDomainsBySiteId(siteId, authenticatedCookie) {
   try {
-    await skipValidationCookies(isSkippedValidationCookies);
+    Message = Utils.Http.Message();
+    await sleep(1000);
     let data = {
       siteId: siteId,
     };
@@ -266,7 +267,7 @@ async function fetchDomainsBySiteId(siteId, isSkippedValidationCookies) {
       url: url,
       headers: cfg.headers,
       form: Message.encryptParams(data),
-      jar: createJar(authenticatedCookies, rp, url),
+      jar: createJar(authenticatedCookie, rp, url),
       resolveWithFullResponse: true,
       transform: (body, res) => {
         return {
@@ -279,10 +280,10 @@ async function fetchDomainsBySiteId(siteId, isSkippedValidationCookies) {
     let domains = decrypt(res.body);
     log(`domains.length = ${domains.length}`);
     //log(domains)
-    return domains;
+    return { success: true, domains: domains };
   } catch (error) {
     log(error);
-    return [];
+    return { success: false, message: error.message };
   }
 }
 
