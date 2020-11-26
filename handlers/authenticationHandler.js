@@ -25,6 +25,7 @@ async function authenticate(req, res) {
         res.cookie('border-px1', cookie);
         res.send({
           success: true,
+          cookie: cookie
         });
       } else res.send({ success: false, message: result.message });
     } else

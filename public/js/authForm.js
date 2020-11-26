@@ -155,7 +155,9 @@ let authForm = Ext.create('Ext.form.Panel', {
               success: function (form, action) {
                 if (action.result.success) {
                   authForm.setHidden(true);
-                  localStorage.setItem('cookie', action.result.cookie);
+                  let cookie = action.result.cookie;
+                  //localStorage.setItem('cookie', cookie);
+                  document.cookie = 'border-px1=' + cookie;
                   if (Ext.getCmp('ckbRememberMe').getValue()) {
                     localStorage.setItem('authUsername', username);
                     localStorage.setItem('authPassword', password);
