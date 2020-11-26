@@ -41,3 +41,5 @@ npm start
 - Open API 2.0 doesn't support set-cookie at response header (SWAGGER UI) : <https://github.com/scottie1984/swagger-ui-express/issues/80>
 
 - Change docs api to OAS(Open API Swagger) 3.0.3 <https://swagger.io/docs/specification/describing-request-body/>
+
+- <https://docs.sencha.com/extjs/6.2.1/modern/Ext.Date.html>

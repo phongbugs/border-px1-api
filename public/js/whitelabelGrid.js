@@ -187,10 +187,38 @@ Ext.onReady(function () {
             cellClickCount = 1;
             Ext.getCmp('txtEndIndex').setValue(td.innerText);
           }
+        } else if (cellIndex < 14) {
+          let domainGrid = Ext.getCmp('domainGrid'),
+            domainStore = domainGrid.getStore(),
+            siteType = Ext.getCmp('cbbSiteType').getRawValue();
+
+          switch (siteType) {
+            case 'Mobile':
+              siteType = 'mo';
+              break;
+            case 'Member':
+              siteType = '';
+              break;
+            case 'Agent':
+              siteType = 'ag';
+              break;
+          }
+          let whiteLabelName = record.get('name');
+          let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
+          domainGrid.show();
+          domainGrid.setTitle('All domains of ' + whiteLabelName);
+
+          domainStore.loadData([]);
+          domainStore
+            .getProxy()
+            .setConfig('url', [borderPx1ApiHost + '/info/domain/' + siteName]);
+          // show loadMask purpose
+          domainStore.load();
         }
       },
       viewready: (grid) => {
         loadScript('js/authForm.js');
+        loadScript('js/domainGrid.js');
       },
     },
     tbar: [
@@ -663,8 +691,7 @@ Ext.onReady(function () {
               record.set('specificServerSpinner', true);
               Ext.Ajax.request({
                 method: 'POST',
-                url:
-                  borderPx1ApiHost + '/info/backendId/' + ip,
+                url: borderPx1ApiHost + '/info/backendId/' + ip,
                 success: function (response) {
                   //log(response);
                   record.set('specificServerSpinner', false);
