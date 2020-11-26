@@ -3,13 +3,15 @@ const { request } = require('express');
 const log = console.log,
   crawler = require('../crawler'),
   sites = require('./sites.map'),
+  allServers = require('./servers.map')['allServers'],
+  findServerIdByIp = (ip) => allServers.find((server) => server.Name === ip).ID,
   fetchBackendId = async (req, res) => {
     try {
-      let serverId = req.params.serverId,
+      let serverIp = req.params.serverIp,
         cookie = req.cookies['border-px1'];
       //log('serverId: %s', serverId);
       if (cookie) {
-        let result = await crawler.fetchBackendId(serverId, [cookie]);
+        let result = await crawler.fetchBackendId(findServerIdByIp(serverIp), [cookie]);
         if (result.success)
           res.send({
             success: true,

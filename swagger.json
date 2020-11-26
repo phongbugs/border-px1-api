@@ -148,7 +148,7 @@
         }
       }
     },
-    "/info/backendId/{serverId}": {
+    "/info/backendId/{serverIp}": {
       "post": {
         "tags": [
           "BORDER PX1 API"
@@ -156,7 +156,7 @@
         "summary": "Create a backendId for browsing page to specific server",
         "parameters": [
           {
-            "name": "serverId",
+            "name": "serverIp",
             "in": "path",
             "required": true,
             "description": "ID of server",
@@ -254,6 +254,9 @@
         "properties": {
           "success": {
             "type": "boolean"
+          },
+          "cookie": {
+            "type": "string"
           },
           "message": {
             "type": "string"
