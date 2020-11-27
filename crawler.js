@@ -60,8 +60,8 @@ function createJar(cookies, rp, url) {
 
 async function login(username, password, hostBorderPx1) {
   log(`|==> Login: ${hostBorderPx1}`);
-  log(username);
-  log(password);
+  //log(username);
+  //log(password);
   try {
     Message = Utils.Http.Message(cfg.pKey);
     let encryptedForm = Message.encryptParams({
@@ -90,7 +90,7 @@ async function login(username, password, hostBorderPx1) {
     let body = JSON.parse(res.body);
     if (body.ErrCode === 0) {
       let cookies = res.headers['set-cookie'];
-      log(await Utils.File.saveTextFile(__dirname + cfg.fileCookies, cookies));
+      //log(await Utils.File.saveTextFile(__dirname + cfg.fileCookies, cookies));
       //log(cookies)
       return { success: true, cookie: cookies };
     }

@@ -22,7 +22,11 @@
     },
     {
       "url": "https://border-px1-api.herokuapp.com",
-      "description": "Production server (uses live data)"
+      "description": "Test server"
+    },
+    {
+      "url": "https://border-px1-api.xyz",
+      "description": "Production server"
     }
   ],
   "paths": {

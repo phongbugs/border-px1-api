@@ -81,3 +81,5 @@ npm start
   - Chrome :
     - chrome://flags/#allow-insecure-localhost
     - type : allow invail -> enable it
+
+- Run nodejs app at cpanel <http://prntscr.com/vr2tc5>
