@@ -18,9 +18,15 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
-
+// Plug open ssl
+// const fs = require('fs'),
+//   httpsOptions = {
+//     key: fs.readFileSync('./security/key.pem'),
+//     cert: fs.readFileSync('./security/cert.pem'),
+//     passphrase: '1234',
+//   };
+// var server = http.createServer(httpsOptions, app);
 var server = http.createServer(app);
-
 /**
  * Listen on provided port, on all network interfaces.
  */

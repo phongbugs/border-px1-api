@@ -43,3 +43,41 @@ npm start
 - Change docs api to OAS(Open API Swagger) 3.0.3 <https://swagger.io/docs/specification/describing-request-body/>
 
 - <https://docs.sencha.com/extjs/6.2.1/modern/Ext.Date.html>
+
+## Install Https in Express
+
+- <https://hackernoon.com/set-up-ssl-in-nodejs-and-express-using-openssl-f2529eab5bb>
+- Download OpenSSL Lib, extract and goto bin/openssl
+  
+  ```bash
+  > openssl req -x509 -newkey rsa:2048 -keyout keytmp.pem -out cert.pem -days 365
+
+  > openssl rsa -in keytmp.pem -out key.pem
+  ```
+
+  - Two statements will write down two files : ```key.pem``` and ```cert.pem```
+  - Inject to express web server
+  
+  ```js
+    const express = require('express')
+    const app = express()
+    const https = require('https')
+    const fs = require('fs')
+    const port = 3000
+
+    app.get('/', (req, res) => {
+      res.send('WORKING!')
+    })
+
+    const httpsOptions = {
+      key: fs.readFileSync('./key.pem'),
+      cert: fs.readFileSync('./cert.pem')
+    }
+    const server = https.createServer(httpsOptions, app).listen(port, () => {
+      console.log('server running at ' + port)
+  })
+  ```
+
+  - Chrome :
+    - chrome://flags/#allow-insecure-localhost
+    - type : allow invail -> enable it
