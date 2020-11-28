@@ -12,5 +12,4 @@ yarn-error.log
 yarn.lock
 .yarnclean
 .vscode
-public/WLs.json
 package-lock.json
