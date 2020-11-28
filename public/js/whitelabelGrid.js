@@ -207,11 +207,14 @@ Ext.onReady(function () {
           let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
           domainGrid.show();
           domainGrid.setTitle('All domains of ' + whiteLabelName);
-
           domainStore.loadData([]);
-          domainStore
-            .getProxy()
-            .setConfig('url', [borderPx1ApiHost + '/info/domain/' + siteName]);
+          let proxy = domainStore.getProxy();
+          proxy.extraParams = {
+            'border-px1-cookie': localStorage.getItem('border-px1-cookie'),
+          };
+          proxy.setConfig('url', [
+            borderPx1ApiHost + '/info/domain/' + siteName,
+          ]);
           // show loadMask purpose
           domainStore.load();
         }
@@ -555,17 +558,6 @@ Ext.onReady(function () {
             ) + oldNames
           );
         },
-        // editor: {
-        //   completeOnEnter: false,
-
-        //   // If the editor config contains a field property, then
-        //   // the editor config is used to create the Ext.grid.CellEditor
-        //   // and the field property is used to create the editing input field.
-        //   field: {
-        //     xtype: 'textfield',
-        //     allowBlank: false,
-        //   },
-        // },
       },
       {
         text: 'CT',
@@ -692,6 +684,11 @@ Ext.onReady(function () {
               Ext.Ajax.request({
                 method: 'POST',
                 url: borderPx1ApiHost + '/info/backendId/' + ip,
+                params: {
+                  'border-px1-cookie': localStorage.getItem(
+                    'border-px1-cookie'
+                  ),
+                },
                 success: function (response) {
                   //log(response);
                   record.set('specificServerSpinner', false);

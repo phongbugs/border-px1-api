@@ -170,7 +170,7 @@
           },
           {
             "name": "border-px1",
-            "in": "cookie",
+            "in": "query",
             "required": true,
             "description": "aunthenticated cookie",
             "schema": {

@@ -8,7 +8,7 @@ const log = console.log,
   fetchBackendId = async (req, res) => {
     try {
       let serverIp = req.params.serverIp,
-        cookie = req.cookies['border-px1'];
+        cookie = req.query['border-px1-cookie'];
       //log('serverId: %s', serverId);
       if (cookie) {
         let result = await crawler.fetchBackendId(findServerIdByIp(serverIp), [cookie]);
@@ -31,10 +31,10 @@ const log = console.log,
     try {
       let siteName = req.params.siteName,
         siteId = sites.find((site) => site.name === siteName).id,
-        cookie = req.cookies['border-px1'];
-      log(siteName);
-      log(siteId);
-      log(cookie);
+        cookie = req.query['border-px1-cookie'];
+      // log(siteName);
+      // log(siteId);
+      // log(cookie);
       if (cookie) {
         let result = await crawler.fetchDomainsBySiteId(siteId, [cookie]);
         if (result.success)
