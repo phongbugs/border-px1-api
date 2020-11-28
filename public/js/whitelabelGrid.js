@@ -220,7 +220,7 @@ Ext.onReady(function () {
         }
       },
       viewready: (grid) => {
-        loadScript('js/authForm.js');
+        loadScript('js/authForm.js?v=2');
         loadScript('js/domainGrid.js');
       },
     },

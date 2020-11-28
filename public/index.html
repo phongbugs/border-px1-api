@@ -83,8 +83,8 @@
             let cookie = new URLSearchParams(window.location.search).get('border-px1-cookie')
             if (!cookie) {
                 if (isAuthenticated())
-                    loadScript('js/whitelabelGrid.js?v=2')
-                else loadScript('js/loginForm.js')
+                    loadScript('js/whitelabelGrid.js?v=3')
+                else loadScript('js/loginForm.js?=2')
             }
             else {
                 document.cookie = 'border-px1=' + cookie;
