@@ -83,3 +83,15 @@ npm start
     - type : allow invail -> enable it
 
 - Run nodejs app at cpanel <http://prntscr.com/vr2tc5>
+
+## Set Cookie to broswer from 3rd party scrips
+
+- Ref: <https://javascript.info/cookie>
+- Only work with https
+
+```txt
+
+  If we load a script from a third-party domain, like <script src="https://google-analytics.com/analytics.js">, and that script uses document.cookie to set a cookie, then such cookie is not third-party.
+
+  If a script sets a cookie, then no matter where the script came from – the cookie belongs to the domain of the current webpage.
+```
