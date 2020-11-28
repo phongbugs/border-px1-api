@@ -187,7 +187,7 @@ Ext.onReady(function () {
             cellClickCount = 1;
             Ext.getCmp('txtEndIndex').setValue(td.innerText);
           }
-        } else if (cellIndex < 14) {
+        } else if (cellIndex < 13) {
           let domainGrid = Ext.getCmp('domainGrid'),
             domainStore = domainGrid.getStore(),
             siteType = Ext.getCmp('cbbSiteType').getRawValue();
