@@ -691,6 +691,7 @@ Ext.onReady(function () {
                 // },
                 cors: true,
                 useDefaultXhrHeader: false,
+                withCredentials: true,
                 success: function (response) {
                   //log(response);
                   record.set('specificServerSpinner', false);
