@@ -138,10 +138,10 @@ let authForm = Ext.create('Ext.form.Panel', {
               password = Ext.getCmp('txtPassword').getValue(),
               hostBorderPx1 = Ext.getCmp('cbbBorderPx1Url').getValue();
             authenticationData = { username, password, hostBorderPx1 };
-            var publicKey =
-              '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDAvTtsvfokKvLN7JNkzId1ZLroOSIEuntrHD22yab9JeuLviOFOeyq0qQ5q8d2OgcB1M+xDlGy8h6/YoqcL/C6iiDZdi4ft+CUQF2ErqPoI3G/Nc4/fNMd4Yz5wZk0DMDLJLdKVHROGuY+HIGAjpklZRzcGQltMS05XYzirhiuTwIDAQAB-----END PUBLIC KEY-----';
-            var crypt = new JSEncrypt();
-            crypt.setKey(publicKey);
+            let authenticationPublicKey =
+                '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDAvTtsvfokKvLN7JNkzId1ZLroOSIEuntrHD22yab9JeuLviOFOeyq0qQ5q8d2OgcB1M+xDlGy8h6/YoqcL/C6iiDZdi4ft+CUQF2ErqPoI3G/Nc4/fNMd4Yz5wZk0DMDLJLdKVHROGuY+HIGAjpklZRzcGQltMS05XYzirhiuTwIDAQAB-----END PUBLIC KEY-----',
+              crypt = new JSEncrypt();
+            crypt.setKey(authenticationPublicKey);
             //log(authenticationData);
             authenticationData = crypt.encrypt(
               JSON.stringify(authenticationData)
@@ -156,9 +156,9 @@ let authForm = Ext.create('Ext.form.Panel', {
                 if (action.result.success) {
                   authForm.setHidden(true);
                   let cookie = action.result.cookie;
-                  localStorage.setItem('border-px1-cookie', cookie);
-                  //document.cookie = 'border-px1=' + cookie;
-                  saveBorderPx1Cookie(cookie)
+                  //localStorage.setItem('border-px1-cookie', cookie);
+                  document.cookie = 'border-px1=' + cookie;
+                  //saveBorderPx1Cookie(cookie);
                   if (Ext.getCmp('ckbRememberMe').getValue()) {
                     localStorage.setItem('authUsername', username);
                     localStorage.setItem('authPassword', password);

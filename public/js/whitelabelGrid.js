@@ -209,9 +209,9 @@ Ext.onReady(function () {
           domainGrid.setTitle('All domains of ' + whiteLabelName);
           domainStore.loadData([]);
           let proxy = domainStore.getProxy();
-          proxy.extraParams = {
-            'border-px1-cookie': localStorage.getItem('border-px1-cookie'),
-          };
+          // proxy.extraParams = {
+          //   'border-px1-cookie': localStorage.getItem('border-px1-cookie'),
+          // };
           proxy.setConfig('url', [
             borderPx1ApiHost + '/info/domain/' + siteName,
           ]);
@@ -220,7 +220,7 @@ Ext.onReady(function () {
         }
       },
       viewready: (grid) => {
-        loadScript('js/authForm.js?v=3');
+        loadScript('js/authForm.js?v=4');
         loadScript('js/domainGrid.js');
       },
     },
@@ -684,11 +684,11 @@ Ext.onReady(function () {
               Ext.Ajax.request({
                 method: 'POST',
                 url: borderPx1ApiHost + '/info/backendId/' + ip,
-                params: {
-                  'border-px1-cookie': localStorage.getItem(
-                    'border-px1-cookie'
-                  ),
-                },
+                // params: {
+                //   'border-px1-cookie': localStorage.getItem(
+                //     'border-px1-cookie'
+                //   ),
+                // },
                 success: function (response) {
                   //log(response);
                   record.set('specificServerSpinner', false);
