@@ -12,7 +12,8 @@
     <!--<script src="extjs/6.2/packages/ux/classic/ux.js"></script>
     <script src="extjs/6.2/packages/charts/classic/charts.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.min.js"></script>
-    <link rel="shortcut icon" href="https://lh3.googleusercontent.com/a-/AOh14GjgiQ5JKAQrLioFlouEN-wAXCv_hU6jKIFU099p9w=s88-c-k-c0x00ffffff-no-rj-mo">
+    <link rel="shortcut icon"
+        href="https://lh3.googleusercontent.com/a-/AOh14GjgiQ5JKAQrLioFlouEN-wAXCv_hU6jKIFU099p9w=s88-c-k-c0x00ffffff-no-rj-mo">
     <style>
         .spinner {
             width: 16px;
@@ -36,22 +37,23 @@
         .remoteDesktop {
             background: url(https://icons.iconarchive.com/icons/tpdkdesign.net/refresh-cl/16/Network-Remote-Desktop-icon.png) no-repeat center;
         }
-		.center {
-			position: absolute;
-			left: 50%;
-			top: 10%;
-			-webkit-transform: translate(-50%, -50%);
-			transform: translate(-50%, -50%);
-		}
+
+        .center {
+            position: absolute;
+            left: 50%;
+            top: 10%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
     </style>
 </head>
 
 <body>
     <div id="app">
         <div id="center" class="center">
-			<div id="loading" class="spinner"></div>
-		 </div>
-		
+            <div id="loading" class="spinner"></div>
+        </div>
+
     </div>
     <script>
         var borderPx1ApiHost = (window.location.host.indexOf('localhost') > -1) ? 'http://localhost:9999' : 'https://border-px1-api.xyz',
@@ -78,10 +80,18 @@
                 return false
             }
         window.onload = () => {
-            if (isAuthenticated())
-                loadScript('js/whitelabelGrid.js?v=2')
-            else loadScript('js/loginForm.js')
+            let cookie = new URLSearchParams(window.location.search).get('border-px1-cookie')
+            if (!cookie) {
+                if (isAuthenticated())
+                    loadScript('js/whitelabelGrid.js?v=2')
+                else loadScript('js/loginForm.js')
+            }
+            else {
+                document.cookie = 'border-px1=' + cookie;
+            }
+
         }
     </script>
 </body>
+
 </html>

