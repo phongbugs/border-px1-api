@@ -23,7 +23,7 @@ const log = console.log,
       } else
         res.send({
           success: false,
-          message: 'Access denied, please login border px1 site - cookie:' + req.cookies,
+          message: 'Access denied, please login border px1 site - cookie:' + cookie,
         });
     } catch (error) {
       res.send({ success: false, message: error.message });
