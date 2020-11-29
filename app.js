@@ -25,10 +25,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors({
-  origin : "http://localhost:9999",
-  credentials: true,
-}))
+// app.use(cors({
+//   origin : "http://localhost:9999",
+//   credentials: true,
+// }))
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/', indexRouter);
