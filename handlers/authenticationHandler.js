@@ -23,7 +23,10 @@ async function authenticate(req, res) {
         let cookie = result.cookie.join(';');
         global.cookie = cookie;
         let encodedCookie = encodeURIComponent(cookie);
-        res.cookie('border-px1', encodedCookie);
+        res.cookie('border-px1', encodedCookie, {
+          sameSite: 'None',
+          secure: true,
+        });
         res.send({
           success: true,
           cookie: encodedCookie,
