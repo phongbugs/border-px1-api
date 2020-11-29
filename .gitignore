@@ -16,3 +16,5 @@ package-lock.json
 public/WLs.json
 public/index.html
 public/extjs
+
+aes.key
