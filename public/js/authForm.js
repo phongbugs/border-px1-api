@@ -43,7 +43,7 @@ let authForm = Ext.create('Ext.form.Panel', {
           }
         },
         failure: function (response) {
-          Ext.Msg.alert('Failure', "authentication/status error");
+          Ext.Msg.alert('Failure', 'authentication/status error');
           record.set('remoteDesktopSpinner', false);
         },
       });
@@ -182,7 +182,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                     },
                   });
                   myCounter.start();
-                  console.clear();
+                  setTimeout(() => console.clear(), 4000);
                 } else Ext.Msg.alert('Failure', action.result.message);
               },
               failure: function (form, action) {
@@ -248,6 +248,9 @@ function convertTimeToMinutesAndSeconds(time) {
 function saveBorderPx1Cookie(cookie) {
   var ifrm = document.createElement('iframe');
   ifrm.setAttribute('style', 'width:0;height:0;border:0; border:none');
-  ifrm.setAttribute('src', borderPx1ApiHost + '/authentication?cookie=' + cookie);
+  ifrm.setAttribute(
+    'src',
+    borderPx1ApiHost + '/authentication?cookie=' + cookie
+  );
   document.body.appendChild(ifrm);
 }
