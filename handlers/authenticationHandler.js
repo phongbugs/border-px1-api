@@ -26,6 +26,7 @@ async function authenticate(req, res) {
         res.cookie('border-px1', encodedCookie, {
           sameSite: 'None',
           secure: true,
+          domain:'border-px1-api.xyz'
         });
         res.send({
           success: true,

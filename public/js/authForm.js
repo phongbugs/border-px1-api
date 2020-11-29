@@ -157,7 +157,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                   authForm.setHidden(true);
                   let cookie = action.result.cookie;
                   //localStorage.setItem('border-px1-cookie', cookie);
-                  document.cookie = 'border-px1=' + cookie + 'Domain=border-px1-api.xyz; Path=/; SameSite=None; Secure';
+                  //document.cookie = 'border-px1=' + cookie + ';Domain=border-px1-api.xyz; Path=/; SameSite=None; Secure';
                   //saveBorderPx1Cookie(cookie);
                   if (Ext.getCmp('ckbRememberMe').getValue()) {
                     localStorage.setItem('authUsername', username);
