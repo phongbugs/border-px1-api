@@ -25,24 +25,24 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors())
+//app.use(cors())
 // app.use(cors({
 //   origin : "http://localhost:9999",
 //   credentials: true,
 // }))
-// app.use(function (req, res, next) {
-//   var allowedDomains = ['http://localhost:9999','maintenance.liga365.com' ];
-//   var origin = req.headers.origin;
-//   if(allowedDomains.indexOf(origin) > -1){
-//     res.setHeader('Access-Control-Allow-Origin', origin);
-//   }
+app.use(function (req, res, next) {
+  var allowedDomains = ['http://localhost:9999','https://border-px1-api.herokuapp.com/' ];
+  var origin = req.headers.origin;
+  if(allowedDomains.indexOf(origin) > -1){
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
 
-//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Accept');
-//   res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Accept');
+  res.setHeader('Access-Control-Allow-Credentials', true);
 
-//   next();
-// })
+  next();
+})
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/', indexRouter);
