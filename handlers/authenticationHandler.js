@@ -83,7 +83,7 @@ function setCookieToBrowser(req, res) {
   try {
     let cookie = req.query.cookie;
     if (cookie) {
-      //res.removeHeader('X-Frame-Options');
+      res.removeHeader('X-Frame-Options');
       res.cookie('border-px1', cookie, {
         sameSite: 'None',
         secure: true,
