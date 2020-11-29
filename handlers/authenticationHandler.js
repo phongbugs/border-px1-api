@@ -50,4 +50,19 @@ async function isAuthenticated(req, res) {
   }
 }
 
-module.exports = { authenticate, isAuthenticated };
+function setCookieToBrowser(req, res) {
+  try {
+    let cookie = req.query.cookie;
+    if (cookie) {
+      res.cookie('border-px1', cookie, {
+        sameSite: 'None',
+        secure: true,
+      });
+      res.send({ message: 'cookie sent' });
+    } else res.send({ success: false, message: "Cookie data doesn't exist" });
+  } catch (error) {
+    res.send({ success: false, message: error.message });
+  }
+}
+
+module.exports = { authenticate, isAuthenticated, setCookieToBrowser };

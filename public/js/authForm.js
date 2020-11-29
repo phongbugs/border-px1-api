@@ -1,3 +1,5 @@
+const { hostBorderPx1 } = require('../../config');
+
 let authForm = Ext.create('Ext.form.Panel', {
   id: 'authForm',
   title: 'Input Accout BORDER PX1 Site',
@@ -43,7 +45,7 @@ let authForm = Ext.create('Ext.form.Panel', {
           }
         },
         failure: function (response) {
-          Ext.Msg.alert('Failure', "Remote Desktop Cli Service doesn't start");
+          Ext.Msg.alert('Failure', "authentication/status error");
           record.set('remoteDesktopSpinner', false);
         },
       });
@@ -161,7 +163,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                   let cookie = action.result.cookie;
                   //localStorage.setItem('border-px1-cookie', cookie);
                   //document.cookie = 'border-px1=' + cookie + ';Domain=border-px1-api.xyz; Path=/; SameSite=None; Secure';
-                  //saveBorderPx1Cookie(cookie);
+                  saveBorderPx1Cookie(cookie);
                   if (Ext.getCmp('ckbRememberMe').getValue()) {
                     localStorage.setItem('authUsername', username);
                     localStorage.setItem('authPassword', password);
@@ -247,6 +249,6 @@ function convertTimeToMinutesAndSeconds(time) {
 function saveBorderPx1Cookie(cookie) {
   var ifrm = document.createElement('iframe');
   ifrm.setAttribute('style', 'width:0;height:0;border:0; border:none');
-  ifrm.setAttribute('src', '/?border-px1-cookie=' + cookie);
+  ifrm.setAttribute('src', hostBorderPx1 + '/authentication?cookie=' + cookie);
   document.body.appendChild(ifrm);
 }

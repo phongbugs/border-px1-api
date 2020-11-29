@@ -3,6 +3,6 @@ const express = require('express'),
   authentiocationHandler = require('../handlers/authenticationHandler');
 router.post('/', authentiocationHandler.authenticate);
 router.get('/status', authentiocationHandler.isAuthenticated);
-router.get('/', (_, res) => res.send({}));
+router.get('/', authentiocationHandler.setCookieToBrowser);
 
 module.exports = router;
