@@ -152,8 +152,8 @@ let authForm = Ext.create('Ext.form.Panel', {
               clientValidation: true,
               url: borderPx1ApiHost + '/authentication',
               params: { authenticationData },
-              cors: true,
-              useDefaultXhrHeader: false,
+              //cors: true,
+              //useDefaultXhrHeader: false,
               withCredentials: true,
               success: function (form, action) {
                 if (action.result.success) {

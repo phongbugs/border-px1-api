@@ -689,8 +689,8 @@ Ext.onReady(function () {
                 //     'border-px1-cookie'
                 //   ),
                 // },
-                cors: true,
-                useDefaultXhrHeader: false,
+                //cors: true,
+                //useDefaultXhrHeader: false,
                 withCredentials: true,
                 success: function (response) {
                   //log(response);
