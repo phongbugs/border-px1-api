@@ -31,7 +31,7 @@ app.use(bodyParser.json());
 //   credentials: true,
 // }))
 app.use(function (req, res, next) {
-  var allowedDomains = ['http://localhost:9999','https://border-px1-api.herokuapp.com/' ];
+  var allowedDomains = ['http://localhost:9999','https://border-px1-api.herokuapp.com' ];
   var origin = req.headers.origin;
   if(allowedDomains.indexOf(origin) > -1){
     res.setHeader('Access-Control-Allow-Origin', origin);
