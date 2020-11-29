@@ -3,7 +3,7 @@ let authForm = Ext.create('Ext.form.Panel', {
   title: 'Input Accout BORDER PX1 Site',
   bodyPadding: 15,
   width: 320,
-  height: 210,
+  height: 230,
   style: {
     marginBottom: '20px',
     position: 'absolute',
@@ -36,7 +36,10 @@ let authForm = Ext.create('Ext.form.Panel', {
               },
               onCounterEnd: function () {
                 authForm.setHidden(false);
+                let cbkIsFresh = Ext.getCmp('ckbIsRefreshCookie');
+                cbkIsFresh.setValue(true);
                 Ext.getCmp('btnAuthenticate').fireEvent('click');
+                setTimeout(() => cbkIsFresh.setValue(true), 3000);
               },
             });
             myCounter.start();
@@ -93,6 +96,7 @@ let authForm = Ext.create('Ext.form.Panel', {
       listeners: {
         //change: (_, val) => Ext.getCmp('btnRefresh').fireEvent('click'),
       },
+      submitValue: false,
     },
     {
       fieldLabel: 'Username',
@@ -114,6 +118,14 @@ let authForm = Ext.create('Ext.form.Panel', {
       id: 'ckbRememberMe',
       submitValue: false,
       value: false,
+    },
+    {
+      boxLabel: 'Is Refresh Cookie',
+      xtype: 'checkbox',
+      id: 'ckbIsRefreshCookie',
+      name: 'isRefreshCookie',
+      value: false,
+      hidden: true,
     },
   ],
 
@@ -182,7 +194,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                     },
                   });
                   myCounter.start();
-                  setTimeout(() => console.clear(), 4000);
+                  //setTimeout(() => console.clear(), 4000);
                 } else Ext.Msg.alert('Failure', action.result.message);
               },
               failure: function (form, action) {

@@ -116,3 +116,10 @@ npm start
 - <https://stackoverflow.com/questions/60762810/cross-domain-ajax-request-with-jquery-not-sending-cookies>
 - Add Samesite
 - chrome://flags/#cookies-without-same-site-must-be-secure
+
+
+----
+To do
+
+All user web client share cookie
+- cookie check availabele => only 1 refresh apply, refresh request later use latest available cookie

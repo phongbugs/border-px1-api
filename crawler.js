@@ -100,24 +100,18 @@ async function login(username, password, hostBorderPx1) {
   }
 }
 
-async function isAuthenticatedCookies() {
+async function isAuthenticatedCookies(authenticatedCookie) {
   log('|==> Authenticate cookies');
   // cookies is in memory
   try {
-    if (!authenticatedCookies) {
-      authenticatedCookies = [
-        await Utils.File.readTextFile(__dirname + cfg.fileCookies),
-      ];
-      log('Loaded cookies file:');
-      log(authenticatedCookies);
-    }
-    log(`|==> Send authentication request: ${cfg.adminUrl}`);
+    let url = cfg.hostBorderPx1 + cfg.adminPath
+    log(`|==> Send authentication request: ${url}`);
     let options = {
       method: 'GET',
-      url: cfg.adminUrl,
+      url: url,
       headers: cfg.headers,
       // note : use loginUrl will fetch
-      jar: createJar(authenticatedCookies, rp, cfg.adminUrl),
+      jar: createJar(authenticatedCookie, rp, url),
       resolveWithFullResponse: true,
       transform: (body, res) => {
         return {
@@ -126,7 +120,7 @@ async function isAuthenticatedCookies() {
         };
       },
     };
-    log(options);
+    //log(options);
     let res = await rp(options);
     log(res.headers);
     //await Utils.File.saveTextFile('admin' + new Date().getTime() + '.html', res.body)
