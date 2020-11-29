@@ -110,3 +110,9 @@ npm start
   - ==> How do i set cookie for b.com domain ? 
     - Create a iframe with ```src=b.com/?border-px1-cookie=response cookie json```
     - Add handling set cookie at window onload event of home page
+
+## Send Cookies Cross Domain
+
+- <https://stackoverflow.com/questions/60762810/cross-domain-ajax-request-with-jquery-not-sending-cookies>
+- Add Samesite
+- chrome://flags/#cookies-without-same-site-must-be-secure
