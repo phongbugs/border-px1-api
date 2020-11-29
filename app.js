@@ -10,7 +10,6 @@ var authenticationRouter = require('./routes/authentication');
 var infoRouter = require('./routes/info');
 
 const bodyParser = require('body-parser');
-const cors = require('cors');
 
 var app = express();
 
@@ -25,6 +24,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+//const cors = require('cors');
 //app.use(cors())
 // app.use(cors({
 //   origin : "http://localhost:9999",
@@ -43,6 +43,7 @@ app.use(function (req, res, next) {
 
   next();
 })
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/', indexRouter);
