@@ -13,3 +13,5 @@ yarn.lock
 .yarnclean
 .vscode
 package-lock.json
+public/WLs.json
+public/index.html
