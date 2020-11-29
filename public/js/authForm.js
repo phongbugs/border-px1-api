@@ -1,9 +1,11 @@
 let authForm = Ext.create('Ext.form.Panel', {
   id: 'authForm',
-  title: 'Input Accout BORDER PX1 Site',
+  title: 'Login BORDER PX1 Site',
+  icon:
+    'https://icons.iconarchive.com/icons/shlyapnikova/toolbar-2/32/brick-wall-icon.png',
   bodyPadding: 15,
   width: 320,
-  height: 230,
+  height: 210,
   style: {
     marginBottom: '20px',
     position: 'absolute',
@@ -12,8 +14,6 @@ let authForm = Ext.create('Ext.form.Panel', {
     zIndex: 999,
   },
   frame: true,
-  collapsible: true,
-  resizable: true,
   draggable: true,
   layout: 'anchor',
   hidden: true,
@@ -29,17 +29,17 @@ let authForm = Ext.create('Ext.form.Panel', {
             var myCounter = new Countdown({
               seconds: localStorage.getItem('authTime'),
               onUpdateStatus: function (time) {
-                Ext.getCmp('btnOpenAuthForm').setText(
+                Ext.getCmp('btnClock').setText(
                   convertTimeToMinutesAndSeconds(time)
                 );
                 localStorage.setItem('authTime', time);
               },
               onCounterEnd: function () {
                 authForm.setHidden(false);
-                let cbkIsFresh = Ext.getCmp('ckbIsRefreshCookie');
-                cbkIsFresh.setValue(true);
+                //let cbkIsFresh = Ext.getCmp('ckbIsRefreshCookie');
+                //cbkIsFresh.setValue(true);
                 Ext.getCmp('btnAuthenticate').fireEvent('click');
-                setTimeout(() => cbkIsFresh.setValue(true), 3000);
+                //setTimeout(() => cbkIsFresh.setValue(true), 3000);
               },
             });
             myCounter.start();
@@ -93,9 +93,6 @@ let authForm = Ext.create('Ext.form.Panel', {
       id: 'cbbBorderPx1Url',
       value: 'https://net-ga.admin.12365.bpx-cdn.cloud',
       editable: false,
-      listeners: {
-        //change: (_, val) => Ext.getCmp('btnRefresh').fireEvent('click'),
-      },
       submitValue: false,
     },
     {
@@ -119,14 +116,14 @@ let authForm = Ext.create('Ext.form.Panel', {
       submitValue: false,
       value: false,
     },
-    {
-      boxLabel: 'Is Refresh Cookie',
-      xtype: 'checkbox',
-      id: 'ckbIsRefreshCookie',
-      name: 'isRefreshCookie',
-      value: false,
-      hidden: true,
-    },
+    // {
+    //   boxLabel: 'Is Refresh Cookie',
+    //   xtype: 'checkbox',
+    //   id: 'ckbIsRefreshCookie',
+    //   name: 'isRefreshCookie',
+    //   value: false,
+    //   hidden: true,
+    // },
   ],
 
   // Reset and Submit buttons
@@ -140,6 +137,8 @@ let authForm = Ext.create('Ext.form.Panel', {
     {
       text: 'Authenticate',
       id: 'btnAuthenticate',
+      icon:
+        'https://icons.iconarchive.com/icons/iconsmind/outline/16/Key-Lock-icon.png',
       formBind: true,
       disabled: true,
       listeners: {
@@ -164,8 +163,6 @@ let authForm = Ext.create('Ext.form.Panel', {
               clientValidation: true,
               url: borderPx1ApiHost + '/authentication',
               params: { authenticationData },
-              //cors: true,
-              //useDefaultXhrHeader: false,
               withCredentials: true,
               success: function (form, action) {
                 if (action.result.success) {
@@ -173,7 +170,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                   let cookie = action.result.cookie;
                   //localStorage.setItem('border-px1-cookie', cookie);
                   //document.cookie = 'border-px1=' + cookie + ';Domain=border-px1-api.xyz; Path=/; SameSite=None; Secure';
-                  saveBorderPx1Cookie(cookie);
+                  //saveBorderPx1Cookie(cookie);
                   if (Ext.getCmp('ckbRememberMe').getValue()) {
                     localStorage.setItem('authUsername', username);
                     localStorage.setItem('authPassword', password);
@@ -183,7 +180,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                   var myCounter = new Countdown({
                     seconds: 1800,
                     onUpdateStatus: function (time) {
-                      Ext.getCmp('btnOpenAuthForm').setText(
+                      Ext.getCmp('btnClock').setText(
                         convertTimeToMinutesAndSeconds(time)
                       );
                       localStorage.setItem('authTime', time);

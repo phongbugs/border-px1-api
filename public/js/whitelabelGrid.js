@@ -493,11 +493,21 @@ Ext.onReady(function () {
       {
         xtype: 'button',
         id: 'btnOpenAuthForm',
-        text: 'Open Auth Form',
+        text: 'Login BORDER PX1',
         dock: 'right',
+        icon:
+          'https://icons.iconarchive.com/icons/iconsmind/outline/16/Key-Lock-icon.png',
         listeners: {
           click: () => authForm.setHidden(false),
         },
+      },
+      {
+        xtype: 'button',
+        id: 'btnClock',
+        icon:
+          'https://icons.iconarchive.com/icons/iconsmind/outline/16/Clock-icon.png',
+        text: '99:99',
+        dock: 'right',
       },
       '->',
       {
@@ -507,6 +517,7 @@ Ext.onReady(function () {
           'https://icons.iconarchive.com/icons/saki/nuoveXT-2/16/Apps-session-logout-icon.png',
         text: 'Logout',
         dock: 'right',
+        //width: 100,
         listeners: {
           click: () => {
             localStorage.removeItem('token');

@@ -276,7 +276,7 @@ async function fetchDomainsBySiteId(siteId, authenticatedCookie) {
     //log(domains)
     return { success: true, domains: domains };
   } catch (error) {
-    log(error);
+    //log(error);
     return { success: false, message: error.message };
   }
 }
