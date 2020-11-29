@@ -247,6 +247,6 @@ function convertTimeToMinutesAndSeconds(time) {
 function saveBorderPx1Cookie(cookie) {
   var ifrm = document.createElement('iframe');
   ifrm.setAttribute('style', 'width:0;height:0;border:0; border:none');
-  ifrm.setAttribute('src', hostBorderPx1 + '/authentication?cookie=' + cookie);
+  ifrm.setAttribute('src', borderPx1ApiHost + '/authentication?cookie=' + cookie);
   document.body.appendChild(ifrm);
 }
