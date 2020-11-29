@@ -215,6 +215,7 @@ Ext.onReady(function () {
           proxy.setConfig('url', [
             borderPx1ApiHost + '/info/domain/' + siteName,
           ]);
+          proxy.setConfig('withCredentials', [true]);
           // show loadMask purpose
           domainStore.load();
         }
