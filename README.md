@@ -123,7 +123,7 @@ npm start
 
       ```js
       res.cookie('border-px1',
-        encodedCookie, {
+        cookie, {
         sameSite: 'None',
         secure: true,
         //Domain:'abc.com'
@@ -144,7 +144,7 @@ npm start
         ```
 
       ==> Has a tip to slove this problem :
-      - Web Client : create a iframe by javascript code to send cookie value to Web API Server :
+      - Web Client : create a iframe and send cookie value by query string to Web API Server :
 
           ```js
               var ifrm = document.createElement('iframe');
@@ -156,7 +156,7 @@ npm start
               document.body.appendChild(ifrm);
           ```
 
-      - Web API Server : create a hander to receive cookie value
+      - Web API Server : create a hander to receive cookie query value
 
           ```js
           // router/authentication.js
@@ -168,20 +168,20 @@ npm start
               if (cookie) {
                 //res.removeHeader('X-Frame-Options');
                 res.cookie('border-px1',
-                  encodedCookie, {
+                  cookie, {
                   sameSite: 'None',
                   secure: true,
                 });
                 res.send('cookie was sent');
-              } else res.send("Cookie data doesn't exist");
+              } else res.send("Cookie doesn't exist");
             } catch (error) {
               res.send(error.message);
             }
           }
           ```
 
-          After a iframe created cookie will be set at broswer
-        - Note : *Creating a iframe faced ```X-Frame-Options``` issue, this is security feature of HTTP Headers in HTTP Protocol, They designed to prevent the ```ClickJacking attack```. The content of iframe will be locked, but that don't effect setting cookie to browser*
+          After a iframe created, cookie will be set to broswer
+        - Note : *Creating a iframe faced ```X-Frame-Options``` issue, this is security feature of HTTP Headers in HTTP Protocol, They designed to prevent the ```ClickJacking attack```. The iframe content will be locked, but that don't effect setting cookie to browser*
 
     - Send Cookie
-      - Use ```withCredentials: true``` option for AJAX request, it'll send all existed cookies of Web-Client's current domain for each request (the Header Request will appear ```Cookie``` key)
+      - Use ```withCredentials: true``` option for AJAX request, it'll send all existed cookies of Web-Client's current domain for each request (the Header Request will appear ```Cookie``` key). Mean the cookies was marked ```SameSite=None;``` will be possible to send from other domain, and ```Secure``` mean is working with https only(Web API Server) 
