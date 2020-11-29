@@ -1,5 +1,3 @@
-const { hostBorderPx1 } = require('../../config');
-
 let authForm = Ext.create('Ext.form.Panel', {
   id: 'authForm',
   title: 'Input Accout BORDER PX1 Site',
