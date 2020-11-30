@@ -501,14 +501,6 @@ Ext.onReady(function () {
           click: () => authForm.setHidden(false),
         },
       },
-      {
-        xtype: 'button',
-        id: 'btnClock',
-        icon:
-          'https://icons.iconarchive.com/icons/iconsmind/outline/16/Clock-icon.png',
-        text: '99:99',
-        dock: 'right',
-      },
       '->',
       {
         xtype: 'button',
@@ -771,8 +763,8 @@ Ext.onReady(function () {
                 },
                 failure: function (response) {
                   Ext.Msg.alert(
-                    'Failure',
-                    "Remote Desktop Cli Service doesn't start"
+                    "Remote Desktop Cli Service doesn't start",
+                    `Run Remote Desktop Service by cmd:<br/><code>cd liga<br/>node rdservice</code>`
                   );
                   record.set('remoteDesktopSpinner', false);
                 },
