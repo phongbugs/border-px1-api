@@ -70,6 +70,38 @@
         }
       }
     },
+    "/user/login/status": {
+      "post": {
+        "tags": [
+          "BORDER PX1 API"
+        ],
+        "summary": "Check has the user logged in yet",
+        "parameters": [
+          {
+            "name": "border-px1-api",
+            "in": "cookie",
+            "required": true,
+            "description": "The cookie of border-px1-api",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login Status response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/loginStatusResponse"
+                }
+                
+              }
+            }
+          }
+        }
+      }
+    },
     "/authentication/": {
       "post": {
         "tags": [
@@ -297,6 +329,19 @@
           },
           "token": {
             "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "loginStatusResponse": {
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
           },
           "message": {
             "type": "string"
