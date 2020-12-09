@@ -23,9 +23,6 @@ let storeDomain = Ext.create('Ext.data.Store', {
       rootProperty: 'domains',
     },
   },
-  listeners: {
-    load: function (_, records, successful, operation, eOpts) {},
-  },
   autoLoad: true,
 });
 let renderDateTime = (v, _, r) => Ext.Date.format(v, 'm/d/Y H:i:s');

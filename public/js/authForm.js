@@ -1,6 +1,6 @@
 let authForm = Ext.create('Ext.form.Panel', {
   id: 'authForm',
-  title: 'Login BORDER PX1 Site',
+  title: 'LOGIN BORDER PX1 SITE',
   icon:
     'https://icons.iconarchive.com/icons/shlyapnikova/toolbar-2/32/brick-wall-icon.png',
   bodyPadding: 15,
@@ -207,7 +207,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                     Ext.Msg.alert('Failure', 'Ajax communication failed');
                     break;
                   case Ext.form.action.Action.SERVER_INVALID:
-                    Ext.Msg.alert('Failure', action.result.message);
+                    Ext.Msg.alert('Failure', action.result.message + '<br />Please Login BORDER PX1 again !');
                 }
               },
             });
