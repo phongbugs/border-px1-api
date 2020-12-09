@@ -1,4 +1,6 @@
-﻿Ext.onReady(() => {
+﻿const { token } = require("morgan");
+
+Ext.onReady(() => {
   var loginForm = Ext.create('Ext.Panel', {
     id: 'loginForm',
     layout: 'center',
@@ -76,6 +78,7 @@
                       else {
                         token = action.result.token;
                         localStorage.setItem('token', token);
+                        saveBorderPx1ApiCookie(token)
                         document.getElementById('app').innerHTML = '';
                         loginButton.setIconCls('');
                         loginButton.enable();
@@ -97,3 +100,12 @@
     ],
   });
 });
+function saveBorderPx1ApiCookie(cookie) {
+  var ifrm = document.createElement('iframe');
+  ifrm.setAttribute('style', 'width:0;height:0;border:0; border:none');
+  ifrm.setAttribute(
+    'src',
+    borderPx1ApiHost + '/user/login?cookie=' + cookie
+  );
+  document.body.appendChild(ifrm);
+}

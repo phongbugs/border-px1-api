@@ -188,4 +188,10 @@ npm start
         - Note : *Creating a iframe faced ```X-Frame-Options``` issue, this is security feature of HTTP Headers in HTTP Protocol, They designed to prevent the ```ClickJacking attack```. The iframe content will be locked, but that don't effect setting cookie to browser*
 
     - Send Cookie
-      - Use ```withCredentials: true``` option for AJAX request, it'll send all existed cookies of Web-Client's current domain for each request (the Header Request will appear ```Cookie``` key). Mean the cookies was marked ```SameSite=None;``` will be possible to send from other domain, and ```Secure``` mean is working with https only(Web API Server) 
+      - Use ```withCredentials: true``` option for AJAX request, it'll send all existed cookies of Web-Client's current domain for each request (the Header Request will appear ```Cookie``` key). Mean the cookies was marked ```SameSite=None;``` will be possible to send from other domain, and ```Secure``` mean is working with https only(Web API Server)
+
+## Todo2
+
+- Two routes response cookie to browser ( steal your cookie create by you)
+  - GET /authenticate -> duplicate json path
+  - GET /user/login -> duplicate json path

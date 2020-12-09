@@ -48,8 +48,21 @@ function getLoginStatus(req, res) {
     res.send({ success: false, message: error.message });
   }
 }
+function setCookieToBrowser(req, res) {
+  try {
+    let cookie = req.query.cookie;
+    if (cookie) {
+      //res.removeHeader('X-Frame-Options');
+      sendResponseCookie(req, res, cookie, 'border-px1-api');
+      res.send('cookie was sent');
+    } else res.send("Cookie data doesn't exist");
+  } catch (error) {
+    res.send(error.message);
+  }
+}
 
 module.exports = {
   login,
   getLoginStatus,
+  setCookieToBrowser
 };
