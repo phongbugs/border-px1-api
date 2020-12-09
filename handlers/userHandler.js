@@ -43,7 +43,15 @@ function getLoginStatus(req, res) {
       //log(d1 - d2);
       status = d1 - d2 <= 0;
     }
-    res.send({ success: status, message: token });
+    res.send({
+      success: status,
+      message: token,
+      date: new Date(JSON.parse(decyptedData).expiredDate),
+      d1: d1,
+      d2: d2,
+      d1d2: d1 - d2,
+      d2d1: d2 - d1,
+    });
   } catch (error) {
     res.send({ success: false, message: error.message });
   }
