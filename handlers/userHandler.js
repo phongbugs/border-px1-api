@@ -43,7 +43,7 @@ function getLoginStatus(req, res) {
       //log(d1 - d2);
       status = d1 - d2 <= 0;
     }
-    res.send({ success: status });
+    res.send({ success: status, message: token });
   } catch (error) {
     res.send({ success: false, message: error.message });
   }
@@ -64,5 +64,5 @@ function setCookieToBrowser(req, res) {
 module.exports = {
   login,
   getLoginStatus,
-  setCookieToBrowser
+  setCookieToBrowser,
 };
