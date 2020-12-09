@@ -30,10 +30,20 @@
         defaultType: 'textfield',
         items: [
           {
+            xtype: 'textfield',
             inputType: 'password',
             placeholder: 'password',
             name: 'password',
             allowBlank: false,
+            enableKeyEvents: true,
+            listeners: {
+              keydown: (tf, e) => {
+                if (e.getKey() == e.ENTER)
+                  Ext.getCmp('btnLogin').fireEvent('click');
+              },
+              // keypress: () => log('keypress'),
+              // keyup: () => log('keyup'),
+            },
           },
         ],
         buttons: [
@@ -47,36 +57,39 @@
           },
           {
             text: 'Login',
+            id: 'btnLogin',
             formBind: true,
             disabled: true,
             icon:
               'https://icons.iconarchive.com/icons/custom-icon-design/flatastic-8/16/Keys-icon.png',
-            handler: function () {
-              let me = this;
-              var form = this.up('form').getForm();
-              me.setIconCls('spinner');
-              me.disable();
-              if (form.isValid()) {
-                form.submit({
-                  success: function (form, action) {
-                    if (!action.result.success)
-                      Ext.Msg.alert('Login Failed', action.result.message);
-                    else {
-                      token = action.result.token;
-                      localStorage.setItem('token', token);
-                      document.getElementById('app').innerHTML = '';
-                      me.setIconCls('');
-                      me.enable();
-                      loadScript('js/whitelabelGrid.js');
-                    }
-                  },
-                  failure: function (form, action) {
-                    me.setIconCls('');
-                    me.enable();
-                    Ext.Msg.alert('Failed', action.result.message);
-                  },
-                });
-              }
+            listeners: {
+              click: () => {
+                let loginButton = Ext.getCmp('btnLogin');
+                var form = loginButton.up('form').getForm();
+                loginButton.setIconCls('spinner');
+                loginButton.disable();
+                if (form.isValid()) {
+                  form.submit({
+                    success: function (form, action) {
+                      if (!action.result.success)
+                        Ext.Msg.alert('Login Failed', action.result.message);
+                      else {
+                        token = action.result.token;
+                        localStorage.setItem('token', token);
+                        document.getElementById('app').innerHTML = '';
+                        loginButton.setIconCls('');
+                        loginButton.enable();
+                        loadScript('js/whitelabelGrid.js');
+                      }
+                    },
+                    failure: function (form, action) {
+                      loginButton.setIconCls('');
+                      loginButton.enable();
+                      Ext.Msg.alert('Failed', action.result.message);
+                    },
+                  });
+                }
+              },
             },
           },
         ],

@@ -71,7 +71,7 @@
       }
     },
     "/user/login/status": {
-      "post": {
+      "get": {
         "tags": [
           "BORDER PX1 API"
         ],

@@ -29,7 +29,10 @@ function getLoginStatus(req, res) {
   try {
     let token = req.cookies['border-px1-api'],
       status = false;
-    if (!token) return false;
+    if (!token) {
+      res.send({ success: false, message: 'cookie undefined' });
+      return;
+    }
     var crypt = new JSEncrypt();
     crypt.setKey(tokenPrivateKey);
     let decyptedData = crypt.decrypt(token);
