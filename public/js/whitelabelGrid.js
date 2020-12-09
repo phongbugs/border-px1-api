@@ -83,7 +83,7 @@ let Groups,
   });
 Ext.onReady(function () {
   // prevent browser call loadScript('js/gridWL.js') at console log
-  if (!isAuthenticated()) return;
+  //if (!isAuthenticated()) return;
   Ext.tip.QuickTipManager.init();
   Ext.define('WL', {
     extend: 'Ext.data.Model',
@@ -206,7 +206,7 @@ Ext.onReady(function () {
           let whiteLabelName = record.get('name');
           let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
           domainGrid.show();
-          domainGrid.setTitle('All domains of ' + whiteLabelName);
+          domainGrid.setTitle(whiteLabelName + '\'s DOMAINS');
           domainStore.loadData([]);
           let proxy = domainStore.getProxy();
           // proxy.extraParams = {
@@ -217,7 +217,22 @@ Ext.onReady(function () {
           ]);
           proxy.setConfig('withCredentials', [true]);
           // show loadMask purpose
-          domainStore.load();
+          domainStore.load({
+            callback: function (records, operation, success) {
+              try {
+                let result = JSON.parse(operation.getResponse().responseText);
+                if (!result.success) {
+                  if (result.message.indexOf('Invalid URI') > -1)
+                    Ext.Msg.alert(
+                      'Have you ever logged in ?',
+                      'Please login BORDER PX1'
+                    );
+                }
+              } catch (error) {
+                log(error);
+              }
+            },
+          });
         }
       },
       viewready: (grid) => {
@@ -513,6 +528,7 @@ Ext.onReady(function () {
         listeners: {
           click: () => {
             localStorage.removeItem('token');
+            document.cookie = 'border-px1-api=';
             location.reload();
           },
         },
@@ -646,6 +662,7 @@ Ext.onReady(function () {
         text: 'Servers',
         width: 120,
         dataIndex: 'servers',
+        hidden: true,
       },
       {
         text: 'H/D Number',

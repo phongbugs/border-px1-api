@@ -27,6 +27,10 @@ npm start
 - Input data number or string, ex 169 and '169'
 - ***cannot unmarshal string into Go struct field*** => backend is implemented by golang
 - Session expired error a(4)(wait session refresh)
+  
+  ```js
+  401 - "{\"ErrCode\":1,\"ErrText\":\"Session expired(a4): crypto/rsa: decryption error\",\"Result\":\"\"}\n"
+  ```
 
 ## Notes
 
