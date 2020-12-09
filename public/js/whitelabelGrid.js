@@ -529,11 +529,10 @@ Ext.onReady(function () {
           click: () => {
             let logoutButton = Ext.getCmp('btnLogout');
             logoutButton.setIconCls('spinner');
-            //logoutButton.disable();
-            localStorage.removeItem('token');
+            //localStorage.removeItem('token');
             document.cookie = 'border-px1-api=';
             saveBorderPx1ApiCookie('logout');
-            setTimeout(() => location.reload(), 3000);
+            setTimeout(() => location.reload(), 2000);
           },
         },
       },
