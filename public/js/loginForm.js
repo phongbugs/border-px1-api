@@ -103,7 +103,7 @@ function saveBorderPx1ApiCookie(cookie) {
   ifrm.setAttribute('style', 'width:0;height:0;border:0; border:none');
   ifrm.setAttribute(
     'src',
-    borderPx1ApiHost + '/user/login?cookie=' + encodeURIComponent(Cookiecookie)
+    borderPx1ApiHost + '/user/login?cookie=' + encodeURIComponent(cookie)
   );
   document.body.appendChild(ifrm);
 }
