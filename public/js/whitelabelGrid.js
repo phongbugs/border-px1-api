@@ -534,8 +534,6 @@ Ext.onReady(function () {
             document.cookie = 'border-px1-api=';
             saveBorderPx1ApiCookie('logout');
             setTimeout(() => location.reload(), 3000);
-            logoutButton.setIconCls('');
-            logoutButton.enable();
           },
         },
       },
