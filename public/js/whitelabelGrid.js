@@ -527,7 +527,7 @@ Ext.onReady(function () {
         //width: 100,
         listeners: {
           click: () => {
-            let logoutButton = Ext.getCmp('btnLogin');
+            let logoutButton = Ext.getCmp('btnLogout');
             logoutButton.setIconCls('spinner');
             logoutButton.disable();
             localStorage.removeItem('token');
