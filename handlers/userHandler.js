@@ -35,7 +35,7 @@ function getLoginStatus(req, res) {
     }
     var crypt = new JSEncrypt();
     crypt.setKey(tokenPrivateKey);
-    let decyptedData = crypt.decrypt(token);
+    let decyptedData = crypt.decrypt(decodeURIComponent(token));
     //log('expiredDate:%s', new Date(JSON.parse(decyptedData).expiredDate));
     if (decyptedData) {
       let d1 = new Date().getTime(),
