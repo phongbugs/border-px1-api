@@ -529,7 +529,7 @@ Ext.onReady(function () {
           click: () => {
             localStorage.removeItem('token');
             document.cookie = 'border-px1-api=';
-            saveBorderPx1ApiCookie('')
+            saveBorderPx1ApiCookie('logout')
             location.reload();
           },
         },
