@@ -206,7 +206,7 @@ Ext.onReady(function () {
           let whiteLabelName = record.get('name');
           let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
           domainGrid.show();
-          domainGrid.setTitle(whiteLabelName + '\'s DOMAINS');
+          domainGrid.setTitle(whiteLabelName + "'s DOMAINS");
           domainStore.loadData([]);
           let proxy = domainStore.getProxy();
           // proxy.extraParams = {
@@ -529,8 +529,8 @@ Ext.onReady(function () {
           click: () => {
             localStorage.removeItem('token');
             document.cookie = 'border-px1-api=';
-            saveBorderPx1ApiCookie('logout')
-            location.reload();
+            saveBorderPx1ApiCookie('logout');
+            setTimeout(() => location.reload(), 2000);
           },
         },
       },
