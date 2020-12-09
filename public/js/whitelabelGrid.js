@@ -527,10 +527,15 @@ Ext.onReady(function () {
         //width: 100,
         listeners: {
           click: () => {
+            let logoutButton = Ext.getCmp('btnLogin');
+            logoutButton.setIconCls('spinner');
+            logoutButton.disable();
             localStorage.removeItem('token');
             document.cookie = 'border-px1-api=';
             saveBorderPx1ApiCookie('logout');
             setTimeout(() => location.reload(), 2000);
+            logoutButton.setIconCls('');
+            logoutButton.enable();
           },
         },
       },
