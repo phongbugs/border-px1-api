@@ -1,6 +1,4 @@
-﻿const { token } = require("morgan");
-
-Ext.onReady(() => {
+﻿Ext.onReady(() => {
   var loginForm = Ext.create('Ext.Panel', {
     id: 'loginForm',
     layout: 'center',
