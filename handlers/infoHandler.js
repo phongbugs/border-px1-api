@@ -1,10 +1,11 @@
 const log = console.log,
   CryptoJS = require('crypto-js'),
   crawler = require('../crawler'),
-  sites = JSON.parse(CryptoJS.AES.decrypt(
-    require('./sites.map').data,
-    'The map data'
-  ).toString(CryptoJS.enc.Utf8)),
+  sites = JSON.parse(
+    CryptoJS.AES.decrypt(require('./sites.map').data, 'The map data').toString(
+      CryptoJS.enc.Utf8
+    )
+  ),
   allServers = require('./servers.map')['allServers'],
   fetch = require('node-fetch'),
   findServerIdByIp = (ip) => allServers.find((server) => server.Name === ip).ID,
@@ -48,10 +49,15 @@ const log = console.log,
         if (result.success)
           res.send({
             success: true,
-            domains: result.domains.map((domain) => {
-              domain['folderPath'] = '';
-              return domain;
-            }),
+            domains: CryptoJS.AES.encrypt(
+              JSON.stringify(
+                result.domains.map((domain) => {
+                  domain['folderPath'] = '';
+                  return domain;
+                })
+              ),
+              'The domain data'
+            ).toString(),
           });
         else res.send({ success: false, message: result.message });
       } else
@@ -75,7 +81,6 @@ const log = console.log,
             files: '',
           })
       );
-      log(url);
       res.send(await response.json());
     } catch (error) {
       res.send({ success: false, message: error.message });
