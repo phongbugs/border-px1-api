@@ -24,11 +24,12 @@ let storeDomain = Ext.create('Ext.data.Store', {
       rootProperty: 'domains',
       transform: {
         fn: function (data) {
-          data.domains = JSON.parse(
-            CryptoJS.AES.decrypt(data.domains, 'The domain data').toString(
-              CryptoJS.enc.Utf8
-            )
-          );
+          if (data.success)
+            data.domains = JSON.parse(
+              CryptoJS.AES.decrypt(data.domains, 'The domain data').toString(
+                CryptoJS.enc.Utf8
+              )
+            );
           return data;
         },
       },
