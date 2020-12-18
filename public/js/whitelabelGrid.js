@@ -84,6 +84,10 @@ let Groups,
 Ext.onReady(function () {
   // prevent browser call loadScript('js/gridWL.js') at console log
   //if (!isAuthenticated()) return;
+  authenticate((isAuthenticated) => {
+    if (!isAuthenticated) location.reload();
+    //else setTimeout(() => Ext.getCmp('gridWLs').setHidden(false), 1000);
+  });
   Ext.tip.QuickTipManager.init();
   Ext.define('WL', {
     extend: 'Ext.data.Model',
@@ -153,7 +157,9 @@ Ext.onReady(function () {
 
   var girdWLs = Ext.create('Ext.grid.Panel', {
     renderTo: 'app',
+    id: 'gridWLs',
     store: storeWLs,
+    //hidden: true,
     width: Ext.getBody().getViewSize().width,
     height: Ext.getBody().getViewSize().height,
     title: 'Summary LIGA White Labels',
@@ -206,7 +212,7 @@ Ext.onReady(function () {
           let whiteLabelName = record.get('name');
           let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
           domainGrid.show();
-          domainGrid.setTitle(whiteLabelName + "'s DOMAINS");
+          domainGrid.setTitle(whiteLabelName + "'s Domains");
           domainStore.loadData([]);
           let proxy = domainStore.getProxy();
           // proxy.extraParams = {
@@ -532,7 +538,7 @@ Ext.onReady(function () {
             //localStorage.removeItem('token');
             document.cookie = 'border-px1-api=';
             saveBorderPx1ApiCookie('logout');
-            setTimeout(() => location.reload(), 2000);
+            setTimeout(() => location.reload(), 1000);
           },
         },
       },

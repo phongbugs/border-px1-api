@@ -1,9 +1,12 @@
 const log = console.log,
-  JSEncrypt = require('node-jsencrypt'),
-  crypt = new JSEncrypt(),
+  CryptoJS = require('crypto-js'),
   crawler = require('../crawler'),
-  sites = require('./sites.map'),
+  sites = JSON.parse(CryptoJS.AES.decrypt(
+    require('./sites.map').data,
+    'The map data'
+  ).toString(CryptoJS.enc.Utf8)),
   allServers = require('./servers.map')['allServers'],
+  fetch = require('node-fetch'),
   findServerIdByIp = (ip) => allServers.find((server) => server.Name === ip).ID,
   fetchBackendId = async (req, res) => {
     try {
@@ -23,7 +26,8 @@ const log = console.log,
       } else
         res.send({
           success: false,
-          message: 'Access denied, please login border px1 site - cookie:' + cookie,
+          message:
+            'Access denied, please login border px1 site - cookie:' + cookie,
         });
     } catch (error) {
       res.send({ success: false, message: error.message });
@@ -44,7 +48,10 @@ const log = console.log,
         if (result.success)
           res.send({
             success: true,
-            domains: result.domains,
+            domains: result.domains.map((domain) => {
+              domain['folderPath'] = '';
+              return domain;
+            }),
           });
         else res.send({ success: false, message: result.message });
       } else
@@ -55,5 +62,23 @@ const log = console.log,
     } catch (error) {
       res.send({ success: false, message: error.message });
     }
+  },
+  fetchFolderPath = async (req, res) => {
+    try {
+      let url =
+        decodeURIComponent(req.query['url']) +
+        '/Public/GetDateModifiedOfFiles.aspx?';
+      const response = await fetch(
+        url +
+          new URLSearchParams({
+            cmd: 'GetModifiedDate',
+            files: '',
+          })
+      );
+      log(url);
+      res.send(await response.json());
+    } catch (error) {
+      res.send({ success: false, message: error.message });
+    }
   };
-module.exports = { fetchBackendId, fetchDomains };
+module.exports = { fetchBackendId, fetchDomains, fetchFolderPath };

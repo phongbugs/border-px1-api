@@ -3,5 +3,6 @@ const express = require('express'),
   infoHandler = require('../handlers/infoHandler');
 router.post('/backendId/:serverIp', infoHandler.fetchBackendId);
 router.get('/domain/:siteName', infoHandler.fetchDomains);
-router.get('/', (_, res) => res.send("info root page"));
+router.get('/folder', infoHandler.fetchFolderPath);
+router.get('/', (_, res) => res.send('info root page'));
 module.exports = router;

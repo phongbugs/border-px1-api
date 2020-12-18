@@ -235,7 +235,6 @@
             "name": "siteName",
             "in": "path",
             "required": true,
-            "description": "Name of site\n Ex:\n- Agent : ag.winning228.bpx\n- Mobile: mo.winning228.bpx\n- Member: winning228.bpx",
             "schema": {
               "type": "string"
             }
@@ -263,10 +262,60 @@
           }
         }
       }
+    },
+    "/info/folder/": {
+      "get": {
+        "tags": [
+          "BORDER PX1 API"
+        ],
+        "summary": "Get folder by doman",
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "description": "url of white label",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get folder successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FolderResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "FolderResponse": {
+        "required": [
+          "success"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "path": {
+            "type": "string"
+          },
+          "modifiedDateOfBKFile": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
       "backendIdResponse": {
         "required": [
           "success"

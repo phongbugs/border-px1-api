@@ -11,6 +11,7 @@ Ext.define('Domain', {
     { name: 'LastUpdate', type: 'date', dateFormat: 'c' },
     { name: 'ServerTime', type: 'date', dateFormat: 'c' },
     { name: 'LastChecked', type: 'date', dateFormat: 'c' },
+    { name: 'folderPath', type: 'string' },
   ],
 });
 let storeDomain = Ext.create('Ext.data.Store', {
@@ -30,7 +31,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
   renderTo: 'app',
   id: 'domainGrid',
   store: storeDomain,
-  width: 1024,
+  width: 768,
   height: 368,
   title: 'Domains',
   style: {
@@ -56,6 +57,21 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
   listeners: {
     viewready: (grid) => {},
   },
+  tbar: [
+    {
+      xtype: 'button',
+      id: 'btnCheckDomain',
+      iconCls: 'checkCls',
+      text: 'Check Domain',
+      dock: 'right',
+      //width: 100,
+      listeners: {
+        click: () => {
+          checkDomainAllGrid();
+        },
+      },
+    },
+  ],
   columns: [
     new Ext.grid.RowNumberer({ dataIndex: 'no', text: 'No.', width: 60 }),
     {
@@ -75,6 +91,9 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           v.toLowerCase(),
           v
         ),
+      editor: {
+        xtype: 'textfield',
+      },
     },
     {
       text: 'Verify DNS',
@@ -106,18 +125,79 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       width: 150,
       dataIndex: 'LastUpdate',
       renderer: renderDateTime,
+      hidden: true,
     },
     {
       text: 'ServerTime',
       width: 150,
       dataIndex: 'ServerTime',
       renderer: renderDateTime,
+      hidden: true,
     },
     {
       text: 'LastChecked',
       width: 150,
       dataIndex: 'LastChecked',
       renderer: renderDateTime,
+      hidden: true,
+    },
+    {
+      xtype: 'actioncolumn',
+      text: 'OK',
+      iconCls: 'checkCls',
+      getClass: function (value, meta, record, rowIndex, colIndex) {
+        var folderPath = record.get('folderPath');
+        var iconCls = '';
+        switch (folderPath) {
+          case '':
+            iconCls = 'checkCls';
+            break;
+          case ' ':
+            iconCls = 'spinner';
+            break;
+          case 'checkKoCls':
+            iconCls = 'checkKoCls';
+            break;
+          default:
+            iconCls = 'checkOkCls';
+            break;
+        }
+        return iconCls;
+      },
+      handler: (grid, rowIndex, colIndex, item, e, record) =>
+        checkDomainOneRecord(record),
     },
   ],
 });
+
+function checkDomainOneRecord(record) {
+  // prevent click after done
+  if (record.get('folderPath') !== '') return;
+
+  // create request to express server
+  record.set('folderPath', ' '); // start checking
+  // check url
+  var url = encodeURIComponent(
+    Ext.getCmp('cbbProtocol').getValue() + '://' + record.get('Domain')
+  );
+  Ext.Ajax.request({
+    url: borderPx1ApiHost + '/info/folder?' + new URLSearchParams({ url }),
+    success: function (response) {
+      // parse jsonString from server
+      var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
+      if (result.success)
+        record.set('folderPath', result.path.replace(/\//g, '\\'));
+      else record.set('folderPath', 'checkKoCls');
+    },
+    failure: function (response) {
+      log('server-side failure with status code ' + response.status);
+      record.set('folderPath', 'checkKoCls');
+    },
+  });
+}
+function checkDomainAllGrid() {
+  let grid = Ext.getCmp('domainGrid'),
+    store = grid.getStore();
+  for (var i = 0; i < store.getCount(); i++)
+    checkDomainOneRecord(store.getAt(i));
+}
