@@ -38,11 +38,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 const cors = require('cors');
-app.use(cors())
-// app.use(cors({
-//   origin : "http://localhost:9999",
-//   credentials: true,
-// }))
+//app.use(cors())
+app.use(cors({
+  origin : "http://localhost:9999",
+  credentials: true,
+}))
 
 // app.use(function (req, res, next) {
 //   var allowedDomains = [
