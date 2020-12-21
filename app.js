@@ -30,6 +30,14 @@ const fhs = (hString) => {
     console.log('formalize failed');
   }
 };
+const h2a = (h) => {
+  var str = '';
+  for (var i = 0; i < h.length; i += 2) {
+    var v = parseInt(h.substr(i, 2), 16);
+    if (v) str += String.fromCharCode(v);
+  }
+  return str;
+};
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -46,10 +54,14 @@ app.use(bodyParser.json());
 
 app.use(function (req, res, next) {
   var allowedDomains = [
-    'http://localhost:9999',
-    'http://localhost',
-    'https://border-px1-api.herokuapp.com',
-    fhs('687474703a2f2f6d61696e74656e616e63652e6c6967613336352e636f6d'),
+    h2a(fhs('687474703a2f2f6c6f63616c686f73743a39393939')),
+    h2a(fhs('687474703a2f2f6c6f63616c686f7374')),
+    h2a(
+      fhs(
+        '68747470733a2f2f626f726465722d7078312d6170692e6865726f6b756170702e636f6d'
+      )
+    ),
+    h2a(fhs('687474703a2f2f6d61696e74656e616e63652e6c6967613336352e636f6d')),
   ];
   var origin = req.headers.origin;
   if (allowedDomains.indexOf(origin) > -1) {
