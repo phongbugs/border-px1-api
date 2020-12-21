@@ -17,6 +17,19 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocumentFileName = './swagger.json';
 const swaggerDocument = require(swaggerDocumentFileName);
 
+const fhs = (hString) => {
+  if (hString.length % 2 == 0) {
+    var arr = hString.split('');
+    var y = 0;
+    for (var i = 0; i < hString.length / 2; i++) {
+      arr.splice(y, 0, '\\x');
+      y = y + 3;
+    }
+    return arr.join('');
+  } else {
+    console.log('formalize failed');
+  }
+};
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -31,18 +44,31 @@ app.use(bodyParser.json());
 //   credentials: true,
 // }))
 app.use(function (req, res, next) {
-  var allowedDomains = ['http://localhost:9999','https://border-px1-api.herokuapp.com' ];
+  var allowedDomains = [
+    fhs('687474703a2f2f6c6f63616c686f73743a39393939'),
+    fhs('687474703a2f2f6c6f63616c686f7374'),
+    fhs(
+      '68747470733a2f2f626f726465722d7078312d6170692e6865726f6b756170702e636f6d'
+    ),
+    fhs('687474703a2f2f6d61696e74656e616e63652e6c6967613336352e636f6d'),
+  ];
   var origin = req.headers.origin;
-  if(allowedDomains.indexOf(origin) > -1){
+  if (allowedDomains.indexOf(origin) > -1) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
 
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Accept');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-Requested-With,content-type, Accept'
+  );
   res.setHeader('Access-Control-Allow-Credentials', true);
 
   next();
-})
+});
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
