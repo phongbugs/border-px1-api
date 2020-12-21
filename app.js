@@ -37,39 +37,37 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-const cors = require('cors');
-//app.use(cors())
-app.use(cors({
-  origin : "http://localhost:9999",
-  credentials: true,
-}))
+// const cors = require('cors');
+// //app.use(cors())
+// app.use(cors({
+//   origin : "http://localhost:9999",
+//   credentials: true,
+// }))
 
-// app.use(function (req, res, next) {
-//   var allowedDomains = [
-//     fhs('687474703a2f2f6c6f63616c686f73743a39393939'),
-//     fhs('687474703a2f2f6c6f63616c686f7374'),
-//     fhs(
-//       '68747470733a2f2f626f726465722d7078312d6170692e6865726f6b756170702e636f6d'
-//     ),
-//     fhs('687474703a2f2f6d61696e74656e616e63652e6c6967613336352e636f6d'),
-//   ];
-//   var origin = req.headers.origin;
-//   if (allowedDomains.indexOf(origin) > -1) {
-//     res.setHeader('Access-Control-Allow-Origin', origin);
-//   }
+app.use(function (req, res, next) {
+  var allowedDomains = [
+    'http://localhost:9999',
+    'http://localhost',
+    'https://border-px1-api.herokuapp.com',
+    fhs('687474703a2f2f6d61696e74656e616e63652e6c6967613336352e636f6d'),
+  ];
+  var origin = req.headers.origin;
+  if (allowedDomains.indexOf(origin) > -1) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
 
-//   res.setHeader(
-//     'Access-Control-Allow-Methods',
-//     'GET, POST, OPTIONS, PUT, PATCH, DELETE'
-//   );
-//   res.setHeader(
-//     'Access-Control-Allow-Headers',
-//     'X-Requested-With,content-type, Accept'
-//   );
-//   res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-Requested-With,content-type, Accept'
+  );
+  res.setHeader('Access-Control-Allow-Credentials', true);
 
-//   next();
-// });
+  next();
+});
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
