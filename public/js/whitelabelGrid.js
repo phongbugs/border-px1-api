@@ -143,6 +143,7 @@ Ext.onReady(function () {
           // icon spniner cols
           record['specificServerSpinner'] = false;
           record['remoteDesktopSpinner'] = false;
+          record['isSyncedDomain'] = false;
           data.push(record);
         }
         Groups = storeWLs.getGroups();
@@ -225,8 +226,13 @@ Ext.onReady(function () {
                   ).toString(CryptoJS.enc.Utf8)
                 )
               );
-              else
-                  Ext.Msg.alert('Caution', 'Cache data of <b>' + whiteLabelName + '</b>\'s domain doesn\'t exist<br/> Please uncheck Load From Cache checkbox' )
+            else
+              Ext.Msg.alert(
+                'Caution',
+                'Cache data of <b>' +
+                  whiteLabelName +
+                  "</b>'s domain doesn't exist<br/> Please uncheck Load From Cache checkbox"
+              );
           } else {
             let proxy = domainStore.getProxy();
             proxy.setConfig('url', [
@@ -537,6 +543,21 @@ Ext.onReady(function () {
           click: () => authForm.setHidden(false),
         },
       },
+      {
+        xtype: 'button',
+        id: 'btnSyncAllDomain',
+        text: 'Sync Domains',
+        dock: 'right',
+        iconCls: 'syncDomainCls',
+        listeners: {
+          click: (btn) => {
+            btn.setIconCls('spinner');
+            syncDomainsAllWLs(0, storeWLs, () =>
+              btn.setIconCls('syncDomainCls')
+            );
+          },
+        },
+      },
       '->',
       {
         xtype: 'button',
@@ -780,41 +801,6 @@ Ext.onReady(function () {
         ],
       },
       {
-        xtype: 'actioncolumn',
-        width: 30,
-        tooltip: 'Open Remote Desktop Connection',
-        text: 'R',
-        dataIndex: 'servers',
-        items: [
-          {
-            getClass: function (value, meta, record, rowIndex, colIndex) {
-              var isSpinning = record.get('remoteDesktopSpinner');
-              return isSpinning ? 'spinner' : 'remoteDesktop';
-            },
-            handler: function (grid, rowIndex, colIndex, item, e, record) {
-              rowIndex = grid.getStore().indexOf(record);
-              record = grid.getStore().getAt(rowIndex);
-              var ip = record.get('specificServer');
-              record.set('remoteDesktopSpinner', true);
-              Ext.Ajax.request({
-                method: 'GET',
-                url: 'http://localhost:3000/remote/' + ip,
-                success: function (response) {
-                  record.set('remoteDesktopSpinner', false);
-                },
-                failure: function (response) {
-                  Ext.Msg.alert(
-                    "Remote Desktop Cli Service doesn't start",
-                    `Run Remote Desktop Service by cmd:<br/><code>cd liga<br/>node rdservice</code>`
-                  );
-                  record.set('remoteDesktopSpinner', false);
-                },
-              });
-            },
-          },
-        ],
-      },
-      {
         text: '📵',
         width: 50,
         dataIndex: 'mobileRedirect',
@@ -850,6 +836,83 @@ Ext.onReady(function () {
         renderer: (value) => (!value ? '▶' : '❌'),
         hidden: true,
       },
+      {
+        xtype: 'actioncolumn',
+        width: 30,
+        tooltip: 'Open Remote Desktop Connection',
+        text: 'R',
+        dataIndex: 'servers',
+        items: [
+          {
+            getClass: function (value, meta, record, rowIndex, colIndex) {
+              var isSpinning = record.get('remoteDesktopSpinner');
+              return isSpinning ? 'spinner' : 'remoteDesktop';
+            },
+            handler: function (grid, rowIndex, colIndex, item, e, record) {
+              rowIndex = grid.getStore().indexOf(record);
+              record = grid.getStore().getAt(rowIndex);
+              var ip = record.get('specificServer');
+              record.set('remoteDesktopSpinner', true);
+              Ext.Ajax.request({
+                method: 'GET',
+                url: 'http://localhost:3000/remote/' + ip,
+                success: function (response) {
+                  record.set('remoteDesktopSpinner', false);
+                },
+                failure: function (response) {
+                  Ext.Msg.alert(
+                    "Remote Desktop Cli Service doesn't start",
+                    `Run Remote Desktop Service by cmd:<br/><code>cd liga<br/>node rdservice</code>`
+                  );
+                  record.set('remoteDesktopSpinner', false);
+                },
+              });
+            },
+          },
+        ],
+      },
+      {
+        xtype: 'actioncolumn',
+        width: 30,
+        tooltip: 'Sync Domains',
+        text: 'SDM',
+        dataIndex: 'isSyncedDomain',
+        items: [
+          {
+            getClass: function (value, meta, record, rowIndex, colIndex) {
+              //var isSynced = record.get('isSyncedDomain');
+              var iconCls = '';
+              switch (value) {
+                case false:
+                  iconCls = 'checkCls';
+                  break;
+                case 'spinner':
+                  iconCls = 'spinner';
+                  break;
+                case 'checkKoCls':
+                  iconCls = 'checkKoCls';
+                  break;
+                default:
+                  iconCls = 'checkOkCls';
+                  break;
+              }
+              return iconCls;
+            },
+            handler: function (grid, rowIndex, colIndex, item, e, record) {
+              rowIndex = grid.getStore().indexOf(record);
+              record = grid.getStore().getAt(rowIndex);
+              var name = record.get('name');
+              record.set('isSyncedDomain', 'spinner');
+              syncDomainsOneWhiteLabel(name, (_, success) =>
+                record.set(
+                  'isSyncedDomain',
+                  success ? 'checkOkCls' : 'checkKoCls'
+                )
+              );
+            },
+          },
+        ],
+      },
     ],
   });
 });
@@ -861,4 +924,45 @@ function saveBorderPx1ApiCookie(cookie) {
     borderPx1ApiHost + '/user/login?cookie=' + encodeURIComponent(cookie)
   );
   document.body.appendChild(ifrm);
+}
+function syncDomainsOneWhiteLabel(whiteLabelName, callback) {
+  let siteType = Ext.getCmp('cbbSiteType').getRawValue();
+  switch (siteType) {
+    case 'Mobile':
+      siteType = 'mo';
+      break;
+    case 'Member':
+      siteType = '';
+      break;
+    case 'Agent':
+      siteType = 'ag';
+      break;
+  }
+  let cacheName = whiteLabelName + '_DM';
+  let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
+  Ext.Ajax.request({
+    method: 'GET',
+    withCredentials: true,
+    url: borderPx1ApiHost + '/info/domain/' + siteName,
+    success: function (response) {
+      let result = JSON.parse(response.responseText);
+      if (result.success) localStorage.setItem(cacheName, result.domains);
+      else log('Please login BORDER PX1 site !');
+      callback(whiteLabelName, result.success);
+    },
+    failure: function (response) {
+      Ext.Msg.alert('Error', '/login/status');
+      callback(false);
+    },
+  });
+}
+function syncDomainsAllWLs(index, store, callback) {
+  let record = store.getAt(index);
+  var name = record.get('name');
+  record.set('isSyncedDomain', 'spinner');
+  syncDomainsOneWhiteLabel(name, (name, success) => {
+    record.set('isSyncedDomain', success ? 'checkOkCls' : 'checkKoCls');
+    if (++index < store.getCount()) syncDomainsAllWLs(index, store, callback);
+    else callback();
+  });
 }

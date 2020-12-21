@@ -46,17 +46,19 @@
         }
 
         .checkOkCls {
-            background: url(img/checkok.png) no-repeat center;
+            background: url(https://icons.iconarchive.com/icons/hopstarter/sleek-xp-basic/16/Ok-icon.png) no-repeat center;
         }
 
         .checkKoCls {
-            background: url(img/checkko.png) no-repeat center;
+            background: url(https://icons.iconarchive.com/icons/elegantthemes/beautiful-flat/16/caution-icon.png) no-repeat center;
         }
 
         .defaultDomainCls {
             background: url(https://icons.iconarchive.com/icons/google/noto-emoji-people-bodyparts/16/12003-OK-hand-light-skin-tone-icon.png) no-repeat center
         }
-
+        .syncDomainCls {
+            background: url(https://icons.iconarchive.com/icons/paomedia/small-n-flat/16/cloud-down-icon.png) no-repeat center
+        }
         .center {
             position: absolute;
             left: 50%;
@@ -111,7 +113,7 @@
         window.onload = () => {
             authenticate((isAuthenticated) => {
                 if (isAuthenticated)
-                    loadScript('js/whitelabelGrid.js?v=11')
+                    loadScript('js/whitelabelGrid.js?v=12')
                 else
                     loadScript('js/loginForm.js?=2')
                 Ext.tip.QuickTipManager.init();
