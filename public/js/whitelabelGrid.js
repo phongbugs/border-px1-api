@@ -210,35 +210,50 @@ Ext.onReady(function () {
               break;
           }
           let whiteLabelName = record.get('name');
+          let cacheName = whiteLabelName + '_DM';
           let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
           domainGrid.show();
           domainGrid.setTitle(whiteLabelName + "'s Domains");
           domainStore.loadData([]);
-          let proxy = domainStore.getProxy();
-          // proxy.extraParams = {
-          //   'border-px1-cookie': localStorage.getItem('border-px1-cookie'),
-          // };
-          proxy.setConfig('url', [
-            borderPx1ApiHost + '/info/domain/' + siteName,
-          ]);
-          proxy.setConfig('withCredentials', [true]);
-          // show loadMask purpose
-          domainStore.load({
-            callback: function (records, operation, success) {
-              try {
-                let result = JSON.parse(operation.getResponse().responseText);
-                if (!result.success) {
-                  if (result.message.indexOf('Invalid URI') > -1)
-                    Ext.Msg.alert(
-                      'Have you ever logged in ?',
-                      'Please login BORDER PX1'
-                    );
+          if (Ext.getCmp('ckbLoadFromCache').getValue()) {
+            if (localStorage.getItem(cacheName))
+              domainStore.loadData(
+                JSON.parse(
+                  CryptoJS.AES.decrypt(
+                    localStorage.getItem(cacheName),
+                    'The domain data'
+                  ).toString(CryptoJS.enc.Utf8)
+                )
+              );
+              else
+                  Ext.Msg.alert('Caution', 'Cache data of <b>' + whiteLabelName + '</b>\'s domain doesn\'t exist<br/> Please uncheck Load From Cache checkbox' )
+          } else {
+            let proxy = domainStore.getProxy();
+            proxy.setConfig('url', [
+              borderPx1ApiHost + '/info/domain/' + siteName,
+            ]);
+            proxy.setConfig('withCredentials', [true]);
+            // show loadMask purpose
+            domainStore.load({
+              callback: function (records, operation, success) {
+                try {
+                  let result = JSON.parse(operation.getResponse().responseText);
+                  if (!result.success) {
+                    if (
+                      result.message.indexOf('Invalid URI') > -1 ||
+                      result.message.indexOf('Access denied') > -1
+                    )
+                      Ext.Msg.alert(
+                        'Have you ever logged in ?',
+                        'Please login BORDER PX1'
+                      );
+                  } else localStorage.setItem(cacheName, result.domains);
+                } catch (error) {
+                  log(error);
                 }
-              } catch (error) {
-                log(error);
-              }
-            },
-          });
+              },
+            });
+          }
         }
       },
       viewready: (grid) => {

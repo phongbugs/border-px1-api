@@ -73,7 +73,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       xtype: 'button',
       id: 'btnCheckDomain',
       iconCls: 'checkCls',
-      text: 'Check Domain',
+      text: 'Check All Domains',
       dock: 'right',
       //width: 100,
       listeners: {
@@ -81,6 +81,12 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           checkDomainAllGrid();
         },
       },
+    },
+    {
+      xtype: 'checkbox',
+      id: 'ckbLoadFromCache',
+      iconCls: 'checkCls',
+      boxLabel: 'Load From Cache',
     },
   ],
   columns: [
@@ -154,7 +160,9 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
     },
     {
       xtype: 'actioncolumn',
-      text: 'OK',
+      text: 'CDW',
+      tooltip:'Check domain workable',
+      width: 60,
       iconCls: 'checkCls',
       getClass: function (value, meta, record, rowIndex, colIndex) {
         var folderPath = record.get('folderPath');
@@ -171,6 +179,34 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
             break;
           default:
             iconCls = 'checkOkCls';
+            break;
+        }
+        return iconCls;
+      },
+      handler: (grid, rowIndex, colIndex, item, e, record) =>
+        checkDomainOneRecord(record),
+    },
+    {
+      xtype: 'actioncolumn',
+      text: 'SDD',
+      width: 60,
+      tooltip:'Set default domain',
+      iconCls: 'checkCls',
+      getClass: function (value, meta, record, rowIndex, colIndex) {
+        var folderPath = record.get('folderPath');
+        var iconCls = '';
+        switch (folderPath) {
+          case '':
+            iconCls = 'checkCls';
+            break;
+          case ' ':
+            iconCls = 'spinner';
+            break;
+          case 'checkKoCls':
+            iconCls = 'checkKoCls';
+            break;
+          default:
+            iconCls = 'defaultDomainCls';
             break;
         }
         return iconCls;
