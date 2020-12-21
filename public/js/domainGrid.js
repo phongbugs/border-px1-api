@@ -1,5 +1,4 @@
 ﻿//if (!isAuthenticated()) return;
-Ext.tip.QuickTipManager.init();
 Ext.define('Domain', {
   extend: 'Ext.data.Model',
   fields: [
@@ -161,7 +160,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
     {
       xtype: 'actioncolumn',
       text: 'CDW',
-      tooltip:'Check domain workable',
+      tooltip: 'Check domain workable',
       width: 60,
       iconCls: 'checkCls',
       getClass: function (value, meta, record, rowIndex, colIndex) {
@@ -190,8 +189,9 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       xtype: 'actioncolumn',
       text: 'SDD',
       width: 60,
-      tooltip:'Set default domain',
+      tooltip: 'Set default domain',
       iconCls: 'checkCls',
+      hidden: true,
       getClass: function (value, meta, record, rowIndex, colIndex) {
         var folderPath = record.get('folderPath');
         var iconCls = '';
@@ -211,8 +211,6 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
         }
         return iconCls;
       },
-      handler: (grid, rowIndex, colIndex, item, e, record) =>
-        checkDomainOneRecord(record),
     },
   ],
 });
