@@ -24,6 +24,9 @@ let serverStores = {
     fields: ['name'],
     data: [[]],
   }),
+  // send to grid domain selected specific server from white label grid
+  selectedSpecificServer = '',
+  selectedServers = '',
   sortAndToList = (array) => {
     let strWLs = array
       .map((record) => record.name)
@@ -195,6 +198,10 @@ Ext.onReady(function () {
             Ext.getCmp('txtEndIndex').setValue(td.innerText);
           }
         } else if (cellIndex < 13) {
+          // send to grid domain two columns
+          selectedSpecificServer = record.get('specificServer');
+          selectedServers = record.get('servers');
+
           let domainGrid = Ext.getCmp('domainGrid'),
             domainStore = domainGrid.getStore(),
             siteType = Ext.getCmp('cbbSiteType').getRawValue();
@@ -224,7 +231,11 @@ Ext.onReady(function () {
                     localStorage.getItem(cacheName),
                     'The domain data'
                   ).toString(CryptoJS.enc.Utf8)
-                )
+                ).map((e) => {
+                  e['specificServer'] = selectedSpecificServer;
+                  e['servers'] = selectedServers;
+                  return e;
+                })
               );
             else
               Ext.Msg.alert(
@@ -251,7 +262,9 @@ Ext.onReady(function () {
                     )
                       Ext.Msg.alert(
                         'Have you ever logged in ?',
-                        'Please login BORDER PX1'
+                        `Please login <b>BORDER PX1</b> site<br/>
+                        OR <br/>
+                        Check to <b>Load From Cache</b> then close popup and open again`
                       );
                   } else localStorage.setItem(cacheName, result.domains);
                 } catch (error) {

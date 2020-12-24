@@ -11,6 +11,7 @@ Ext.define('Domain', {
     { name: 'ServerTime', type: 'date', dateFormat: 'c' },
     { name: 'LastChecked', type: 'date', dateFormat: 'c' },
     { name: 'folderPath', type: 'string' },
+    { name: 'specificServer', type: 'string' },
   ],
 });
 let storeDomain = Ext.create('Ext.data.Store', {
@@ -23,12 +24,18 @@ let storeDomain = Ext.create('Ext.data.Store', {
       rootProperty: 'domains',
       transform: {
         fn: function (data) {
-          if (data.success)
+          if (data.success) {
             data.domains = JSON.parse(
               CryptoJS.AES.decrypt(data.domains, 'The domain data').toString(
                 CryptoJS.enc.Utf8
               )
             );
+            data.domains.map((e) => {
+              e['specificServer'] = selectedSpecificServer;
+              e['servers'] = selectedServers;
+              return e;
+            });
+          }
           return data;
         },
       },
@@ -41,7 +48,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
   renderTo: 'app',
   id: 'domainGrid',
   store: storeDomain,
-  width: 768,
+  width: 500,
   height: 368,
   title: 'Domains',
   style: {
@@ -61,11 +68,26 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       handler: () => domainGrid.setHidden(true),
     },
   ],
+  plugins: ['cellediting'],
+  plugins: [
+    {
+      ptype: 'cellediting',
+      clicksToEdit: 1,
+    },
+  ],
   viewConfig: {
     loadMask: true,
   },
   listeners: {
-    viewready: (grid) => {},
+    show: (grid) => {
+      if (Ext.getCmp('ckbLoadFromCache').getValue())
+        setTimeout(() => Ext.getCmp('btnCheckDomain').fireEvent('click'), 500);
+    },
+    beforeedit: function (editor, context) {
+      selectedServerGroupStore.loadData(
+        serverStores[context.record.get('servers')]
+      );
+    },
   },
   tbar: [
     {
@@ -116,6 +138,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       width: 90,
       dataIndex: 'RootValid',
       renderer: (v, _, r) => (v === 1 ? '✅' : '❌'),
+      hidden: true,
     },
     {
       text: 'WWW',
@@ -128,6 +151,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           v === 1 ? 'www.' : '',
           r.get('Domain').toLowerCase()
         ),
+      hidden: true,
     },
 
     {
@@ -135,6 +159,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       width: 70,
       dataIndex: 'HTTPS',
       renderer: (v, _, r) => (v === 1 ? '✅' : '❌'),
+      hidden: true,
     },
     {
       text: 'LastUpdate',
@@ -211,6 +236,61 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
         }
         return iconCls;
       },
+    },
+    {
+      text: 'Specific Server',
+      width: 130,
+      dataIndex: 'specificServer',
+      editor: {
+        xtype: 'combo',
+        store: selectedServerGroupStore,
+        //serverStores['101-102-103'],
+        displayField: 'name',
+        valueField: 'name',
+        queryMode: 'local',
+      },
+    },
+    {
+      xtype: 'actioncolumn',
+      width: 30,
+      tooltip: 'Open link by specific server',
+      text: 'O',
+      items: [
+        {
+          iconCls: 'openLink',
+          getClass: function (value, meta, record, rowIndex, colIndex) {
+            var isSpinning = record.get('specificServerSpinner');
+            return isSpinning ? 'spinner' : 'openLink';
+          },
+          handler: function (grid, rowIndex, colIndex, item, e, record) {
+            rowIndex = grid.getStore().indexOf(record);
+            record = grid.getStore().getAt(rowIndex);
+            var ip = record.get('specificServer');
+            record.set('specificServerSpinner', true);
+            Ext.Ajax.request({
+              method: 'POST',
+              url: borderPx1ApiHost + '/info/backendId/' + ip,
+              withCredentials: true,
+              success: function (response) {
+                //log(response);
+                record.set('specificServerSpinner', false);
+                let result = JSON.parse(response.responseText);
+                if (result.success) {
+                  let defaultDomain = record.get('Domain'),
+                    protocol = Ext.getCmp('cbbProtocol').getValue(),
+                    backendId = result.backendId;
+                  let url = protocol + '://' + defaultDomain + '/';
+                  url += '?bpx-backend-id=' + backendId;
+                  window.open(url, '_blank');
+                } else alert(result.message);
+              },
+              failure: function (response) {
+                alert(JSON.stringify(response));
+              },
+            });
+          },
+        },
+      ],
     },
   ],
 });

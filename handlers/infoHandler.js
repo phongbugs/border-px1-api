@@ -28,7 +28,7 @@ const log = console.log,
         res.send({
           success: false,
           message:
-            'Access denied, please login border px1 site - cookie:' + cookie,
+            'Access denied, please login BORDER PX1 site',
         });
     } catch (error) {
       res.send({ success: false, message: error.message });
