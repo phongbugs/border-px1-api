@@ -320,6 +320,7 @@ function checkDomainOneRecord(record) {
     },
   });
 }
+// fast and farious
 function checkDomainAllGrid() {
   let grid = Ext.getCmp('domainGrid'),
     store = grid.getStore();

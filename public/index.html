@@ -56,8 +56,15 @@
         .defaultDomainCls {
             background: url(https://icons.iconarchive.com/icons/google/noto-emoji-people-bodyparts/16/12003-OK-hand-light-skin-tone-icon.png) no-repeat center
         }
+
         .syncDomainCls {
             background: url(https://icons.iconarchive.com/icons/paomedia/small-n-flat/16/cloud-down-icon.png) no-repeat center
+        }
+        .folderCls {
+            background: url(https://icons.iconarchive.com/icons/dtafalonso/modern-xp/16/ModernXP-50-Folder-Search-icon.png) no-repeat center
+        }
+        .folderOkCls {
+            background: url(https://icons.iconarchive.com/icons/dryicons/aesthetica-2/16/folder-accept-icon.png) no-repeat center
         }
         .center {
             position: absolute;
@@ -111,6 +118,7 @@
                 });
             }
         window.onload = () => {
+            loadScript('js/utils.js')
             authenticate((isAuthenticated) => {
                 if (isAuthenticated)
                     loadScript('js/whitelabelGrid.js?v=12')

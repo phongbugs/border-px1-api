@@ -147,6 +147,9 @@ Ext.onReady(function () {
           record['specificServerSpinner'] = false;
           record['remoteDesktopSpinner'] = false;
           record['isSyncedDomain'] = false;
+          record['isSyncedFolder'] = false;
+          record['folderPath'] = '';
+          record['backupDate'] = '';
           data.push(record);
         }
         Groups = storeWLs.getGroups();
@@ -571,6 +574,19 @@ Ext.onReady(function () {
           },
         },
       },
+      {
+        xtype: 'button',
+        id: 'btnCheckDomains',
+        text: 'Check Domains',
+        dock: 'right',
+        iconCls: 'folderCls',
+        listeners: {
+          click: (btn) => {
+            btn.setIconCls('spinner');
+            fetchFolderAllWLs(2, storeWLs, () => btn.setIconCls('folderCls'));
+          },
+        },
+      },
       '->',
       {
         xtype: 'button',
@@ -886,9 +902,9 @@ Ext.onReady(function () {
       },
       {
         xtype: 'actioncolumn',
-        width: 30,
+        width: 40,
         tooltip: 'Sync Domains',
-        text: 'SDM',
+        text: 'SD',
         dataIndex: 'isSyncedDomain',
         items: [
           {
@@ -926,18 +942,63 @@ Ext.onReady(function () {
           },
         ],
       },
+      {
+        xtype: 'actioncolumn',
+        width: 40,
+        tooltip: 'Sync Folders',
+        text: 'SF',
+        dataIndex: 'isSyncedFolder',
+        items: [
+          {
+            getClass: function (value, meta, record, rowIndex, colIndex) {
+              var iconCls = '';
+              switch (value) {
+                case 'spinner':
+                  iconCls = 'spinner';
+                  break;
+                case 'checkKoCls':
+                  iconCls = 'checkKoCls';
+                  break;
+                case false:
+                  iconCls = 'folderCls';
+                  break;
+                default:
+                  iconCls = 'folderOkCls';
+                  break;
+              }
+              return iconCls;
+            },
+            handler: function (grid, rowIndex, colIndex, item, e, record, row) {
+              rowIndex = grid.getStore().indexOf(record);
+              record = grid.getStore().getAt(rowIndex);
+              record.set('isSyncedFolder', 'spinner');
+              //log(row.children[1].innerHTML);
+              fetchFolderOneRecord(record, (success) =>
+                record.set(
+                  'isSyncedFolder',
+                  success ? 'folderOkCls' : 'checkKoCls'
+                )
+              );
+            },
+          },
+        ],
+      },
+      {
+        text: 'Folder',
+        tooltip: 'Folder Path',
+        width: 300,
+        dataIndex: 'folderPath',
+      },
+      {
+        text: 'Backup Date',
+        tooltip: 'Backup Date',
+        width: 222,
+        dataIndex: 'backupDate',
+      },
     ],
   });
 });
-function saveBorderPx1ApiCookie(cookie) {
-  var ifrm = document.createElement('iframe');
-  ifrm.setAttribute('style', 'width:0;height:0;border:0; border:none');
-  ifrm.setAttribute(
-    'src',
-    borderPx1ApiHost + '/user/login?cookie=' + encodeURIComponent(cookie)
-  );
-  document.body.appendChild(ifrm);
-}
+
 function syncDomainsOneWhiteLabel(whiteLabelName, callback) {
   let siteType = Ext.getCmp('cbbSiteType').getRawValue();
   switch (siteType) {
@@ -976,6 +1037,65 @@ function syncDomainsAllWLs(index, store, callback) {
   syncDomainsOneWhiteLabel(name, (name, success) => {
     record.set('isSyncedDomain', success ? 'checkOkCls' : 'checkKoCls');
     if (++index < store.getCount()) syncDomainsAllWLs(index, store, callback);
+    else callback();
+  });
+}
+function genUrl(record) {
+  let defaultDomain = record.get('defaultDomain'),
+    status = record.get('status'),
+    protocol = Ext.getCmp('cbbProtocol').getValue(),
+    siteType = Ext.getCmp('cbbSiteType').getValue(),
+    whiteLabelName = record.get('name');
+  if (!defaultDomain) defaultDomain = whiteLabelName + '.com';
+  defaultDomain =
+    siteType === 'member' ? defaultDomain : siteType + defaultDomain;
+  if (status === 'testing') {
+    defaultDomain =
+      whiteLabelName +
+      (siteType === 'member' ? 'main.' : siteType) +
+      'playliga.com';
+    protocol = 'http';
+  }
+  let url = protocol + '://' + defaultDomain.toLowerCase();
+  return url;
+}
+function fetchFolderOneRecord(record, callback) {
+  // prevent click after done
+  if (record.get('folderPath') !== '') return;
+
+  // create request to express server
+  record.set('folderPath', ' '); // start checking
+  // check url
+  var url = genUrl(record);
+  Ext.Ajax.request({
+    url: borderPx1ApiHost + '/info/folder?' + new URLSearchParams({ url }),
+    success: function (response) {
+      // parse jsonString from server
+      var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
+      if (result.success) {
+        record.set('folderPath', result.path.replace(/\//g, '\\'));
+        record.set('backupDate', result.modifiedDateOfBKFile);
+      } else {
+        record.set('folderPath', 'failure');
+        record.set('backupDate', 'failure');
+      }
+      callback(result.success);
+    },
+    failure: function (response) {
+      log('server-side failure with status code ' + response.status);
+      record.set('folderPath', 'failure...');
+      record.set('backupDate', 'failure...');
+      callback(result.success);
+    },
+  });
+}
+// Safe slowly one by one
+function fetchFolderAllWLs(index, store, callback) {
+  let record = store.getAt(index);
+  record.set('isSyncedFolder', 'spinner');
+  fetchFolderOneRecord(record, (success) => {
+    record.set('isSyncedFolder', success ? 'checkOkCls' : 'checkKoCls');
+    if (++index < store.getCount()) fetchFolderAllWLs(index, store, callback);
     else callback();
   });
 }
