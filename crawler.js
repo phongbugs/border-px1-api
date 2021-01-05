@@ -104,7 +104,7 @@ async function isAuthenticatedCookies(authenticatedCookie) {
   log('|==> Authenticate cookies');
   // cookies is in memory
   try {
-    let url = cfg.hostBorderPx1 + cfg.adminPath
+    let url = cfg.hostBorderPx1 + cfg.adminPath;
     log(`|==> Send authentication request: ${url}`);
     let options = {
       method: 'GET',
@@ -208,45 +208,45 @@ function decrypt(body) {
  * @param {*} nameWhiteLabel hanaha -> fetch one, "" -> fetch all
  * @param {*} isSkippedValidationCookies
  */
-async function fetchSites(nameWhiteLabel, isSkippedValidationCookies) {
-  await skipValidationCookies(isSkippedValidationCookies);
-  let url = cfg.listWLSiteUrl;
-  log(`|==> fetchSites: ${url}`);
-  let data = {
-    CNAMEID: 0,
-    group: '0',
-    keyword: nameWhiteLabel,
-    pageNum: 1,
-    pageSize: 1000,
-    proxyID: 0,
-  };
-  await sleep(1000);
-  let options = {
-    method: 'POST',
-    url: url,
-    headers: cfg.headers,
-    form: Message.encryptParams(data),
-    jar: createJar(authenticatedCookies, rp, url),
-    transform: (body, res) => {
-      return {
-        body: body,
-        headers: res.headers,
-      };
-    },
-  };
-  //log(options)
-  let res = await rp(options).catch(function (err) {
-    log(err.message);
-    return [];
-  });
-  //log(`body:{%s}`, res.body)
-  //log(res.headers)
-  let sites = decrypt(res.body).Sites;
-  log(`sites.length = ${sites.length}`);
-  //log(JSON.stringify(sites))
-  return sites;
+async function fetchSites(nameWhiteLabel, authenticatedCookie) {
+  try {
+    Message = Utils.Http.Message();
+    await sleep(1000);
+    let url = cfg.hostBorderPx1 + cfg.listWLSitePath;
+    log(`|==> Fetch Sites: ${url}`);
+    let data = {
+      CNAMEID: 0,
+      group: '0',
+      keyword: nameWhiteLabel,
+      pageNum: 1,
+      pageSize: 1000,
+      proxyID: 0,
+    };
+    let options = {
+      method: 'POST',
+      url: url,
+      headers: cfg.headers,
+      form: Message.encryptParams(data),
+      jar: createJar(authenticatedCookie, rp, url),
+      transform: (body, res) => {
+        return {
+          body: body,
+          headers: res.headers,
+        };
+      },
+    };
+    //log(options);
+    let res = await rp(options);
+    //log(`body:{%s}`, res.body)
+    //log(res.headers)
+    let sites = decrypt(res.body).Sites;
+    log(`sites.length = ${sites.length}`);
+    //log(JSON.stringify(sites))
+    return { success: true, sites: sites };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
 }
-
 async function fetchDomainsBySiteId(siteId, authenticatedCookie) {
   try {
     Message = Utils.Http.Message();

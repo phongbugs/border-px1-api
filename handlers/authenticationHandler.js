@@ -24,7 +24,7 @@ async function authenticate(req, res) {
     if (authenticationData) {
       if (global.cookie && isAuthenticatedCookies([global.cookie])) {
         let encodedCookie = encodeURIComponent(global.cookie);
-        sendResponseCookie(req, res, encodedCookie,'border-px1');
+        sendResponseCookie(req, res, encodedCookie, 'border-px1');
         res.send({
           success: true,
           cookie: encodedCookie,
@@ -45,9 +45,21 @@ async function authenticate(req, res) {
           global.cookie = cookie;
           let encodedCookie = encodeURIComponent(cookie);
           sendResponseCookie(req, res, encodedCookie, 'border-px1');
+
+          // fetch latest sites from border-px1-site
+          let response = await crawler.fetchSites('', [cookie]);
+          if (response.success)
+            global.sites = response.sites.map((site) => ({
+              id: site.ID,
+              name: site.Host,
+            }));
+          //log(global.sites);
           res.send({
             success: true,
             cookie: encodedCookie,
+            message: response.success
+              ? 'Sites Fetched'
+              : 'Sites are not latest',
           });
         } else res.send({ success: false, message: result.message });
       }
