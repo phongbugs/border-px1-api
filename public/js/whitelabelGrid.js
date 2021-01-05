@@ -259,16 +259,12 @@ Ext.onReady(function () {
                 try {
                   let result = JSON.parse(operation.getResponse().responseText);
                   if (!result.success) {
-                    if (
-                      result.message.indexOf('Invalid URI') > -1 ||
-                      result.message.indexOf('Access denied') > -1
-                    )
-                      Ext.Msg.alert(
-                        'Have you ever logged in ?',
-                        `Please login <b>BORDER PX1</b> site<br/>
+                    Ext.Msg.alert(
+                      result.message,
+                      `Please login <b>BORDER PX1</b> site<br/>
                         OR <br/>
                         Check to <b>Load From Cache</b> then close popup and open again`
-                      );
+                    );
                   } else localStorage.setItem(cacheName, result.domains);
                 } catch (error) {
                   log(error);
@@ -568,6 +564,8 @@ Ext.onReady(function () {
         listeners: {
           click: (btn) => {
             btn.setIconCls('spinner');
+            let cm = Ext.getCmp('gridWLs').getColumns()[21];
+            cm.setHidden(false);
             syncDomainsAllWLs(0, storeWLs, () =>
               btn.setIconCls('syncDomainCls')
             );
@@ -586,6 +584,7 @@ Ext.onReady(function () {
             fetchFolderAllWLs(2, storeWLs, () => btn.setIconCls('folderCls'));
           },
         },
+        hidden: true,
       },
       '->',
       {
@@ -819,7 +818,18 @@ Ext.onReady(function () {
                     }
                     url += '?bpx-backend-id=' + backendId;
                     window.open(url, '_blank');
-                  } else alert(result.message);
+                  } else {
+                    if (
+                      result.message.indexOf(
+                        'Invalid URI "/api/domainEdit/token'
+                      ) > -1
+                    )
+                      Ext.Msg.alert(
+                        result.message,
+                        `Please login <b>BORDER PX1</b> site<br/>`
+                      );
+                    else alert(result.message);
+                  }
                 },
                 failure: function (response) {
                   alert(JSON.stringify(response));
@@ -906,6 +916,7 @@ Ext.onReady(function () {
         tooltip: 'Sync Domains',
         text: 'SD',
         dataIndex: 'isSyncedDomain',
+        hidden: true,
         items: [
           {
             getClass: function (value, meta, record, rowIndex, colIndex) {
@@ -948,6 +959,7 @@ Ext.onReady(function () {
         tooltip: 'Sync Folders',
         text: 'SF',
         dataIndex: 'isSyncedFolder',
+        hidden: true,
         items: [
           {
             getClass: function (value, meta, record, rowIndex, colIndex) {
@@ -988,12 +1000,14 @@ Ext.onReady(function () {
         tooltip: 'Folder Path',
         width: 300,
         dataIndex: 'folderPath',
+        hidden: true,
       },
       {
         text: 'Backup Date',
         tooltip: 'Backup Date',
         width: 222,
         dataIndex: 'backupDate',
+        hidden: true,
       },
     ],
   });
@@ -1076,8 +1090,8 @@ function fetchFolderOneRecord(record, callback) {
         record.set('folderPath', result.path.replace(/\//g, '\\'));
         record.set('backupDate', result.modifiedDateOfBKFile);
       } else {
-        record.set('folderPath', 'failure');
-        record.set('backupDate', 'failure');
+        record.set('folderPath', result.msg);
+        record.set('backupDate', result.msg);
       }
       callback(result.success);
     },

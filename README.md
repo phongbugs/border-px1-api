@@ -195,3 +195,7 @@ npm start
 - Two routes response cookie to browser ( steal your cookie create by you)
   - GET /authenticate -> duplicate json path
   - GET /user/login -> duplicate json path
+
+- Hide sync domain and folder column
+- update site id data
+- sync domain error some wl names
