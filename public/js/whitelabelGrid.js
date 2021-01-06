@@ -288,22 +288,19 @@ Ext.onReady(function () {
     },
     tbar: [
       {
-        xtype: 'combo',
-        width: 125,
-        store: new Ext.data.ArrayStore({
-          fields: ['id', 'name'],
-          data: [
-            ['name', 'Domain Name'],
-            ['ip', 'Domain IP'],
-          ],
-        }),
-        displayField: 'name',
-        valueField: 'id',
-        name: 'cbbDomainType',
-        id: 'cbbDomainType',
-        value: 'name',
-        editable: false,
-        listeners: {},
+        xtype: 'button',
+        id: 'btnRefresh',
+        icon:
+          'https://icons.iconarchive.com/icons/graphicloads/100-flat/16/reload-icon.png',
+        text: 'Refresh',
+        // other component can not fireEvent to
+        // handler: () => { storeWLs.clearFilter(); storeWLs.loadData(data) },
+        listeners: {
+          click: () => {
+            storeWLs.clearFilter();
+            storeWLs.loadData(data);
+          },
+        },
       },
       {
         xtype: 'combo',
@@ -353,21 +350,7 @@ Ext.onReady(function () {
           },
         },
       },
-      {
-        xtype: 'button',
-        id: 'btnRefresh',
-        icon:
-          'https://icons.iconarchive.com/icons/graphicloads/100-flat/16/reload-icon.png',
-        text: 'Refresh',
-        // other component can not fireEvent to
-        // handler: () => { storeWLs.clearFilter(); storeWLs.loadData(data) },
-        listeners: {
-          click: () => {
-            storeWLs.clearFilter();
-            storeWLs.loadData(data);
-          },
-        },
-      },
+
       {
         xtype: 'combo',
         width: 120,
@@ -582,7 +565,7 @@ Ext.onReady(function () {
         text: 'Login BORDER PX1',
         dock: 'right',
         icon:
-          'https://icons.iconarchive.com/icons/iconsmind/outline/16/Key-Lock-icon.png',
+          'https://icons.iconarchive.com/icons/shlyapnikova/toolbar-2/32/brick-wall-icon.png',
         listeners: {
           click: () => authForm.setHidden(false),
         },

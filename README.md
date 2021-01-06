@@ -204,3 +204,5 @@ npm start
   - KL365
   - KL228
   - AF
+  - need fix auto login
+  - need sync domain with type site(member, agent, mobile) and type domain (ip, name)

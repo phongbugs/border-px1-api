@@ -93,15 +93,6 @@ let authForm = Ext.create('Ext.form.Panel', {
       value: 'https://net-ga.admin.12365.bpx-cdn.cloud',
       editable: false,
       submitValue: false,
-      listeners: {
-        change: (_, newValue) => {
-          let domainType = newValue.indexOf('22365') > -1 ? 'ip' : 'name';
-          Ext.getCmp('cbbDomainType').setValue(domainType);
-          Ext.getCmp('cbbProtocol').setValue(
-            domainType === 'ip' ? 'http' : 'https'
-          );
-        },
-      },
     },
     {
       fieldLabel: 'Username',
