@@ -84,7 +84,7 @@ const log = console.log,
       let text = (await response.text())
         .replace(/\\/g, '\\\\')
         .replace(/'/g, '');
-      log(text);
+      //log(text);
       res.send(JSON.parse(text));
     } catch (error) {
       res.send({ success: false, message: error.message });
