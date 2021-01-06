@@ -211,13 +211,13 @@ Ext.onReady(function () {
 
           switch (siteType) {
             case 'Mobile':
-              siteType = 'mo';
+              siteType = 'mobile.';
               break;
             case 'Member':
               siteType = '';
               break;
             case 'Agent':
-              siteType = 'ag';
+              siteType = 'ag.';
               break;
           }
           let whiteLabelName = record.get('name');
@@ -257,7 +257,7 @@ Ext.onReady(function () {
                 ? 'ip'
                 : 'name';
             proxy.setConfig('url', [
-              borderPx1ApiHost + '/info/domain/' + domainType + '/'+ siteName,
+              borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
             ]);
             proxy.setConfig('withCredentials', [true]);
             // show loadMask purpose
@@ -343,7 +343,14 @@ Ext.onReady(function () {
         value: 'member',
         editable: false,
         listeners: {
-          change: (_, val) => Ext.getCmp('btnRefresh').fireEvent('click'),
+          change: (_, newValue) => {
+            // mobile and agent dont have ip domain
+            if (newValue === 'mobile.' || newValue === 'ag.')
+              Ext.getCmp('cbbBorderPx1Url').setValue(
+                'https://net-ga.admin.12365.bpx-cdn.cloud'
+              );
+            Ext.getCmp('btnRefresh').fireEvent('click');
+          },
         },
       },
       {

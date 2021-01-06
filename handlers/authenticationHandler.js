@@ -42,14 +42,20 @@ async function authenticate(req, res) {
 
         // set key for domainType
         // it can recognize by hostBorderPx1
-        if (decryptedData.hostBorderPx1.indexOf('22365') > -1)
+        let hostBorderPx1 = decryptedData.hostBorderPx1;
+        if (hostBorderPx1.indexOf('22365') > -1) {
           crawler.setPKey(crawler.cfg.pKeyIP);
-        else crawler.setPKey(crawler.cfg.pKeyName);
+          global.hostBorderPx1Ip = hostBorderPx1;
+        } else {
+          crawler.setPKey(crawler.cfg.pKeyName);
+          global.hostBorderPx1Name = hostBorderPx1;
+        }
 
         let result = await crawler.login(
           decryptedData.username,
           decryptedData.password,
-          decryptedData.hostBorderPx1
+          hostBorderPx1,
+          domainType
         );
 
         //log(result);
@@ -61,13 +67,20 @@ async function authenticate(req, res) {
           let cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1';
           sendResponseCookie(req, res, encodedCookie, cookieName);
           // fetch latest sites from border-px1-site
-          let response = await crawler.fetchSites('', [cookie]);
-          if (response.success)
-            global.sites = response.sites.map((site) => ({
+          let response = await crawler.fetchSites('', [cookie], domainType);
+          if (response.success) {
+            let sites = response.sites.map((site) => ({
               id: site.ID,
               name: site.Host,
             }));
-          //log(global.sites);
+            if (domainType === 'ip') global.sitesIp = sites;
+            else global.sites = sites;
+          }
+          // log(global.sites);
+          // await require('../Utils').File.saveTextFile(
+          //   './sites.map.' + domainType + '.json',
+          //   JSON.stringify(global.sites)
+          // );
           res.send({
             success: true,
             cookie: encodedCookie,

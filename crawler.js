@@ -58,13 +58,13 @@ function createJar(cookies, rp, url) {
   return jar;
 }
 
-async function login(username, password, hostBorderPx1) {
+async function login(username, password, hostBorderPx1, domainType) {
   log(`|==> Login: ${hostBorderPx1}`);
   //log(username);
   //log(password);
   try {
     //log('getPKey(): %s', getPKey());
-    Message = Utils.Http.Message(cfg.pKey);
+    Message = Utils.Http.Message({ pemKey: cfg.pKey, domainType: domainType });
     let encryptedForm = Message.encryptParams({
       username: username,
       password: password,
@@ -101,11 +101,14 @@ async function login(username, password, hostBorderPx1) {
   }
 }
 
-async function isAuthenticatedCookies(authenticatedCookie) {
+async function isAuthenticatedCookies(authenticatedCookie, domainType) {
   log('|==> Authenticate cookies');
   // cookies is in memory
   try {
-    let url = cfg.hostBorderPx1 + cfg.adminPath;
+    let url =
+      (domainType === 'ip'
+        ? global.hostBorderPx1Ip
+        : global.hostBorderPx1Name) + cfg.adminPath;
     log(`|==> Send authentication request: ${url}`);
     let options = {
       method: 'GET',
@@ -209,11 +212,14 @@ function decrypt(body) {
  * @param {*} nameWhiteLabel hanaha -> fetch one, "" -> fetch all
  * @param {*} isSkippedValidationCookies
  */
-async function fetchSites(nameWhiteLabel, authenticatedCookie) {
+async function fetchSites(nameWhiteLabel, authenticatedCookie, domainType) {
   try {
-    Message = Utils.Http.Message();
-    await sleep(1000);
-    let url = cfg.hostBorderPx1 + cfg.listWLSitePath;
+    Message = Utils.Http.Message({ domainType });
+    //await sleep(1000);
+    let url =
+      (domainType === 'ip'
+        ? global.hostBorderPx1Ip
+        : global.hostBorderPx1Name) + cfg.listWLSitePath;
     log(`|==> Fetch Sites: ${url}`);
     let data = {
       CNAMEID: 0,
@@ -248,14 +254,17 @@ async function fetchSites(nameWhiteLabel, authenticatedCookie) {
     return { success: false, message: error.message };
   }
 }
-async function fetchDomainsBySiteId(siteId, authenticatedCookie) {
+async function fetchDomainsBySiteId(siteId, authenticatedCookie, domainType) {
   try {
-    Message = Utils.Http.Message();
-    await sleep(1000);
+    Message = Utils.Http.Message({ domainType });
+    //await sleep(1000);
     let data = {
       siteId: siteId,
     };
-    let url = cfg.hostBorderPx1 + cfg.listWLDomainPath;
+    let url =
+      (domainType === 'ip'
+        ? global.hostBorderPx1Ip
+        : global.hostBorderPx1Name) + cfg.listWLDomainPath;
     log(`|==> Fetch Domains: ${url}`);
     let options = {
       method: 'POST',
@@ -272,6 +281,7 @@ async function fetchDomainsBySiteId(siteId, authenticatedCookie) {
       },
     };
     let res = await rp(options);
+    //log(res.body);
     let domains = decrypt(res.body);
     log(`domains.length = ${domains.length}`);
     //log(domains)
@@ -338,14 +348,17 @@ async function fetchAllServers(isSkippedValidationCookies) {
 }
 
 //http://prntscr.com/pngy17
-async function fetchBackendId(serverId, authenticatedCookie) {
+async function fetchBackendId(serverId, authenticatedCookie, domainType) {
   // cookie is available, use ase file
-  Message = Utils.Http.Message();
-  await sleep(1000);
+  Message = Utils.Http.Message({ domainType });
+  //await sleep(1000);
   let data = {
     backend_id: +serverId,
   };
-  let url = cfg.hostBorderPx1 + cfg.backendIdPath;
+  let url =
+  (domainType === 'ip'
+    ? global.hostBorderPx1Ip
+    : global.hostBorderPx1Name) + cfg.backendIdPath;
   log(`|==> Fetch BackendId: ${url}`);
   let options = {
     method: 'POST',

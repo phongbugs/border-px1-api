@@ -199,3 +199,8 @@ npm start
 - Hide sync domain and folder column
 - update site id data
 - sync domain error some wl names
+
+- Backend id success Ip
+  - KL365
+  - KL228
+  - AF

@@ -1,3 +1,5 @@
+const { hostBorderPx1 } = require('../config');
+
 const log = console.log,
   CryptoJS = require('crypto-js'),
   crawler = require('../crawler'),
@@ -11,10 +13,13 @@ const log = console.log,
         cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
         cookie = req.cookies[cookieName];
       //log('serverId: %s', serverId);
+      //log('domainType: %s', domainType);
       if (cookie) {
-        let result = await crawler.fetchBackendId(findServerIdByIp(serverIp), [
-          decodeURIComponent(cookie),
-        ]);
+        let result = await crawler.fetchBackendId(
+          findServerIdByIp(serverIp),
+          [decodeURIComponent(cookie)],
+          domainType
+        );
         if (result.success)
           res.send({
             success: true,
@@ -34,17 +39,21 @@ const log = console.log,
     try {
       if (global.sites) {
         let siteName = req.params.siteName,
-          siteId = global.sites.find((site) => site.name === siteName).id,
           domainType = req.params.domainType,
+          sites = domainType === 'ip' ? global.sitesIp : global.sites,
+          siteId = sites.find((site) => site.name === siteName).id,
           cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
           cookie = req.cookies[cookieName];
         // log(siteName);
         // log(siteId);
         // log(cookie);
         if (cookie) {
-          let result = await crawler.fetchDomainsBySiteId(siteId, [
-            decodeURIComponent(cookie),
-          ]);
+          //log('%s:%s', cookieName, cookie);
+          let result = await crawler.fetchDomainsBySiteId(
+            siteId,
+            [decodeURIComponent(cookie)],
+            domainType
+          );
           if (result.success)
             res.send({
               success: true,

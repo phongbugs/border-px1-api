@@ -270,10 +270,15 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
             rowIndex = grid.getStore().indexOf(record);
             record = grid.getStore().getAt(rowIndex);
             var ip = record.get('specificServer');
+            let domainType =
+              Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+                ? 'ip'
+                : 'name';
             record.set('specificServerSpinner', true);
             Ext.Ajax.request({
               method: 'POST',
-              url: borderPx1ApiHost + '/info/backendId/' + ip,
+              url:
+                borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
               withCredentials: true,
               success: function (response) {
                 //log(response);
