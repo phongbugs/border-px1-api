@@ -221,7 +221,10 @@ Ext.onReady(function () {
               break;
           }
           let whiteLabelName = record.get('name');
-          let cacheName = whiteLabelName + '_DM';
+          let typeDomain = localStorage.getItem('domainType');
+          //let cacheName = whiteLabelName + '_DM';
+          let cacheName =
+            whiteLabelName + (typeDomain === 'Domain Name' ? '_DM' : '_DMIP');
           let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
           domainGrid.show();
           domainGrid.setTitle(whiteLabelName + "'s Domains");
@@ -249,8 +252,12 @@ Ext.onReady(function () {
               );
           } else {
             let proxy = domainStore.getProxy();
+            let domainType =
+              Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+                ? 'ip'
+                : 'name';
             proxy.setConfig('url', [
-              borderPx1ApiHost + '/info/domain/' + siteName,
+              borderPx1ApiHost + '/info/domain/' + domainType + '/'+ siteName,
             ]);
             proxy.setConfig('withCredentials', [true]);
             // show loadMask purpose
@@ -280,6 +287,24 @@ Ext.onReady(function () {
       },
     },
     tbar: [
+      {
+        xtype: 'combo',
+        width: 125,
+        store: new Ext.data.ArrayStore({
+          fields: ['id', 'name'],
+          data: [
+            ['name', 'Domain Name'],
+            ['ip', 'Domain IP'],
+          ],
+        }),
+        displayField: 'name',
+        valueField: 'id',
+        name: 'cbbDomainType',
+        id: 'cbbDomainType',
+        value: 'name',
+        editable: false,
+        listeners: {},
+      },
       {
         xtype: 'combo',
         width: 65,
@@ -777,9 +802,14 @@ Ext.onReady(function () {
               record = grid.getStore().getAt(rowIndex);
               var ip = record.get('specificServer');
               record.set('specificServerSpinner', true);
+              let domainType =
+                Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+                  ? 'ip'
+                  : 'name';
               Ext.Ajax.request({
                 method: 'POST',
-                url: borderPx1ApiHost + '/info/backendId/' + ip,
+                url:
+                  borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
                 // params: {
                 //   'border-px1-cookie': localStorage.getItem(
                 //     'border-px1-cookie'
@@ -1030,7 +1060,7 @@ function syncDomainsOneWhiteLabel(whiteLabelName, callback) {
   }
   let typeDomain = localStorage.getItem('domainType');
   let cacheName =
-    whiteLabelName + (typeDomain === 'Domain Name' ? '_DM' : 'DMIP');
+    whiteLabelName + (typeDomain === 'Domain Name' ? '_DM' : '_DMIP');
   let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
   Ext.Ajax.request({
     method: 'GET',

@@ -20,11 +20,15 @@ const { isAuthenticatedCookies } = require('../crawler'),
 async function authenticate(req, res) {
   try {
     let authenticationData = req.body.authenticationData;
+    let domainType = req.body.domainType;
     //log('authenticationData: %s', authenticationData);
     if (authenticationData) {
-      if (global.cookie && isAuthenticatedCookies([global.cookie])) {
-        let encodedCookie = encodeURIComponent(global.cookie);
-        sendResponseCookie(req, res, encodedCookie, 'border-px1');
+      let cookie = domainType === 'ip' ? global.cookieIp : global.cookie;
+      if (cookie && isAuthenticatedCookies([cookie])) {
+        let encodedCookie = encodeURIComponent(cookie);
+        // share cookie to other browser client
+        let cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1';
+        sendResponseCookie(req, res, encodedCookie, cookieName);
         res.send({
           success: true,
           cookie: encodedCookie,
@@ -35,21 +39,27 @@ async function authenticate(req, res) {
         crypt.setPrivateKey(authenticationPrivateKey);
         let decryptedData = JSON.parse(crypt.decrypt(authenticationData));
         //log('decryptedData: %s', decryptedData);
+
+        // set key for domainType
+        // it can recognize by hostBorderPx1
         if (decryptedData.hostBorderPx1.indexOf('22365') > -1)
           crawler.setPKey(crawler.cfg.pKeyIP);
         else crawler.setPKey(crawler.cfg.pKeyName);
+
         let result = await crawler.login(
           decryptedData.username,
           decryptedData.password,
           decryptedData.hostBorderPx1
         );
+
         //log(result);
         if (result.success) {
           let cookie = result.cookie.join(';');
-          global.cookie = cookie;
+          if (domainType === 'ip') global.cookieIp = cookie;
+          else global.cookie = cookie;
           let encodedCookie = encodeURIComponent(cookie);
-          sendResponseCookie(req, res, encodedCookie, 'border-px1');
-
+          let cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1';
+          sendResponseCookie(req, res, encodedCookie, cookieName);
           // fetch latest sites from border-px1-site
           let response = await crawler.fetchSites('', [cookie]);
           if (response.success)
@@ -79,11 +89,20 @@ async function authenticate(req, res) {
 
 async function isAuthenticated(req, res) {
   try {
-    let cookie = req.cookies['border-px1'];
+    let domainType = req.params['domainType'];
+    let cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1';
+    let cookie = req.cookies[cookieName];
     if (cookie) {
       //log('cookie: %s', cookie);
       //log('global.cookie = %s', global.cookie);
-      res.send({ success: global.cookie === decodeURIComponent(cookie) });
+      let decodedCookie = decodeURIComponent(cookie);
+      res.send({
+        success:
+          domainType === 'ip'
+            ? global.cookieIp === decodedCookie
+            : global.cookie === decodedCookie,
+        domainType: domainType,
+      });
     } else res.send({ success: false, message: "Cookie data doesn't exist" });
   } catch (error) {
     res.send({ success: false, message: error.message });
@@ -95,7 +114,9 @@ function setCookieToBrowser(req, res) {
     let cookie = req.query.cookie;
     if (cookie) {
       //res.removeHeader('X-Frame-Options');
-      sendResponseCookie(req, res, cookie, 'border-px1');
+      let domainType = req.params['domainType'];
+      let cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1';
+      sendResponseCookie(req, res, cookie, cookieName);
       res.send('cookie was sent');
     } else res.send("Cookie data doesn't exist");
   } catch (error) {

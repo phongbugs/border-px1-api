@@ -19,9 +19,13 @@ let authForm = Ext.create('Ext.form.Panel', {
   hidden: true,
   listeners: {
     afterrender: () => {
+      let domainType =
+        Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+          ? 'ip'
+          : 'name';
       Ext.Ajax.request({
         method: 'GET',
-        url: borderPx1ApiHost + '/authentication/status',
+        url: borderPx1ApiHost + '/authentication/status/' + domainType,
         //params: { cookie: localStorage.getItem('cookie') },
         success: function (response) {
           let result = JSON.parse(response.responseText);
@@ -89,6 +93,15 @@ let authForm = Ext.create('Ext.form.Panel', {
       value: 'https://net-ga.admin.12365.bpx-cdn.cloud',
       editable: false,
       submitValue: false,
+      listeners: {
+        change: (_, newValue) => {
+          let domainType = newValue.indexOf('22365') > -1 ? 'ip' : 'name';
+          Ext.getCmp('cbbDomainType').setValue(domainType);
+          Ext.getCmp('cbbProtocol').setValue(
+            domainType === 'ip' ? 'http' : 'https'
+          );
+        },
+      },
     },
     {
       fieldLabel: 'Username',
@@ -158,7 +171,13 @@ let authForm = Ext.create('Ext.form.Panel', {
             form.submit({
               clientValidation: true,
               url: borderPx1ApiHost + '/authentication',
-              params: { authenticationData },
+              params: {
+                authenticationData: authenticationData,
+                domainType:
+                  Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+                    ? 'ip'
+                    : 'name',
+              },
               withCredentials: true,
               success: function (form, action) {
                 if (action.result.success) {
@@ -260,11 +279,15 @@ function convertTimeToMinutesAndSeconds(time) {
   );
 }
 function saveBorderPx1Cookie(cookie) {
+  let domainType =
+    Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+      ? 'ip'
+      : 'name';
   var ifrm = document.createElement('iframe');
   ifrm.setAttribute('style', 'width:0;height:0;border:0; border:none');
   ifrm.setAttribute(
     'src',
-    borderPx1ApiHost + '/authentication?cookie=' + cookie
+    borderPx1ApiHost + '/authentication/' + domainType + '?cookie=' + cookie
   );
   document.body.appendChild(ifrm);
 }

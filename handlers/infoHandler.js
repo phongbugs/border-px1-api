@@ -7,7 +7,9 @@ const log = console.log,
   fetchBackendId = async (req, res) => {
     try {
       let serverIp = req.params.serverIp,
-        cookie = req.cookies['border-px1'];
+        domainType = req.params.domainType,
+        cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
+        cookie = req.cookies[cookieName];
       //log('serverId: %s', serverId);
       if (cookie) {
         let result = await crawler.fetchBackendId(findServerIdByIp(serverIp), [
@@ -33,7 +35,9 @@ const log = console.log,
       if (global.sites) {
         let siteName = req.params.siteName,
           siteId = global.sites.find((site) => site.name === siteName).id,
-          cookie = req.cookies['border-px1'];
+          domainType = req.params.domainType,
+          cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
+          cookie = req.cookies[cookieName];
         // log(siteName);
         // log(siteId);
         // log(cookie);

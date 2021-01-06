@@ -14,11 +14,15 @@ Ext.define('Domain', {
     { name: 'specificServer', type: 'string' },
   ],
 });
+let domainType =
+  Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+    ? 'ip'
+    : 'name';
 let storeDomain = Ext.create('Ext.data.Store', {
   model: 'Domain',
   proxy: {
     type: 'ajax',
-    url: borderPx1ApiHost + '/info/domain/' + 'liga365.bpx',
+    url: borderPx1ApiHost + '/info/domain/' + domainType + '/banana.bpx',
     reader: {
       type: 'json',
       rootProperty: 'domains',
