@@ -42,6 +42,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                 //setTimeout(() => cbkIsFresh.setValue(true), 3000);
               },
             });
+            Ext.getCmp('btnSyncAllDomain').setDisabled(false);
             myCounter.start();
           }
         },
@@ -77,14 +78,8 @@ let authForm = Ext.create('Ext.form.Panel', {
       store: new Ext.data.ArrayStore({
         fields: ['id', 'name'],
         data: [
-          [
-            'https://net-ga.admin.12365.bpx-cdn.cloud',
-            'https://net-ga.admin.12365.bpx-cdn.cloud',
-          ],
-          [
-            'https://net-gb.admin.22365.bpx-cdn.cloud',
-            'https://net-gb.admin.22365.bpx-cdn.cloud',
-          ],
+          ['https://net-ga.admin.12365.bpx-cdn.cloud', 'Domain Name'],
+          ['https://net-gb.admin.22365.bpx-cdn.cloud', 'Domain IP'],
         ],
       }),
       displayField: 'name',
@@ -131,6 +126,7 @@ let authForm = Ext.create('Ext.form.Panel', {
     {
       text: 'Reset',
       handler: function () {
+        //alert(Ext.getCmp('cbbBorderPx1Url').getRawValue())
         this.up('form').getForm().reset();
       },
     },
@@ -192,6 +188,11 @@ let authForm = Ext.create('Ext.form.Panel', {
                   });
                   myCounter.start();
                   //setTimeout(() => console.clear(), 4000);
+                  Ext.getCmp('btnSyncAllDomain').setDisabled(false);
+                  localStorage.setItem(
+                    'domainType',
+                    Ext.getCmp('cbbBorderPx1Url').getRawValue()
+                  );
                 } else Ext.Msg.alert('Failure', action.result.message);
               },
               failure: function (form, action) {
@@ -207,7 +208,11 @@ let authForm = Ext.create('Ext.form.Panel', {
                     Ext.Msg.alert('Failure', 'Ajax communication failed');
                     break;
                   case Ext.form.action.Action.SERVER_INVALID:
-                    Ext.Msg.alert('Failure', action.result.message + '<br />Please Login BORDER PX1 again !');
+                    Ext.Msg.alert(
+                      'Failure',
+                      action.result.message +
+                        '<br />Please Login BORDER PX1 again !'
+                    );
                 }
               },
             });

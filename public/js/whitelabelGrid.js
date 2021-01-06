@@ -561,14 +561,16 @@ Ext.onReady(function () {
         text: 'Sync Domains',
         dock: 'right',
         iconCls: 'syncDomainCls',
+        disabled: true,
         listeners: {
           click: (btn) => {
             btn.setIconCls('spinner');
             let cm = Ext.getCmp('gridWLs').getColumns()[21];
             cm.setHidden(false);
-            syncDomainsAllWLs(0, storeWLs, () =>
-              btn.setIconCls('syncDomainCls')
-            );
+            syncDomainsAllWLs(0, storeWLs, () => {
+              btn.setIconCls('syncDomainCls');
+              cm.setHidden(true);
+            });
           },
         },
       },
@@ -1026,7 +1028,9 @@ function syncDomainsOneWhiteLabel(whiteLabelName, callback) {
       siteType = 'ag';
       break;
   }
-  let cacheName = whiteLabelName + '_DM';
+  let typeDomain = localStorage.getItem('domainType');
+  let cacheName =
+    whiteLabelName + (typeDomain === 'Domain Name' ? '_DM' : 'DMIP');
   let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
   Ext.Ajax.request({
     method: 'GET',

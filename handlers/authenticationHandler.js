@@ -35,11 +35,15 @@ async function authenticate(req, res) {
         crypt.setPrivateKey(authenticationPrivateKey);
         let decryptedData = JSON.parse(crypt.decrypt(authenticationData));
         //log('decryptedData: %s', decryptedData);
+        if (decryptedData.hostBorderPx1.indexOf('22365') > -1)
+          crawler.setPKey(crawler.cfg.pKeyIP);
+        else crawler.setPKey(crawler.cfg.pKeyName);
         let result = await crawler.login(
           decryptedData.username,
           decryptedData.password,
           decryptedData.hostBorderPx1
         );
+        //log(result);
         if (result.success) {
           let cookie = result.cookie.join(';');
           global.cookie = cookie;
@@ -77,7 +81,9 @@ async function isAuthenticated(req, res) {
   try {
     let cookie = req.cookies['border-px1'];
     if (cookie) {
-      res.send({ success: global.cookie === cookie });
+      //log('cookie: %s', cookie);
+      //log('global.cookie = %s', global.cookie);
+      res.send({ success: global.cookie === decodeURIComponent(cookie) });
     } else res.send({ success: false, message: "Cookie data doesn't exist" });
   } catch (error) {
     res.send({ success: false, message: error.message });

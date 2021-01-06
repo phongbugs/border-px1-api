@@ -63,6 +63,7 @@ async function login(username, password, hostBorderPx1) {
   //log(username);
   //log(password);
   try {
+    //log('getPKey(): %s', getPKey());
     Message = Utils.Http.Message(cfg.pKey);
     let encryptedForm = Message.encryptParams({
       username: username,
@@ -393,16 +394,21 @@ async function fetchAllWhiteLabelsName(isSkippedValidationCookies) {
   log(listWhiteLabelsName);
   return listWhiteLabelsName;
 }
+function setPKey(key) {
+  cfg.pKey = key;
+}
 module.exports = {
   fetchSites: fetchSites,
   fetchDomainsBySiteId: fetchDomainsBySiteId,
-  fetchServerBySiteId: fetchServerBySiteId,
-  fetchAllServers: fetchAllServers,
-  fetchAllWhiteLabelsName: fetchAllWhiteLabelsName,
-  setSocketMethod: setSocketMethod,
-  setSocket: setSocket,
-  getSiteId: getSiteId,
+  //fetchServerBySiteId: fetchServerBySiteId,
+  //fetchAllServers: fetchAllServers,
+  //fetchAllWhiteLabelsName: fetchAllWhiteLabelsName,
+  //setSocketMethod: setSocketMethod,
+  //setSocket: setSocket,
+  //getSiteId: getSiteId,
   fetchBackendId: fetchBackendId,
   login: login,
   isAuthenticatedCookies: isAuthenticatedCookies,
+  cfg: cfg,
+  setPKey: setPKey,
 };
