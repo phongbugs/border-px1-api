@@ -82,8 +82,14 @@ let authForm = Ext.create('Ext.form.Panel', {
       store: new Ext.data.ArrayStore({
         fields: ['id', 'name'],
         data: [
-          ['https://net-ga.admin.12365.bpx-cdn.cloud', '[NA] https://net-ga.admin.12365.bpx-cdn.cloud'],
-          ['https://net-gb.admin.22365.bpx-cdn.cloud', '[IP] https://net-gb.admin.22365.bpx-cdn.cloud'],
+          [
+            'https://net-ga.admin.12365.bpx-cdn.cloud',
+            '[NA] https://net-ga.admin.12365.bpx-cdn.cloud',
+          ],
+          [
+            'https://net-gb.admin.22365.bpx-cdn.cloud',
+            '[IP] https://net-gb.admin.22365.bpx-cdn.cloud',
+          ],
         ],
       }),
       displayField: 'name',
@@ -93,6 +99,14 @@ let authForm = Ext.create('Ext.form.Panel', {
       value: 'https://net-ga.admin.12365.bpx-cdn.cloud',
       editable: false,
       submitValue: false,
+      listeners: {
+        change: (_, newValue) => {
+          if (newValue === 'https://net-gb.admin.22365.bpx-cdn.cloud') {
+            Ext.getCmp('cbbSiteType').setValue('member');
+            Ext.getCmp('cbbProtocol').setValue('http');
+          }
+        },
+      },
     },
     {
       fieldLabel: 'Username',
@@ -137,8 +151,8 @@ let authForm = Ext.create('Ext.form.Panel', {
     {
       text: 'Authenticate',
       id: 'btnAuthenticate',
-      iconCls:'authenticationCls',
-        
+      iconCls: 'authenticationCls',
+
       formBind: true,
       disabled: true,
       listeners: {
