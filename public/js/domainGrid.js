@@ -46,6 +46,11 @@ let storeDomain = Ext.create('Ext.data.Store', {
     },
   },
   autoLoad: true,
+  listeners: {
+    load: () => {
+      Ext.getCmp('btnCheckDomain').fireEvent('click')
+    },
+  },
 });
 let renderDateTime = (v, _, r) => Ext.Date.format(v, 'm/d/Y H:i:s');
 let domainGrid = Ext.create('Ext.grid.Panel', {
@@ -83,10 +88,11 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
     loadMask: true,
   },
   listeners: {
-    show: (grid) => {
-      if (Ext.getCmp('ckbLoadFromCache').getValue())
-        setTimeout(() => Ext.getCmp('btnCheckDomain').fireEvent('click'), 500);
-    },
+    // show: (grid) => {
+    //   if (Ext.getCmp('ckbLoadFromCache').getValue())
+    //     setTimeout(() => Ext.getCmp('btnCheckDomain').fireEvent('click'), 500);
+    // },
+    hide: () => Ext.getCmp('gridWLs').setDisabled(false),
     beforeedit: function (editor, context) {
       selectedServerGroupStore.loadData(
         serverStores[context.record.get('servers')]

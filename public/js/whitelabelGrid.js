@@ -201,36 +201,25 @@ Ext.onReady(function () {
             Ext.getCmp('txtEndIndex').setValue(td.innerText);
           }
         } else if (cellIndex < 13) {
+          Ext.getCmp('gridWLs').setDisabled(true);
           // send to grid domain two columns
           selectedSpecificServer = record.get('specificServer');
           selectedServers = record.get('servers');
 
           let domainGrid = Ext.getCmp('domainGrid'),
             domainStore = domainGrid.getStore(),
-            siteType = Ext.getCmp('cbbSiteType').getRawValue();
+            siteTypeValue = getSiteTypeValue(),
+            whiteLabelName = record.get('name'),
+            siteTypeName = getSiteTypeName(),
+            domainType = getDomainType(),
+            cacheName = whiteLabelName + '_' + domainType + '_' + siteTypeName,
+            siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
 
-          switch (siteType) {
-            case 'Mobile':
-              siteType = 'mobile.';
-              break;
-            case 'Member':
-              siteType = '';
-              break;
-            case 'Agent':
-              siteType = 'ag.';
-              break;
-          }
-          let whiteLabelName = record.get('name');
-          let typeDomain = localStorage.getItem('domainType');
-          //let cacheName = whiteLabelName + '_DM';
-          let cacheName =
-            whiteLabelName + (typeDomain === 'Domain Name' ? '_DM' : '_DMIP');
-          let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
           domainGrid.show();
-          domainGrid.setTitle(whiteLabelName + "'s Domains");
+          domainGrid.setTitle('🌍 ' + whiteLabelName + "'s Domains");
           domainStore.loadData([]);
           if (Ext.getCmp('ckbLoadFromCache').getValue()) {
-            if (localStorage.getItem(cacheName))
+            if (localStorage.getItem(cacheName)){
               domainStore.loadData(
                 JSON.parse(
                   CryptoJS.AES.decrypt(
@@ -243,6 +232,9 @@ Ext.onReady(function () {
                   return e;
                 })
               );
+              Ext.getCmp('btnCheckDomain').fireEvent('click')
+            }
+              
             else
               Ext.Msg.alert(
                 'Caution',
@@ -502,7 +494,7 @@ Ext.onReady(function () {
         xtype: 'numberfield',
         id: 'txtStartIndex',
         value: 0,
-        width: 30,
+        width: 40,
         hideTrigger: true,
         listeners: {
           focus: function (tf, e) {
@@ -1036,26 +1028,15 @@ Ext.onReady(function () {
 });
 
 function syncDomainsOneWhiteLabel(whiteLabelName, callback) {
-  let siteType = Ext.getCmp('cbbSiteType').getRawValue();
-  switch (siteType) {
-    case 'Mobile':
-      siteType = 'mo';
-      break;
-    case 'Member':
-      siteType = '';
-      break;
-    case 'Agent':
-      siteType = 'ag';
-      break;
-  }
-  let typeDomain = localStorage.getItem('domainType');
-  let cacheName =
-    whiteLabelName + (typeDomain === 'Domain Name' ? '_DM' : '_DMIP');
-  let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
+  let siteTypeName = getSiteTypeName(),
+    siteTypeValue = getSiteTypeValue(),
+    domainType = getDomainType(),
+    cacheName = whiteLabelName + '_' + domainType + '_' + siteTypeName,
+    siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
   Ext.Ajax.request({
     method: 'GET',
     withCredentials: true,
-    url: borderPx1ApiHost + '/info/domain/' + siteName,
+    url: borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
     success: function (response) {
       let result = JSON.parse(response.responseText);
       if (result.success) localStorage.setItem(cacheName, result.domains);
@@ -1063,7 +1044,7 @@ function syncDomainsOneWhiteLabel(whiteLabelName, callback) {
       callback(whiteLabelName, result.success);
     },
     failure: function (response) {
-      Ext.Msg.alert('Error', '/login/status');
+      log(response);
       callback(false);
     },
   });
