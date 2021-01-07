@@ -62,6 +62,8 @@ app.use(function (req, res, next) {
       )
     ),
     h2a(fhs('687474703a2f2f6d61696e74656e616e63652e6c6967613336352e636f6d')),
+    'http://phillip:9999',
+    'http://192.168.2.185:9999'
   ];
   var origin = req.headers.origin;
   if (allowedDomains.indexOf(origin) > -1) {
