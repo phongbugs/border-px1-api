@@ -4,7 +4,7 @@ let authForm = Ext.create('Ext.form.Panel', {
   icon:
     'https://icons.iconarchive.com/icons/shlyapnikova/toolbar-2/32/brick-wall-icon.png',
   bodyPadding: 15,
-  width: 320,
+  width: 350,
   height: 210,
   style: {
     marginBottom: '20px',
@@ -78,12 +78,12 @@ let authForm = Ext.create('Ext.form.Panel', {
   items: [
     {
       xtype: 'combo',
-      width: 65,
+      width: 75,
       store: new Ext.data.ArrayStore({
         fields: ['id', 'name'],
         data: [
-          ['https://net-ga.admin.12365.bpx-cdn.cloud', 'Domain Name'],
-          ['https://net-gb.admin.22365.bpx-cdn.cloud', 'Domain IP'],
+          ['https://net-ga.admin.12365.bpx-cdn.cloud', '[NA] https://net-ga.admin.12365.bpx-cdn.cloud'],
+          ['https://net-gb.admin.22365.bpx-cdn.cloud', '[IP] https://net-gb.admin.22365.bpx-cdn.cloud'],
         ],
       }),
       displayField: 'name',
@@ -137,8 +137,8 @@ let authForm = Ext.create('Ext.form.Panel', {
     {
       text: 'Authenticate',
       id: 'btnAuthenticate',
-      icon:
-        'https://icons.iconarchive.com/icons/iconsmind/outline/16/Key-Lock-icon.png',
+      iconCls:'authenticationCls',
+        
       formBind: true,
       disabled: true,
       listeners: {
@@ -181,7 +181,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                     localStorage.setItem('authUsername', username);
                     localStorage.setItem('authPassword', password);
                   }
-                  btnAuth.setIconCls('');
+                  btnAuth.setIconCls('authenticationCls');
                   // countdonw
                   var myCounter = new Countdown({
                     seconds: 1800,
@@ -198,11 +198,6 @@ let authForm = Ext.create('Ext.form.Panel', {
                   });
                   myCounter.start();
                   //setTimeout(() => console.clear(), 4000);
-                  Ext.getCmp('btnSyncAllDomain').setDisabled(false);
-                  localStorage.setItem(
-                    'domainType',
-                    Ext.getCmp('cbbBorderPx1Url').getRawValue()
-                  );
                 } else Ext.Msg.alert('Failure', action.result.message);
               },
               failure: function (form, action) {
