@@ -270,7 +270,7 @@ Ext.onReady(function () {
         }
       },
       viewready: (grid) => {
-        loadScript('js/authForm.js?v=7');
+        loadScript('js/authForm.js?v=8');
         loadScript('js/domainGrid.js?v=5');
       },
     },
@@ -572,7 +572,21 @@ Ext.onReady(function () {
             cm.setHidden(false);
             syncDomainsAllWLs(0, storeWLs, () => {
               btn.setIconCls('syncDomainCls');
-              cm.setHidden(true);
+              setTimeout(() => {
+                alert(
+                  'Sync domain ' +
+                    getDomainType() +
+                    ' of ' +
+                    getSiteTypeName() +
+                    ' site done !'
+                );
+                let store = Ext.getCmp('gridWLs').getStore();
+                for (let i = 0; i < store.getCount(); i++)
+                  store.getAt(i).set({
+                    isSyncedDomain: false,
+                  });
+                cm.setHidden(true);
+              }, 1000);
             });
           },
         },
@@ -941,13 +955,7 @@ Ext.onReady(function () {
               rowIndex = grid.getStore().indexOf(record);
               record = grid.getStore().getAt(rowIndex);
               var name = record.get('name');
-              record.set('isSyncedDomain', 'spinner');
-              syncDomainsOneWhiteLabel(name, (_, success) =>
-                record.set(
-                  'isSyncedDomain',
-                  success ? 'checkOkCls' : 'checkKoCls'
-                )
-              );
+              syncDomainsOneWhiteLabel(name, record, (success) => {});
             },
           },
         ],
@@ -1012,21 +1020,23 @@ Ext.onReady(function () {
   });
 });
 
-function syncDomainsOneWhiteLabel(whiteLabelName, callback) {
+function syncDomainsOneWhiteLabel(whiteLabelName, record, callback) {
   let siteTypeName = getSiteTypeName(),
     siteTypeValue = getSiteTypeValue(),
     domainType = getDomainType(),
     cacheName = whiteLabelName + '_' + domainType + '_' + siteTypeName,
     siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
+  record.set('isSyncedDomain', 'spinner');
   Ext.Ajax.request({
     method: 'GET',
     withCredentials: true,
     url: borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
     success: function (response) {
       let result = JSON.parse(response.responseText);
-      if (result.success) localStorage.setItem(cacheName, result.domains);
+      let success = result.success;
+      if (success) localStorage.setItem(cacheName, result.domains);
       else log('Please login BORDER PX1 site !');
-      callback(whiteLabelName, result.success);
+      callback(success);
     },
     failure: function (response) {
       log(response);
@@ -1037,11 +1047,10 @@ function syncDomainsOneWhiteLabel(whiteLabelName, callback) {
 function syncDomainsAllWLs(index, store, callback) {
   let record = store.getAt(index);
   var name = record.get('name');
-  record.set('isSyncedDomain', 'spinner');
-  syncDomainsOneWhiteLabel(name, (name, success) => {
+  syncDomainsOneWhiteLabel(name, record, (success) => {
     record.set('isSyncedDomain', success ? 'checkOkCls' : 'checkKoCls');
     if (++index < store.getCount()) syncDomainsAllWLs(index, store, callback);
-    else callback();
+    else callback(success);
   });
 }
 function genUrl(record) {
@@ -1066,7 +1075,6 @@ function genUrl(record) {
 function fetchFolderOneRecord(record, callback) {
   // prevent click after done
   if (record.get('folderPath') !== '') return;
-
   // create request to express server
   record.set('folderPath', ' '); // start checking
   // check url
