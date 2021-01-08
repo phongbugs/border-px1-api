@@ -326,22 +326,43 @@ function checkDomainOneRecord(record, callback) {
   var url = encodeURIComponent(
     Ext.getCmp('cbbProtocol').getValue() + '://' + record.get('Domain')
   );
-  Ext.Ajax.request({
-    url: borderPx1ApiHost + '/info/folder?' + new URLSearchParams({ url }),
-    success: function (response) {
-      // parse jsonString from server
-      var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
-      if (result.success)
-        record.set('folderPath', result.path.replace(/\//g, '\\'));
-      else record.set('folderPath', 'checkKoCls');
-      callback(result.success);
-    },
-    failure: function (response) {
-      log('server-side failure with status code ' + response.status);
-      record.set('folderPath', 'checkKoCls');
-      callback(result.success);
-    },
-  });
+
+  let siteType = getSiteTypeName();
+  if (siteType === 'mobile') {
+    Ext.Ajax.request({
+      url: borderPx1ApiHost + '/info/mobile/?' + new URLSearchParams({ url }),
+      success: function (response) {
+        // parse jsonString from server
+        var result = JSON.parse(response.responseText);
+        if (result.success) record.set('folderPath', result.message);
+        else record.set('folderPath', 'checkKoCls');
+        callback(result.success);
+      },
+      failure: function (response) {
+        log('server-side failure with status code ' + response.status);
+        record.set('folderPath', 'checkKoCls');
+        callback(result.success);
+      },
+    });
+  } else {
+    Ext.Ajax.request({
+      url: borderPx1ApiHost + '/info/folder?' + new URLSearchParams({ url }),
+      success: function (response) {
+        // parse jsonString from server
+        var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
+        log;
+        if (result.success)
+          record.set('folderPath', result.path.replace(/\//g, '\\'));
+        else record.set('folderPath', 'checkKoCls');
+        callback(result.success);
+      },
+      failure: function (response) {
+        log('server-side failure with status code ' + response.status);
+        record.set('folderPath', 'checkKoCls');
+        callback(result.success);
+      },
+    });
+  }
 }
 // fast and farious
 function checkDomainAllGrid() {

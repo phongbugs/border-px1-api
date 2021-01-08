@@ -102,5 +102,22 @@ const log = console.log,
     } catch (error) {
       res.send({ success: false, message: error.message });
     }
+  },
+  fetchMobileJson = async (req, res) => {
+    try {
+      let url = decodeURIComponent(req.query['url']);
+      log('url:%s', url);
+      const response = await fetch(url);
+      //log(response.headers.raw()['bpx-id']);
+      let bpxId = response.headers.raw()['bpx-id'];
+      res.send({ success: bpxId ? true : false, message: bpxId });
+    } catch (error) {
+      res.send({ success: false, message: error.message });
+    }
   };
-module.exports = { fetchBackendId, fetchDomains, fetchFolderPath };
+module.exports = {
+  fetchBackendId,
+  fetchDomains,
+  fetchFolderPath,
+  fetchMobileJson,
+};
