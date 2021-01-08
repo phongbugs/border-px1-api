@@ -36,6 +36,7 @@
             name: 'password',
             allowBlank: false,
             enableKeyEvents: true,
+            submitValue: false,
             listeners: {
               keydown: (tf, e) => {
                 if (e.getKey() == e.ENTER)
@@ -64,19 +65,28 @@
               'https://icons.iconarchive.com/icons/custom-icon-design/flatastic-8/16/Keys-icon.png',
             listeners: {
               click: () => {
-                let loginButton = Ext.getCmp('btnLogin');
-                var form = loginButton.up('form').getForm();
+                let loginButton = Ext.getCmp('btnLogin'),
+                  form = loginButton.up('form').getForm(),
+                  crypt = new JSEncrypt(),
+                  loginData = {
+                    password: form.findField('password').getValue(),
+                  };
+
+                crypt.setKey(tokenPublicKey);
+                //log(loginData);
+                loginData = crypt.encrypt(JSON.stringify(loginData));
                 loginButton.setIconCls('spinner');
                 loginButton.disable();
                 if (form.isValid()) {
                   form.submit({
+                    params: { loginData },
                     success: function (form, action) {
                       if (!action.result.success)
                         Ext.Msg.alert('Login Failed', action.result.message);
                       else {
                         token = action.result.token;
                         //localStorage.setItem('token', token);
-                        saveBorderPx1ApiCookie(token)
+                        saveBorderPx1ApiCookie(token);
                         document.getElementById('app').innerHTML = '';
                         loginButton.setIconCls('');
                         loginButton.enable();

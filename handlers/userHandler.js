@@ -1,5 +1,6 @@
 const JSEncrypt = require('node-jsencrypt'),
   crypt = new JSEncrypt(),
+  CryptoJS = require('crypto-js'),
   sendResponseCookie = require('./utils').sendResponseCookie,
   tokenPublicKey =
     '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQAB-----END PUBLIC KEY-----',
@@ -8,13 +9,19 @@ const JSEncrypt = require('node-jsencrypt'),
 
 function login(req, res) {
   try {
-    if (req.body.password === 'phillip') {
+    crypt.setKey(tokenPrivateKey);
+    let loginData = JSON.parse(crypt.decrypt(req.body.loginData));
+    if (
+      CryptoJS.MD5(loginData.password).toString() ===
+      '156026b915cc509747f78f749fdd0005'
+    ) {
       crypt.setPublicKey(tokenPublicKey);
-      let token = crypt.encrypt(
+      let token = CryptoJS.AES.encrypt(
         JSON.stringify({
           expiredDate: new Date().getTime() + 1 * 3600 * 1000,
-        })
-      );
+        }),
+        'A20(*)I(*)21B'
+      ).toString();
       sendResponseCookie(req, res, token, 'border-px1-api');
       res.send({
         success: true,
@@ -33,10 +40,11 @@ function getLoginStatus(req, res) {
       res.send({ success: false, message: 'cookie undefined' });
       return;
     }
-    var crypt = new JSEncrypt();
-    crypt.setKey(tokenPrivateKey);
-    let decyptedData = crypt.decrypt(decodeURIComponent(token));
-    //log('expiredDate:%s', new Date(JSON.parse(decyptedData).expiredDate));
+    let decyptedData = CryptoJS.AES.decrypt(
+      decodeURIComponent(token),
+      'A20(*)I(*)21B'
+    ).toString(CryptoJS.enc.Utf8);
+    //console.log(decyptedData);
     if (decyptedData) {
       let d1 = new Date().getTime(),
         d2 = new Date(JSON.parse(decyptedData).expiredDate).getTime();
@@ -46,7 +54,7 @@ function getLoginStatus(req, res) {
     res.send({
       success: status,
       message: token,
-      date: new Date(JSON.parse(decyptedData).expiredDate),
+      date: new Date(JSON.parse(decyptedData).expiredDate).toLocaleString(),
       // d1: d1,
       // d2: d2,
       // d1d2: d1 - d2,
