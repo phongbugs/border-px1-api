@@ -271,7 +271,7 @@ Ext.onReady(function () {
       },
       viewready: (grid) => {
         loadScript('js/authForm.js?v=6');
-        loadScript('js/domainGrid.js?v=4');
+        loadScript('js/domainGrid.js?v=5');
       },
     },
     tbar: [

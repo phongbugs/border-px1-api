@@ -334,12 +334,12 @@ function checkDomainOneRecord(record, callback) {
       if (result.success)
         record.set('folderPath', result.path.replace(/\//g, '\\'));
       else record.set('folderPath', 'checkKoCls');
-      callback();
+      callback(result.success);
     },
     failure: function (response) {
       log('server-side failure with status code ' + response.status);
       record.set('folderPath', 'checkKoCls');
-      callback();
+      callback(result.success);
     },
   });
 }
@@ -353,8 +353,8 @@ function checkDomainAllGrid() {
 
 function checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback) {
   let record = store.getAt(index);
-  checkDomainOneRecord(record, () => {
-    if (stopAtFistVailDomain) index = store.getCount();
+  checkDomainOneRecord(record, (success) => {
+    if (success && stopAtFistVailDomain) index = store.getCount();
     if (++index < store.getCount())
       checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback);
     else callback(record.get('Domain'));
