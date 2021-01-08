@@ -86,10 +86,8 @@ let Groups,
   });
 Ext.onReady(function () {
   // prevent browser call loadScript('js/gridWL.js') at console log
-  //if (!isAuthenticated()) return;
   authenticate((isAuthenticated) => {
     if (!isAuthenticated) location.reload();
-    //else setTimeout(() => Ext.getCmp('gridWLs').setHidden(false), 1000);
   });
   Ext.tip.QuickTipManager.init();
   Ext.define('WL', {
@@ -219,7 +217,7 @@ Ext.onReady(function () {
           domainGrid.setTitle('🌍 ' + whiteLabelName + "'s Domains");
           domainStore.loadData([]);
           if (Ext.getCmp('ckbLoadFromCache').getValue()) {
-            if (localStorage.getItem(cacheName)){
+            if (localStorage.getItem(cacheName)) {
               domainStore.loadData(
                 JSON.parse(
                   CryptoJS.AES.decrypt(
@@ -232,10 +230,8 @@ Ext.onReady(function () {
                   return e;
                 })
               );
-              Ext.getCmp('btnCheckDomain').fireEvent('click')
-            }
-              
-            else
+              Ext.getCmp('btnCheckDomain').fireEvent('click');
+            } else
               Ext.Msg.alert(
                 'Caution',
                 'Cache data of <b>' +
@@ -784,24 +780,13 @@ Ext.onReady(function () {
               record = grid.getStore().getAt(rowIndex);
               var ip = record.get('specificServer');
               record.set('specificServerSpinner', true);
-              let domainType =
-                Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
-                  ? 'ip'
-                  : 'name';
+              let domainType = getDomainType();
               Ext.Ajax.request({
                 method: 'POST',
                 url:
                   borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
-                // params: {
-                //   'border-px1-cookie': localStorage.getItem(
-                //     'border-px1-cookie'
-                //   ),
-                // },
-                //cors: true,
-                //useDefaultXhrHeader: false,
                 withCredentials: true,
                 success: function (response) {
-                  //log(response);
                   record.set('specificServerSpinner', false);
                   let result = JSON.parse(response.responseText);
                   if (result.success) {
@@ -908,7 +893,7 @@ Ext.onReady(function () {
               record.set('remoteDesktopSpinner', true);
               Ext.Ajax.request({
                 method: 'GET',
-                url: 'http://localhost:3000/remote/' + ip,
+                url: remoteDesktopServiceUrl + ip,
                 success: function (response) {
                   record.set('remoteDesktopSpinner', false);
                 },
