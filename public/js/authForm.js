@@ -23,6 +23,7 @@ let authForm = Ext.create('Ext.form.Panel', {
       Ext.Ajax.request({
         method: 'GET',
         url: borderPx1ApiHost + '/authentication/status/' + domainType,
+        withCredentials: true,
         success: function (response) {
           let result = JSON.parse(response.responseText);
           if (result.success) {
