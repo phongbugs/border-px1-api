@@ -14,10 +14,7 @@ Ext.define('Domain', {
     { name: 'specificServer', type: 'string' },
   ],
 });
-let domainType =
-  Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
-    ? 'ip'
-    : 'name';
+let domainType = getDomainType();
 let storeDomain = Ext.create('Ext.data.Store', {
   model: 'Domain',
   proxy: {
@@ -48,7 +45,7 @@ let storeDomain = Ext.create('Ext.data.Store', {
   autoLoad: true,
   listeners: {
     load: () => {
-      Ext.getCmp('btnCheckDomain').fireEvent('click')
+      Ext.getCmp('btnCheckDomain').fireEvent('click');
     },
   },
 });
@@ -106,10 +103,16 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       iconCls: 'checkCls',
       text: 'Check All Domains',
       dock: 'right',
-      //width: 100,
+      hidden: true,
       listeners: {
         click: () => {
-          checkDomainAllGrid();
+          let store = Ext.getCmp('domainGrid').getStore(),
+            stopAtFist = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
+          if (stopAtFist)
+            checkDomainAllGridSlow(0, store, stopAtFist, (domain) => {
+              log(domain);
+            });
+          else checkDomainAllGrid();
         },
       },
     },
@@ -118,6 +121,13 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       id: 'ckbLoadFromCache',
       iconCls: 'checkCls',
       boxLabel: 'Load From Cache',
+      value: true,
+    },
+    {
+      xtype: 'checkbox',
+      id: 'ckbStopCheckAt1stValidDomain',
+      iconCls: 'checkCls',
+      boxLabel: 'Stop checking when 1st domain is valid',
     },
   ],
   columns: [
@@ -218,7 +228,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
         return iconCls;
       },
       handler: (grid, rowIndex, colIndex, item, e, record) =>
-        checkDomainOneRecord(record),
+        checkDomainOneRecord(record, () => {}),
     },
     {
       xtype: 'actioncolumn',
@@ -254,7 +264,6 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       editor: {
         xtype: 'combo',
         store: selectedServerGroupStore,
-        //serverStores['101-102-103'],
         displayField: 'name',
         valueField: 'name',
         queryMode: 'local',
@@ -276,10 +285,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
             rowIndex = grid.getStore().indexOf(record);
             record = grid.getStore().getAt(rowIndex);
             var ip = record.get('specificServer');
-            let domainType =
-              Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
-                ? 'ip'
-                : 'name';
+            let domainType = getDomainType();
             record.set('specificServerSpinner', true);
             Ext.Ajax.request({
               method: 'POST',
@@ -310,7 +316,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
   ],
 });
 
-function checkDomainOneRecord(record) {
+function checkDomainOneRecord(record, callback) {
   // prevent click after done
   if (record.get('folderPath') !== '') return;
 
@@ -328,10 +334,12 @@ function checkDomainOneRecord(record) {
       if (result.success)
         record.set('folderPath', result.path.replace(/\//g, '\\'));
       else record.set('folderPath', 'checkKoCls');
+      callback();
     },
     failure: function (response) {
       log('server-side failure with status code ' + response.status);
       record.set('folderPath', 'checkKoCls');
+      callback();
     },
   });
 }
@@ -340,5 +348,15 @@ function checkDomainAllGrid() {
   let grid = Ext.getCmp('domainGrid'),
     store = grid.getStore();
   for (var i = 0; i < store.getCount(); i++)
-    checkDomainOneRecord(store.getAt(i));
+    checkDomainOneRecord(store.getAt(i), () => {});
+}
+
+function checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback) {
+  let record = store.getAt(index);
+  checkDomainOneRecord(record, () => {
+    if (stopAtFistVailDomain) index = store.getCount();
+    if (++index < store.getCount())
+      checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback);
+    else callback(record.get('Domain'));
+  });
 }
