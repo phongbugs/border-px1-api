@@ -1,5 +1,3 @@
-const { hostBorderPx1 } = require('../config');
-
 const log = console.log,
   CryptoJS = require('crypto-js'),
   crawler = require('../crawler'),
@@ -114,10 +112,34 @@ const log = console.log,
     } catch (error) {
       res.send({ success: false, message: error.message });
     }
+  },
+  getServerInfo = async (req, res) => {
+    try {
+      let info = {
+        hostName: global.hostBorderPx1Name || undefined,
+        cookieName: global.cookie || undefined,
+        hostIp: global.hostBorderPx1Ip || undefined,
+        cookieIp: global.cookieIp || undefined,
+      };
+
+      if (global.hostBorderPx1Name)
+        info.isExpiredCookieName = !(await crawler.isAuthenticatedCookies([
+          global.cookie,
+        ]));
+      if (global.hostBorderPx1Ip)
+        info.isExpiredCookieIp = !(await crawler.isAuthenticatedCookies([
+          global.cookieIp,
+        ]));
+
+      res.send(info);
+    } catch (error) {
+      res.send({ success: false, message: error.message });
+    }
   };
 module.exports = {
   fetchBackendId,
   fetchDomains,
   fetchFolderPath,
   fetchMobileJson,
+  getServerInfo,
 };
