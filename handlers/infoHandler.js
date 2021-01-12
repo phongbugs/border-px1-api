@@ -116,10 +116,10 @@ const log = console.log,
   getServerInfo = async (req, res) => {
     try {
       let info = {
-        hostName: global.hostBorderPx1Name || undefined,
-        cookieName: global.cookie || undefined,
-        hostIp: global.hostBorderPx1Ip || undefined,
-        cookieIp: global.cookieIp || undefined,
+        hostName: global.hostBorderPx1Name || 'undefined',
+        cookieName: global.cookie || 'undefined',
+        hostIp: global.hostBorderPx1Ip || 'undefined',
+        cookieIp: global.cookieIp || 'undefined',
       };
 
       if (global.hostBorderPx1Name)
