@@ -20,6 +20,7 @@ let storeDomain = Ext.create('Ext.data.Store', {
   proxy: {
     type: 'ajax',
     url: borderPx1ApiHost + '/info/domain/' + domainType + '/banana.bpx',
+    withCredentials: true,
     reader: {
       type: 'json',
       rootProperty: 'domains',

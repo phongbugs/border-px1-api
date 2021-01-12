@@ -45,8 +45,8 @@ let authForm = Ext.create('Ext.form.Panel', {
           }
         },
         failure: function (response) {
+          log(response)
           Ext.Msg.alert('Failure', 'authentication/status error');
-          record.set('remoteDesktopSpinner', false);
         },
       });
     },
