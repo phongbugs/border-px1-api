@@ -81,7 +81,7 @@ app.use(function (req, res, next) {
 
   next();
 });
-app.use(require('./auth'));
+//app.use(require('./auth'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/', indexRouter);

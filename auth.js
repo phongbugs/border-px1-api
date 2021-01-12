@@ -21,16 +21,14 @@ module.exports = async (req, res, next) => {
       const token = req.cookies['border-px1-api'];
       if (token && hasNotExpired(token)) next();
       else {
-        res.set('WWW-Authenticate', 'c');
-        res
-          .status(440)
-          .send({
-            success: false,
-            message: "The client's session has expired and must log in again.",
-          });
+        res.status(440).send({
+          success: false,
+          message: "The client's session has expired and must log in again.",
+        });
       }
     }
   } catch (error) {
+    log(error.message);
     next(error.message);
   }
 };
