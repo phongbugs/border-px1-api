@@ -206,3 +206,23 @@ npm start
   - AF
   - need fix auto login
   - need sync domain with type site(member, agent, mobile) and type domain (ip, name)
+
+## HTTP Status Code When Cookie Expired
+  
+  ```js
+  // Only use for header authorization
+  401 Unauthorized
+  WWW-Authenticate: <type> realm=<realm>[, charset="UTF-8"]
+  ```
+
+  OR
+
+```js
+ // Customize of IIS (Microsoft)
+ 440 Login Time-out
+ The client's session has expired and must log in again.
+ ```
+
+- Refs:
+  - <https://stackoverflow.com/questions/1653493/what-http-status-code-is-supposed-to-be-used-to-tell-the-client-the-session-has>
+  - <https://stackoverflow.com/questions/17000835/token-authentication-vs-cookies>
