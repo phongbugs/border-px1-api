@@ -30,6 +30,8 @@ npm start
   
   ```js
   401 - "{\"ErrCode\":1,\"ErrText\":\"Session expired(a4): crypto/rsa: decryption error\",\"Result\":\"\"}\n"
+
+  "401 - "{\"ErrCode\":1,\"ErrText\":\"Permission Denied\",\"Result\":\"\"}\n""
   ```
 
 ## Notes

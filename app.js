@@ -62,6 +62,7 @@ app.use(function (req, res, next) {
       )
     ),
     h2a(fhs('687474703a2f2f6d61696e74656e616e63652e6c6967613336352e636f6d')),
+    'http://localhost'
   ];
   var origin = req.headers.origin;
   if (allowedDomains.indexOf(origin) > -1) {
@@ -104,3 +105,4 @@ app.use(function (err, req, res, _) {
   res.render('error');
 });
 module.exports = app;
+console.log(h2a(fhs('687474703a2f2f6c6f63616c686f73743a39393939')),)
