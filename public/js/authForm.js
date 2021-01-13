@@ -30,9 +30,9 @@ let authForm = Ext.create('Ext.form.Panel', {
             var myCounter = new Countdown({
               seconds: localStorage.getItem('authTime'),
               onUpdateStatus: function (time) {
-                Ext.getCmp('btnAuthenticate').setText(
-                  convertTimeToMinutesAndSeconds(time)
-                );
+                // Ext.getCmp('btnAuthenticate').setText(
+                //   convertTimeToMinutesAndSeconds(time)
+                // );
                 localStorage.setItem('authTime', time);
               },
               onCounterEnd: function () {
@@ -184,9 +184,9 @@ let authForm = Ext.create('Ext.form.Panel', {
                   var myCounter = new Countdown({
                     seconds: 1800,
                     onUpdateStatus: function (time) {
-                      Ext.getCmp('btnAuthenticate').setText(
-                        convertTimeToMinutesAndSeconds(time)
-                      );
+                      // Ext.getCmp('btnAuthenticate').setText(
+                      //   convertTimeToMinutesAndSeconds(time)
+                      // );
                       localStorage.setItem('authTime', time);
                     },
                     onCounterEnd: function () {
