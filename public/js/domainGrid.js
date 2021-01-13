@@ -150,9 +150,6 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           v.toLowerCase(),
           v
         ),
-      editor: {
-        xtype: 'textfield',
-      },
     },
     {
       text: 'Verify DNS',

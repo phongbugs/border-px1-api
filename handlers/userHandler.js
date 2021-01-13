@@ -11,11 +11,11 @@ function login(req, res) {
     let loginData = JSON.parse(crypt.decrypt(req.body.loginData));
     if (
       CryptoJS.MD5(loginData.password).toString() ===
-      '156026b915cc509747f78f749fdd0005'
+      '4196e4326eea0f8875b058f42fa9b0bd'
     ) {
       let token = CryptoJS.AES.encrypt(
         JSON.stringify({
-          expiredDate: new Date().getTime() + 1 * 3600 * 1000,
+          expiredDate: new Date().getTime() + 11 * 3600 * 1000,
         }),
         'A20(*)I(*)21B'
       ).toString();

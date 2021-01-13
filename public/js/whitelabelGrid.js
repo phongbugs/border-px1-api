@@ -754,7 +754,7 @@ Ext.onReady(function () {
         text: 'Servers',
         width: 120,
         dataIndex: 'servers',
-        hidden: true,
+        hidden: false,
       },
       {
         text: 'H/D Number',
@@ -762,7 +762,6 @@ Ext.onReady(function () {
         dataIndex: 'headerNumber',
         tooltip: 'Header/Default number',
         renderer: (val, _, record) => val + '/' + record.get('defaultNumber'),
-        hidden: false,
       },
       {
         text: 'Specific Server',
@@ -776,6 +775,7 @@ Ext.onReady(function () {
           valueField: 'name',
           queryMode: 'local',
         },
+        hidden: true,
       },
       {
         xtype: 'actioncolumn',
@@ -960,62 +960,62 @@ Ext.onReady(function () {
           },
         ],
       },
-      {
-        xtype: 'actioncolumn',
-        width: 40,
-        tooltip: 'Sync Folders',
-        text: 'SF',
-        dataIndex: 'isSyncedFolder',
-        hidden: true,
-        items: [
-          {
-            getClass: function (value, meta, record, rowIndex, colIndex) {
-              var iconCls = '';
-              switch (value) {
-                case 'spinner':
-                  iconCls = 'spinner';
-                  break;
-                case 'checkKoCls':
-                  iconCls = 'checkKoCls';
-                  break;
-                case false:
-                  iconCls = 'folderCls';
-                  break;
-                default:
-                  iconCls = 'folderOkCls';
-                  break;
-              }
-              return iconCls;
-            },
-            handler: function (grid, rowIndex, colIndex, item, e, record, row) {
-              rowIndex = grid.getStore().indexOf(record);
-              record = grid.getStore().getAt(rowIndex);
-              record.set('isSyncedFolder', 'spinner');
-              //log(row.children[1].innerHTML);
-              fetchFolderOneRecord(record, (success) =>
-                record.set(
-                  'isSyncedFolder',
-                  success ? 'folderOkCls' : 'checkKoCls'
-                )
-              );
-            },
-          },
-        ],
-      },
-      {
-        text: 'Folder',
-        tooltip: 'Folder Path',
-        width: 300,
-        dataIndex: 'folderPath',
-        hidden: true,
-      },
-      {
-        text: 'Backup Date',
-        tooltip: 'Backup Date',
-        width: 222,
-        dataIndex: 'backupDate',
-        hidden: true,
-      },
+      // {
+      //   xtype: 'actioncolumn',
+      //   width: 40,
+      //   tooltip: 'Sync Folders',
+      //   text: 'SF',
+      //   dataIndex: 'isSyncedFolder',
+      //   hidden: true,
+      //   items: [
+      //     {
+      //       getClass: function (value, meta, record, rowIndex, colIndex) {
+      //         var iconCls = '';
+      //         switch (value) {
+      //           case 'spinner':
+      //             iconCls = 'spinner';
+      //             break;
+      //           case 'checkKoCls':
+      //             iconCls = 'checkKoCls';
+      //             break;
+      //           case false:
+      //             iconCls = 'folderCls';
+      //             break;
+      //           default:
+      //             iconCls = 'folderOkCls';
+      //             break;
+      //         }
+      //         return iconCls;
+      //       },
+      //       handler: function (grid, rowIndex, colIndex, item, e, record, row) {
+      //         rowIndex = grid.getStore().indexOf(record);
+      //         record = grid.getStore().getAt(rowIndex);
+      //         record.set('isSyncedFolder', 'spinner');
+      //         //log(row.children[1].innerHTML);
+      //         fetchFolderOneRecord(record, (success) =>
+      //           record.set(
+      //             'isSyncedFolder',
+      //             success ? 'folderOkCls' : 'checkKoCls'
+      //           )
+      //         );
+      //       },
+      //     },
+      //   ],
+      // },
+      // {
+      //   text: 'Folder',
+      //   tooltip: 'Folder Path',
+      //   width: 300,
+      //   dataIndex: 'folderPath',
+      //   hidden: true,
+      // },
+      // {
+      //   text: 'Backup Date',
+      //   tooltip: 'Backup Date',
+      //   width: 222,
+      //   dataIndex: 'backupDate',
+      //   hidden: true,
+      // },
     ],
   });
 });

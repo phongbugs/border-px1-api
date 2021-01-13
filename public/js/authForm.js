@@ -45,17 +45,17 @@ let authForm = Ext.create('Ext.form.Panel', {
           }
         },
         failure: function (response) {
-          log(response)
+          log(response);
           Ext.Msg.alert('Failure', 'authentication/status error');
         },
       });
     },
     show: () => {
       Ext.getCmp('txtUsername').setValue(
-        localStorage.getItem('authUsername') || ''
+        decrypt(localStorage.getItem('authUsername')) || ''
       );
       Ext.getCmp('txtPassword').setValue(
-        localStorage.getItem('authPassword') || ''
+        decrypt(localStorage.getItem('authPassword')) || ''
       );
     },
   },
@@ -175,8 +175,8 @@ let authForm = Ext.create('Ext.form.Panel', {
                   //=> use for cookie cross domain
                   saveBorderPx1Cookie(cookie);
                   if (Ext.getCmp('ckbRememberMe').getValue()) {
-                    localStorage.setItem('authUsername', username);
-                    localStorage.setItem('authPassword', password);
+                    localStorage.setItem('authUsername', encrypt(username));
+                    localStorage.setItem('authPassword', encrypt(password));
                   }
                   btnAuth.setIconCls('authenticationCls');
                   Ext.getCmp('btnSyncAllDomain').setDisabled(false);
@@ -272,3 +272,6 @@ function saveBorderPx1Cookie(cookie) {
   );
   document.body.appendChild(ifrm);
 }
+let decrypt = (str) =>
+    CryptoJS.AES.decrypt(str, 'The LG data').toString(CryptoJS.enc.Utf8),
+  encrypt = (str) => CryptoJS.AES.encrypt(str, 'The LG data').toString();
