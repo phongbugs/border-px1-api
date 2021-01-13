@@ -1,20 +1,24 @@
 const JSEncrypt = require('node-jsencrypt'),
   crypt = new JSEncrypt(),
+  CryptoJS = require('crypto-js'),
   sendResponseCookie = require('./utils').sendResponseCookie,
-  tokenPublicKey =
-    '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQAB-----END PUBLIC KEY-----',
   tokenPrivateKey =
     '-----BEGIN RSA PRIVATE KEY-----MIICXAIBAAKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQABAoGBAIQ04VguKg/uUjeg7AKnMMKsIuSI4g9Ej5U9CFN/UEQiOuiId77IBdT6nm+9nIRO73WCrDMkzrh7tfp3/st+0sCklR6IINTFH1+p9552qSDru6WpbIPsEK70yD6Cb8gfEC8PGQh1LRgzpLFMCGVcixuTRfbL3gXc2ZUmh+xmYMXBAkEA27ubu0MmMko3K/n02EU+Cij/fmlcnqkYblkDQxKJVQ3pmgVCmD4wfm2byT2TwbTPs+Rqp3nVnlR/RNJsDJESYQJBAMeMFTd6wOhB1d93HFxWgAYL/AA3B3znc5TxxxW7mn5v0c/uTR52UefoRfBDxxhqItCeTs+NsB5PIw3r6T95ri8CQHlr/4+IeLf7iOdVNba49KJ6q0y4fkTynhyENag/uwH0MS06UOV+ICANA7Q9wcOd3dTDmSg4zBG1Ear/OFPtaqECQC1gboayNGHcbr0lQd7BkNVPLlwCJ4LAwyjQnjwT8DrmRKjrAMB3mYKJ8DWFxCWKJSaZiURrbOxHhKoqxly31+MCQGDwutUtAE6q8E1hZ/+/tqr4fyG5vFW4EYXbeXcYPM6h+PoSBFSPaG/EAGfNmxPiFRll7ODBoHMHei/XXPlAHKg=-----END RSA PRIVATE KEY-----';
 
 function login(req, res) {
   try {
-    if (req.body.password === 'phillip') {
-      crypt.setPublicKey(tokenPublicKey);
-      let token = crypt.encrypt(
+    crypt.setKey(tokenPrivateKey);
+    let loginData = JSON.parse(crypt.decrypt(req.body.loginData));
+    if (
+      CryptoJS.MD5(loginData.password).toString() ===
+      '156026b915cc509747f78f749fdd0005'
+    ) {
+      let token = CryptoJS.AES.encrypt(
         JSON.stringify({
           expiredDate: new Date().getTime() + 1 * 3600 * 1000,
-        })
-      );
+        }),
+        'A20(*)I(*)21B'
+      ).toString();
       sendResponseCookie(req, res, token, 'border-px1-api');
       res.send({
         success: true,
@@ -30,13 +34,14 @@ function getLoginStatus(req, res) {
     let token = req.cookies['border-px1-api'],
       status = false;
     if (!token) {
-      res.send({ success: false, message: 'cookie undefined' });
+      res.send({ success: false, message: 'cookie has expirated' });
       return;
     }
-    var crypt = new JSEncrypt();
-    crypt.setKey(tokenPrivateKey);
-    let decyptedData = crypt.decrypt(decodeURIComponent(token));
-    //log('expiredDate:%s', new Date(JSON.parse(decyptedData).expiredDate));
+    let decyptedData = CryptoJS.AES.decrypt(
+      decodeURIComponent(token),
+      'A20(*)I(*)21B'
+    ).toString(CryptoJS.enc.Utf8);
+    //console.log(decyptedData);
     if (decyptedData) {
       let d1 = new Date().getTime(),
         d2 = new Date(JSON.parse(decyptedData).expiredDate).getTime();
@@ -46,7 +51,7 @@ function getLoginStatus(req, res) {
     res.send({
       success: status,
       message: token,
-      date: new Date(JSON.parse(decyptedData).expiredDate),
+      date: new Date(JSON.parse(decyptedData).expiredDate).toLocaleString(),
       // d1: d1,
       // d2: d2,
       // d1d2: d1 - d2,

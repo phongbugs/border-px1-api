@@ -18,6 +18,11 @@
     <link rel="shortcut icon"
         href="https://lh3.googleusercontent.com/a-/AOh14GjgiQ5JKAQrLioFlouEN-wAXCv_hU6jKIFU099p9w=s88-c-k-c0x00ffffff-no-rj-mo">
     <style>
+        body,
+        html {
+            overflow: hidden;
+        }
+
         .spinner {
             width: 16px;
             height: 16px;
@@ -60,12 +65,19 @@
         .syncDomainCls {
             background: url(https://icons.iconarchive.com/icons/paomedia/small-n-flat/16/cloud-down-icon.png) no-repeat center
         }
+
         .folderCls {
             background: url(https://icons.iconarchive.com/icons/dtafalonso/modern-xp/16/ModernXP-50-Folder-Search-icon.png) no-repeat center
         }
+
         .folderOkCls {
             background: url(https://icons.iconarchive.com/icons/dryicons/aesthetica-2/16/folder-accept-icon.png) no-repeat center
         }
+
+        .authenticationCls {
+            background: url(https://icons.iconarchive.com/icons/iconsmind/outline/16/Key-Lock-icon.png) no-repeat center
+        }
+
         .center {
             position: absolute;
             left: 50%;
@@ -83,11 +95,12 @@
         </div>
     </div>
     <script>
-        //var borderPx1ApiHost = !(window.location.host.indexOf('localhost') > -1) ? 'http://localhost:9999' : 'https://border-px1-api.herokuapp.com',
         let borderPx1ApiHost = 'http://localhost:9999',
             //let borderPx1ApiHost = 'https://border-px1-api.herokuapp.com',
             //let borderPx1ApiHost = 'https://border-px1-api.xyz',
-            tokenPrivateKey = '-----BEGIN RSA PRIVATE KEY-----MIICXAIBAAKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQABAoGBAIQ04VguKg/uUjeg7AKnMMKsIuSI4g9Ej5U9CFN/UEQiOuiId77IBdT6nm+9nIRO73WCrDMkzrh7tfp3/st+0sCklR6IINTFH1+p9552qSDru6WpbIPsEK70yD6Cb8gfEC8PGQh1LRgzpLFMCGVcixuTRfbL3gXc2ZUmh+xmYMXBAkEA27ubu0MmMko3K/n02EU+Cij/fmlcnqkYblkDQxKJVQ3pmgVCmD4wfm2byT2TwbTPs+Rqp3nVnlR/RNJsDJESYQJBAMeMFTd6wOhB1d93HFxWgAYL/AA3B3znc5TxxxW7mn5v0c/uTR52UefoRfBDxxhqItCeTs+NsB5PIw3r6T95ri8CQHlr/4+IeLf7iOdVNba49KJ6q0y4fkTynhyENag/uwH0MS06UOV+ICANA7Q9wcOd3dTDmSg4zBG1Ear/OFPtaqECQC1gboayNGHcbr0lQd7BkNVPLlwCJ4LAwyjQnjwT8DrmRKjrAMB3mYKJ8DWFxCWKJSaZiURrbOxHhKoqxly31+MCQGDwutUtAE6q8E1hZ/+/tqr4fyG5vFW4EYXbeXcYPM6h+PoSBFSPaG/EAGfNmxPiFRll7ODBoHMHei/XXPlAHKg=-----END RSA PRIVATE KEY-----',
+            remoteDesktopServiceUrl = 'http://localhost:3000/remote/',
+            tokenPublicKey =
+                '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQAB-----END PUBLIC KEY-----',
             log = console.log,
             loadScript = (pathScript) => {
                 const script = document.createElement('script')
@@ -102,10 +115,8 @@
                     success: function (response) {
                         let success = JSON.parse(response.responseText).success
                         if (success)
-                            //loadScript('js/whitelabelGrid.js?v=11')
                             callback(true)
                         else
-                            //loadScript('js/loginForm.js?=2')
                             callback(false)
                     },
                     failure: function (response) {
@@ -118,12 +129,12 @@
                 });
             }
         window.onload = () => {
-            loadScript('js/utils.js')
+            loadScript('js/utils.js?v=3')
             authenticate((isAuthenticated) => {
                 if (isAuthenticated)
-                    loadScript('js/whitelabelGrid.js?v=12')
+                    loadScript('js/whitelabelGrid.js?v=20')
                 else
-                    loadScript('js/loginForm.js?=2')
+                    loadScript('js/loginForm.js?v=5')
                 Ext.tip.QuickTipManager.init();
             })
         }

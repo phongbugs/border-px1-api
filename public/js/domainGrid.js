@@ -14,11 +14,13 @@ Ext.define('Domain', {
     { name: 'specificServer', type: 'string' },
   ],
 });
+let domainType = getDomainType();
 let storeDomain = Ext.create('Ext.data.Store', {
   model: 'Domain',
   proxy: {
     type: 'ajax',
-    url: borderPx1ApiHost + '/info/domain/' + 'liga365.bpx',
+    url: borderPx1ApiHost + '/info/domain/' + domainType + '/banana.bpx',
+    withCredentials: true,
     reader: {
       type: 'json',
       rootProperty: 'domains',
@@ -42,6 +44,11 @@ let storeDomain = Ext.create('Ext.data.Store', {
     },
   },
   autoLoad: true,
+  listeners: {
+    load: (store, records, successful, operation, eOpts) => {
+      if (successful) Ext.getCmp('btnCheckDomain').fireEvent('click');
+    },
+  },
 });
 let renderDateTime = (v, _, r) => Ext.Date.format(v, 'm/d/Y H:i:s');
 let domainGrid = Ext.create('Ext.grid.Panel', {
@@ -79,10 +86,11 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
     loadMask: true,
   },
   listeners: {
-    show: (grid) => {
-      if (Ext.getCmp('ckbLoadFromCache').getValue())
-        setTimeout(() => Ext.getCmp('btnCheckDomain').fireEvent('click'), 500);
-    },
+    // show: (grid) => {
+    //   if (Ext.getCmp('ckbLoadFromCache').getValue())
+    //     setTimeout(() => Ext.getCmp('btnCheckDomain').fireEvent('click'), 500);
+    // },
+    hide: () => Ext.getCmp('gridWLs').setDisabled(false),
     beforeedit: function (editor, context) {
       selectedServerGroupStore.loadData(
         serverStores[context.record.get('servers')]
@@ -96,10 +104,16 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       iconCls: 'checkCls',
       text: 'Check All Domains',
       dock: 'right',
-      //width: 100,
+      hidden: true,
       listeners: {
         click: () => {
-          checkDomainAllGrid();
+          let store = Ext.getCmp('domainGrid').getStore(),
+            stopAtFist = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
+          if (stopAtFist)
+            checkDomainAllGridSlow(0, store, stopAtFist, (domain) => {
+              log(domain);
+            });
+          else checkDomainAllGrid();
         },
       },
     },
@@ -108,6 +122,13 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       id: 'ckbLoadFromCache',
       iconCls: 'checkCls',
       boxLabel: 'Load From Cache',
+      value: true,
+    },
+    {
+      xtype: 'checkbox',
+      id: 'ckbStopCheckAt1stValidDomain',
+      iconCls: 'checkCls',
+      boxLabel: 'Stop checking when 1st domain is valid',
     },
   ],
   columns: [
@@ -208,7 +229,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
         return iconCls;
       },
       handler: (grid, rowIndex, colIndex, item, e, record) =>
-        checkDomainOneRecord(record),
+        checkDomainOneRecord(record, () => {}),
     },
     {
       xtype: 'actioncolumn',
@@ -244,7 +265,6 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       editor: {
         xtype: 'combo',
         store: selectedServerGroupStore,
-        //serverStores['101-102-103'],
         displayField: 'name',
         valueField: 'name',
         queryMode: 'local',
@@ -266,10 +286,12 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
             rowIndex = grid.getStore().indexOf(record);
             record = grid.getStore().getAt(rowIndex);
             var ip = record.get('specificServer');
+            let domainType = getDomainType();
             record.set('specificServerSpinner', true);
             Ext.Ajax.request({
               method: 'POST',
-              url: borderPx1ApiHost + '/info/backendId/' + ip,
+              url:
+                borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
               withCredentials: true,
               success: function (response) {
                 //log(response);
@@ -295,7 +317,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
   ],
 });
 
-function checkDomainOneRecord(record) {
+function checkDomainOneRecord(record, callback) {
   // prevent click after done
   if (record.get('folderPath') !== '') return;
 
@@ -305,25 +327,58 @@ function checkDomainOneRecord(record) {
   var url = encodeURIComponent(
     Ext.getCmp('cbbProtocol').getValue() + '://' + record.get('Domain')
   );
-  Ext.Ajax.request({
-    url: borderPx1ApiHost + '/info/folder?' + new URLSearchParams({ url }),
-    success: function (response) {
-      // parse jsonString from server
-      var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
-      if (result.success)
-        record.set('folderPath', result.path.replace(/\//g, '\\'));
-      else record.set('folderPath', 'checkKoCls');
-    },
-    failure: function (response) {
-      log('server-side failure with status code ' + response.status);
-      record.set('folderPath', 'checkKoCls');
-    },
-  });
+
+  let siteType = getSiteTypeName();
+  if (siteType === 'mobile') {
+    Ext.Ajax.request({
+      url: borderPx1ApiHost + '/info/mobile/?' + new URLSearchParams({ url }),
+      success: function (response) {
+        // parse jsonString from server
+        var result = JSON.parse(response.responseText);
+        if (result.success) record.set('folderPath', result.message);
+        else record.set('folderPath', 'checkKoCls');
+        callback(result.success);
+      },
+      failure: function (response) {
+        log('server-side failure with status code ' + response.status);
+        record.set('folderPath', 'checkKoCls');
+        callback(result.success);
+      },
+    });
+  } else {
+    Ext.Ajax.request({
+      url: borderPx1ApiHost + '/info/folder?' + new URLSearchParams({ url }),
+      success: function (response) {
+        // parse jsonString from server
+        var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
+        log;
+        if (result.success)
+          record.set('folderPath', result.path.replace(/\//g, '\\'));
+        else record.set('folderPath', 'checkKoCls');
+        callback(result.success);
+      },
+      failure: function (response) {
+        log('server-side failure with status code ' + response.status);
+        record.set('folderPath', 'checkKoCls');
+        callback(result.success);
+      },
+    });
+  }
 }
 // fast and farious
 function checkDomainAllGrid() {
   let grid = Ext.getCmp('domainGrid'),
     store = grid.getStore();
   for (var i = 0; i < store.getCount(); i++)
-    checkDomainOneRecord(store.getAt(i));
+    checkDomainOneRecord(store.getAt(i), () => {});
+}
+
+function checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback) {
+  let record = store.getAt(index);
+  checkDomainOneRecord(record, (success) => {
+    if (success && stopAtFistVailDomain) index = store.getCount();
+    if (++index < store.getCount())
+      checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback);
+    else callback(record.get('Domain'));
+  });
 }

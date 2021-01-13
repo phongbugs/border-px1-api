@@ -7,12 +7,17 @@ const log = console.log,
   fetchBackendId = async (req, res) => {
     try {
       let serverIp = req.params.serverIp,
-        cookie = req.cookies['border-px1'];
+        domainType = req.params.domainType,
+        cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
+        cookie = req.cookies[cookieName];
       //log('serverId: %s', serverId);
+      //log('domainType: %s', domainType);
       if (cookie) {
-        let result = await crawler.fetchBackendId(findServerIdByIp(serverIp), [
-          decodeURIComponent(cookie),
-        ]);
+        let result = await crawler.fetchBackendId(
+          findServerIdByIp(serverIp),
+          [decodeURIComponent(cookie)],
+          domainType
+        );
         if (result.success)
           res.send({
             success: true,
@@ -32,15 +37,21 @@ const log = console.log,
     try {
       if (global.sites) {
         let siteName = req.params.siteName,
-          siteId = global.sites.find((site) => site.name === siteName).id,
-          cookie = req.cookies['border-px1'];
+          domainType = req.params.domainType,
+          sites = domainType === 'ip' ? global.sitesIp : global.sites,
+          siteId = sites.find((site) => site.name === siteName).id,
+          cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
+          cookie = req.cookies[cookieName];
         // log(siteName);
         // log(siteId);
         // log(cookie);
         if (cookie) {
-          let result = await crawler.fetchDomainsBySiteId(siteId, [
-            decodeURIComponent(cookie),
-          ]);
+          //log('%s:%s', cookieName, cookie);
+          let result = await crawler.fetchDomainsBySiteId(
+            siteId,
+            [decodeURIComponent(cookie)],
+            domainType
+          );
           if (result.success)
             res.send({
               success: true,
@@ -89,5 +100,46 @@ const log = console.log,
     } catch (error) {
       res.send({ success: false, message: error.message });
     }
+  },
+  fetchMobileJson = async (req, res) => {
+    try {
+      let url = decodeURIComponent(req.query['url']);
+      log('url:%s', url);
+      const response = await fetch(url);
+      //log(response.headers.raw()['bpx-id']);
+      let bpxId = response.headers.raw()['bpx-id'];
+      res.send({ success: bpxId ? true : false, message: bpxId });
+    } catch (error) {
+      res.send({ success: false, message: error.message });
+    }
+  },
+  getServerInfo = async (req, res) => {
+    try {
+      let info = {
+        hostName: global.hostBorderPx1Name || 'undefined',
+        cookieName: global.cookie || 'undefined',
+        hostIp: global.hostBorderPx1Ip || 'undefined',
+        cookieIp: global.cookieIp || 'undefined',
+      };
+
+      if (global.hostBorderPx1Name)
+        info.isExpiredCookieName = !(await crawler.isAuthenticatedCookies([
+          global.cookie,
+        ]));
+      if (global.hostBorderPx1Ip)
+        info.isExpiredCookieIp = !(await crawler.isAuthenticatedCookies([
+          global.cookieIp,
+        ]));
+
+      res.send(info);
+    } catch (error) {
+      res.send({ success: false, message: error.message });
+    }
   };
-module.exports = { fetchBackendId, fetchDomains, fetchFolderPath };
+module.exports = {
+  fetchBackendId,
+  fetchDomains,
+  fetchFolderPath,
+  fetchMobileJson,
+  getServerInfo,
+};

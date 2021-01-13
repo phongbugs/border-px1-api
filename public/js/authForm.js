@@ -4,7 +4,7 @@ let authForm = Ext.create('Ext.form.Panel', {
   icon:
     'https://icons.iconarchive.com/icons/shlyapnikova/toolbar-2/32/brick-wall-icon.png',
   bodyPadding: 15,
-  width: 320,
+  width: 350,
   height: 210,
   style: {
     marginBottom: '20px',
@@ -19,27 +19,25 @@ let authForm = Ext.create('Ext.form.Panel', {
   hidden: true,
   listeners: {
     afterrender: () => {
+      let domainType = getDomainType();
       Ext.Ajax.request({
         method: 'GET',
-        url: borderPx1ApiHost + '/authentication/status',
-        //params: { cookie: localStorage.getItem('cookie') },
+        url: borderPx1ApiHost + '/authentication/status/' + domainType,
+        withCredentials: true,
         success: function (response) {
           let result = JSON.parse(response.responseText);
           if (result.success) {
             var myCounter = new Countdown({
               seconds: localStorage.getItem('authTime'),
               onUpdateStatus: function (time) {
-                // Ext.getCmp('btnAuthenticate').setText(
-                //   convertTimeToMinutesAndSeconds(time)
-                // );
+                Ext.getCmp('btnAuthenticate').setText(
+                  convertTimeToMinutesAndSeconds(time)
+                );
                 localStorage.setItem('authTime', time);
               },
               onCounterEnd: function () {
                 authForm.setHidden(false);
-                //let cbkIsFresh = Ext.getCmp('ckbIsRefreshCookie');
-                //cbkIsFresh.setValue(true);
                 Ext.getCmp('btnAuthenticate').fireEvent('click');
-                //setTimeout(() => cbkIsFresh.setValue(true), 3000);
               },
             });
             Ext.getCmp('btnSyncAllDomain').setDisabled(false);
@@ -47,8 +45,8 @@ let authForm = Ext.create('Ext.form.Panel', {
           }
         },
         failure: function (response) {
+          log(response)
           Ext.Msg.alert('Failure', 'authentication/status error');
-          record.set('remoteDesktopSpinner', false);
         },
       });
     },
@@ -74,12 +72,18 @@ let authForm = Ext.create('Ext.form.Panel', {
   items: [
     {
       xtype: 'combo',
-      width: 65,
+      width: 75,
       store: new Ext.data.ArrayStore({
         fields: ['id', 'name'],
         data: [
-          ['https://net-ga.admin.12365.bpx-cdn.cloud', 'Domain Name'],
-          ['https://net-gb.admin.22365.bpx-cdn.cloud', 'Domain IP'],
+          [
+            'https://net-ga.admin.12365.bpx-cdn.cloud',
+            '[NA] https://net-ga.admin.12365.bpx-cdn.cloud',
+          ],
+          [
+            'https://net-gb.admin.22365.bpx-cdn.cloud',
+            '[IP] https://net-gb.admin.22365.bpx-cdn.cloud',
+          ],
         ],
       }),
       displayField: 'name',
@@ -89,6 +93,14 @@ let authForm = Ext.create('Ext.form.Panel', {
       value: 'https://net-ga.admin.12365.bpx-cdn.cloud',
       editable: false,
       submitValue: false,
+      listeners: {
+        change: (_, newValue) => {
+          if (newValue === 'https://net-gb.admin.22365.bpx-cdn.cloud') {
+            Ext.getCmp('cbbSiteType').setValue('member');
+            Ext.getCmp('cbbProtocol').setValue('http');
+          }
+        },
+      },
     },
     {
       fieldLabel: 'Username',
@@ -111,30 +123,19 @@ let authForm = Ext.create('Ext.form.Panel', {
       submitValue: false,
       value: false,
     },
-    // {
-    //   boxLabel: 'Is Refresh Cookie',
-    //   xtype: 'checkbox',
-    //   id: 'ckbIsRefreshCookie',
-    //   name: 'isRefreshCookie',
-    //   value: false,
-    //   hidden: true,
-    // },
   ],
 
   // Reset and Submit buttons
   buttons: [
     {
       text: 'Reset',
-      handler: function () {
-        //alert(Ext.getCmp('cbbBorderPx1Url').getRawValue())
-        this.up('form').getForm().reset();
-      },
+      handler: () => this.up('form').getForm().reset(),
     },
     {
       text: 'Authenticate',
       id: 'btnAuthenticate',
-      icon:
-        'https://icons.iconarchive.com/icons/iconsmind/outline/16/Key-Lock-icon.png',
+      iconCls: 'authenticationCls',
+
       formBind: true,
       disabled: true,
       listeners: {
@@ -158,27 +159,34 @@ let authForm = Ext.create('Ext.form.Panel', {
             form.submit({
               clientValidation: true,
               url: borderPx1ApiHost + '/authentication',
-              params: { authenticationData },
+              params: {
+                authenticationData: authenticationData,
+                domainType: getDomainType(),
+              },
               withCredentials: true,
               success: function (form, action) {
                 if (action.result.success) {
                   authForm.setHidden(true);
                   let cookie = action.result.cookie;
-                  //localStorage.setItem('border-px1-cookie', cookie);
-                  //document.cookie = 'border-px1=' + cookie + ';Domain=border-px1-api.xyz; Path=/; SameSite=None; Secure';
+                  //=> use localstorage
+                  // localStorage.setItem('border-px1-cookie', cookie);
+                  //=> use for cookie same domain
+                  // document.cookie = 'border-px1=' + cookie + ';Domain=border-px1-api.xyz; Path=/; SameSite=None; Secure';
+                  //=> use for cookie cross domain
                   saveBorderPx1Cookie(cookie);
                   if (Ext.getCmp('ckbRememberMe').getValue()) {
                     localStorage.setItem('authUsername', username);
                     localStorage.setItem('authPassword', password);
                   }
-                  btnAuth.setIconCls('');
+                  btnAuth.setIconCls('authenticationCls');
+                  Ext.getCmp('btnSyncAllDomain').setDisabled(false);
                   // countdonw
                   var myCounter = new Countdown({
                     seconds: 1800,
                     onUpdateStatus: function (time) {
-                      // Ext.getCmp('btnAuthenticate').setText(
-                      //   convertTimeToMinutesAndSeconds(time)
-                      // );
+                      Ext.getCmp('btnAuthenticate').setText(
+                        convertTimeToMinutesAndSeconds(time)
+                      );
                       localStorage.setItem('authTime', time);
                     },
                     onCounterEnd: function () {
@@ -188,11 +196,6 @@ let authForm = Ext.create('Ext.form.Panel', {
                   });
                   myCounter.start();
                   //setTimeout(() => console.clear(), 4000);
-                  Ext.getCmp('btnSyncAllDomain').setDisabled(false);
-                  localStorage.setItem(
-                    'domainType',
-                    Ext.getCmp('cbbBorderPx1Url').getRawValue()
-                  );
                 } else Ext.Msg.alert('Failure', action.result.message);
               },
               failure: function (form, action) {
@@ -216,7 +219,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                 }
               },
             });
-          } else Ext.Msg.alert('Info', 'Record is null');
+          } else Ext.Msg.alert('Info', 'Please fill username/password');
         },
       },
     },
@@ -260,11 +263,12 @@ function convertTimeToMinutesAndSeconds(time) {
   );
 }
 function saveBorderPx1Cookie(cookie) {
+  let domainType = getDomainType();
   var ifrm = document.createElement('iframe');
   ifrm.setAttribute('style', 'width:0;height:0;border:0; border:none');
   ifrm.setAttribute(
     'src',
-    borderPx1ApiHost + '/authentication?cookie=' + cookie
+    borderPx1ApiHost + '/authentication/' + domainType + '?cookie=' + cookie
   );
   document.body.appendChild(ifrm);
 }

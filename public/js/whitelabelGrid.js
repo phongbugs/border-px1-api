@@ -86,10 +86,8 @@ let Groups,
   });
 Ext.onReady(function () {
   // prevent browser call loadScript('js/gridWL.js') at console log
-  //if (!isAuthenticated()) return;
   authenticate((isAuthenticated) => {
     if (!isAuthenticated) location.reload();
-    //else setTimeout(() => Ext.getCmp('gridWLs').setHidden(false), 1000);
   });
   Ext.tip.QuickTipManager.init();
   Ext.define('WL', {
@@ -201,33 +199,25 @@ Ext.onReady(function () {
             Ext.getCmp('txtEndIndex').setValue(td.innerText);
           }
         } else if (cellIndex < 13) {
+          Ext.getCmp('gridWLs').setDisabled(true);
           // send to grid domain two columns
           selectedSpecificServer = record.get('specificServer');
           selectedServers = record.get('servers');
 
           let domainGrid = Ext.getCmp('domainGrid'),
             domainStore = domainGrid.getStore(),
-            siteType = Ext.getCmp('cbbSiteType').getRawValue();
+            siteTypeValue = getSiteTypeValue(),
+            whiteLabelName = record.get('name'),
+            siteTypeName = getSiteTypeName(),
+            domainType = getDomainType(),
+            cacheName = whiteLabelName + '_' + domainType + '_' + siteTypeName,
+            siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
 
-          switch (siteType) {
-            case 'Mobile':
-              siteType = 'mo';
-              break;
-            case 'Member':
-              siteType = '';
-              break;
-            case 'Agent':
-              siteType = 'ag';
-              break;
-          }
-          let whiteLabelName = record.get('name');
-          let cacheName = whiteLabelName + '_DM';
-          let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
           domainGrid.show();
-          domainGrid.setTitle(whiteLabelName + "'s Domains");
+          domainGrid.setTitle('🌍 ' + whiteLabelName + "'s Domains");
           domainStore.loadData([]);
           if (Ext.getCmp('ckbLoadFromCache').getValue()) {
-            if (localStorage.getItem(cacheName))
+            if (localStorage.getItem(cacheName)) {
               domainStore.loadData(
                 JSON.parse(
                   CryptoJS.AES.decrypt(
@@ -240,7 +230,8 @@ Ext.onReady(function () {
                   return e;
                 })
               );
-            else
+              Ext.getCmp('btnCheckDomain').fireEvent('click');
+            } else
               Ext.Msg.alert(
                 'Caution',
                 'Cache data of <b>' +
@@ -249,8 +240,12 @@ Ext.onReady(function () {
               );
           } else {
             let proxy = domainStore.getProxy();
+            let domainType =
+              Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+                ? 'ip'
+                : 'name';
             proxy.setConfig('url', [
-              borderPx1ApiHost + '/info/domain/' + siteName,
+              borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
             ]);
             proxy.setConfig('withCredentials', [true]);
             // show loadMask purpose
@@ -275,11 +270,26 @@ Ext.onReady(function () {
         }
       },
       viewready: (grid) => {
-        loadScript('js/authForm.js?v=4');
-        loadScript('js/domainGrid.js?v=2');
+        loadScript('js/authForm.js?v=9');
+        loadScript('js/domainGrid.js?v=8');
       },
     },
     tbar: [
+      {
+        xtype: 'button',
+        id: 'btnRefresh',
+        icon:
+          'https://icons.iconarchive.com/icons/graphicloads/100-flat/16/reload-icon.png',
+        text: 'Refresh',
+        // other component can not fireEvent to
+        // handler: () => { storeWLs.clearFilter(); storeWLs.loadData(data) },
+        listeners: {
+          click: () => {
+            storeWLs.clearFilter();
+            storeWLs.loadData(data);
+          },
+        },
+      },
       {
         xtype: 'combo',
         width: 65,
@@ -318,24 +328,17 @@ Ext.onReady(function () {
         value: 'member',
         editable: false,
         listeners: {
-          change: (_, val) => Ext.getCmp('btnRefresh').fireEvent('click'),
-        },
-      },
-      {
-        xtype: 'button',
-        id: 'btnRefresh',
-        icon:
-          'https://icons.iconarchive.com/icons/graphicloads/100-flat/16/reload-icon.png',
-        text: 'Refresh',
-        // other component can not fireEvent to
-        // handler: () => { storeWLs.clearFilter(); storeWLs.loadData(data) },
-        listeners: {
-          click: () => {
-            storeWLs.clearFilter();
-            storeWLs.loadData(data);
+          change: (_, newValue) => {
+            // mobile and agent dont have ip domain
+            if (newValue === 'mobile.' || newValue === 'ag.')
+              Ext.getCmp('cbbBorderPx1Url').setValue(
+                'https://net-ga.admin.12365.bpx-cdn.cloud'
+              );
+            Ext.getCmp('btnRefresh').fireEvent('click');
           },
         },
       },
+
       {
         xtype: 'combo',
         width: 120,
@@ -487,7 +490,7 @@ Ext.onReady(function () {
         xtype: 'numberfield',
         id: 'txtStartIndex',
         value: 0,
-        width: 30,
+        width: 40,
         hideTrigger: true,
         listeners: {
           focus: function (tf, e) {
@@ -550,7 +553,7 @@ Ext.onReady(function () {
         text: 'Login BORDER PX1',
         dock: 'right',
         icon:
-          'https://icons.iconarchive.com/icons/iconsmind/outline/16/Key-Lock-icon.png',
+          'https://icons.iconarchive.com/icons/shlyapnikova/toolbar-2/32/brick-wall-icon.png',
         listeners: {
           click: () => authForm.setHidden(false),
         },
@@ -569,7 +572,21 @@ Ext.onReady(function () {
             cm.setHidden(false);
             syncDomainsAllWLs(0, storeWLs, () => {
               btn.setIconCls('syncDomainCls');
-              cm.setHidden(true);
+              setTimeout(() => {
+                alert(
+                  'Sync domain ' +
+                    getDomainType() +
+                    ' of ' +
+                    getSiteTypeName() +
+                    ' site done !'
+                );
+                let store = Ext.getCmp('gridWLs').getStore();
+                for (let i = 0; i < store.getCount(); i++)
+                  store.getAt(i).set({
+                    isSyncedDomain: false,
+                  });
+                cm.setHidden(true);
+              }, 1000);
             });
           },
         },
@@ -777,19 +794,13 @@ Ext.onReady(function () {
               record = grid.getStore().getAt(rowIndex);
               var ip = record.get('specificServer');
               record.set('specificServerSpinner', true);
+              let domainType = getDomainType();
               Ext.Ajax.request({
                 method: 'POST',
-                url: borderPx1ApiHost + '/info/backendId/' + ip,
-                // params: {
-                //   'border-px1-cookie': localStorage.getItem(
-                //     'border-px1-cookie'
-                //   ),
-                // },
-                //cors: true,
-                //useDefaultXhrHeader: false,
+                url:
+                  borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
                 withCredentials: true,
                 success: function (response) {
-                  //log(response);
                   record.set('specificServerSpinner', false);
                   let result = JSON.parse(response.responseText);
                   if (result.success) {
@@ -896,7 +907,7 @@ Ext.onReady(function () {
               record.set('remoteDesktopSpinner', true);
               Ext.Ajax.request({
                 method: 'GET',
-                url: 'http://localhost:3000/remote/' + ip,
+                url: remoteDesktopServiceUrl + ip,
                 success: function (response) {
                   record.set('remoteDesktopSpinner', false);
                 },
@@ -944,13 +955,7 @@ Ext.onReady(function () {
               rowIndex = grid.getStore().indexOf(record);
               record = grid.getStore().getAt(rowIndex);
               var name = record.get('name');
-              record.set('isSyncedDomain', 'spinner');
-              syncDomainsOneWhiteLabel(name, (_, success) =>
-                record.set(
-                  'isSyncedDomain',
-                  success ? 'checkOkCls' : 'checkKoCls'
-                )
-              );
+              syncDomainsOneWhiteLabel(name, record, (success) => {});
             },
           },
         ],
@@ -1015,35 +1020,26 @@ Ext.onReady(function () {
   });
 });
 
-function syncDomainsOneWhiteLabel(whiteLabelName, callback) {
-  let siteType = Ext.getCmp('cbbSiteType').getRawValue();
-  switch (siteType) {
-    case 'Mobile':
-      siteType = 'mo';
-      break;
-    case 'Member':
-      siteType = '';
-      break;
-    case 'Agent':
-      siteType = 'ag';
-      break;
-  }
-  let typeDomain = localStorage.getItem('domainType');
-  let cacheName =
-    whiteLabelName + (typeDomain === 'Domain Name' ? '_DM' : 'DMIP');
-  let siteName = siteType + whiteLabelName.toLowerCase() + '.bpx';
+function syncDomainsOneWhiteLabel(whiteLabelName, record, callback) {
+  let siteTypeName = getSiteTypeName(),
+    siteTypeValue = getSiteTypeValue(),
+    domainType = getDomainType(),
+    cacheName = whiteLabelName + '_' + domainType + '_' + siteTypeName,
+    siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
+  record.set('isSyncedDomain', 'spinner');
   Ext.Ajax.request({
     method: 'GET',
     withCredentials: true,
-    url: borderPx1ApiHost + '/info/domain/' + siteName,
+    url: borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
     success: function (response) {
       let result = JSON.parse(response.responseText);
-      if (result.success) localStorage.setItem(cacheName, result.domains);
+      let success = result.success;
+      if (success) localStorage.setItem(cacheName, result.domains);
       else log('Please login BORDER PX1 site !');
-      callback(whiteLabelName, result.success);
+      callback(success);
     },
     failure: function (response) {
-      Ext.Msg.alert('Error', '/login/status');
+      log(response);
       callback(false);
     },
   });
@@ -1051,11 +1047,10 @@ function syncDomainsOneWhiteLabel(whiteLabelName, callback) {
 function syncDomainsAllWLs(index, store, callback) {
   let record = store.getAt(index);
   var name = record.get('name');
-  record.set('isSyncedDomain', 'spinner');
-  syncDomainsOneWhiteLabel(name, (name, success) => {
+  syncDomainsOneWhiteLabel(name, record, (success) => {
     record.set('isSyncedDomain', success ? 'checkOkCls' : 'checkKoCls');
     if (++index < store.getCount()) syncDomainsAllWLs(index, store, callback);
-    else callback();
+    else callback(success);
   });
 }
 function genUrl(record) {
@@ -1080,7 +1075,6 @@ function genUrl(record) {
 function fetchFolderOneRecord(record, callback) {
   // prevent click after done
   if (record.get('folderPath') !== '') return;
-
   // create request to express server
   record.set('folderPath', ' '); // start checking
   // check url

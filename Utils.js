@@ -52,11 +52,12 @@ var Utils = {
             }
         },
 
-        Message: function (pemKey) {
+        Message: function ({pemKey, domainType}) {
             var destroyed = false;
             var mode = "";
             var pemKey = pemKey;
             var aesKey64 = null;
+            console.log('domainType:%s', domainType)
             // TODO: need another condition for non-encrypt
             if (pemKey) {
                 mode = "rsa*aes";
@@ -64,17 +65,28 @@ var Utils = {
                 aesKey64 = CryptoJS.enc.Base64.stringify(key);
                 //Utils.LocalStorage.keyAES64 = aesKey64
                 //console.log('Utils.LocalStorage.keyAES64:%s', aesKey64)
-                Utils.File.saveTextFile(__dirname + cfg.fileAESKey, aesKey64)
+                //Utils.File.saveTextFile(__dirname + cfg.fileAESKey, aesKey64)
+                if(domainType === 'ip')
+                    global.aesKey64Ip = aesKey64
+                else
+                    global.aesKey64 = aesKey64
                 //localStorage.setItem("aes-key", aesKey64);
+                
+                // console.log('global.aesKey64:%s', global.aesKey64)
+                // console.log('global.aesKey64Ip:%s', global.aesKey64Ip)
             } else {
                 mode = "aes";
                 //aesKey64 = Utils.LocalStorage.keyAES64
                 //console.log('aesKey64:%s', aesKey64)
-                Utils.File.readTextFile(__dirname + cfg.fileAESKey).then((key) => {
-                    aesKey64 = key
-                    console.log('aesKey64:%s', aesKey64)
-                })
+                // Utils.File.readTextFile(__dirname + cfg.fileAESKey).then((key) => {
+                //     aesKey64 = key
+                //     console.log('aesKey64:%s', aesKey64)
+                // })
+                aesKey64 = domainType === 'ip' ?  global.aesKey64Ip:  global.aesKey64
                 //aesKey64 = localStorage.getItem("aes-key");
+                // console.log('aesKey64:%s', aesKey64)
+                // console.log('global.aesKey64:%s', global.aesKey64)
+                // console.log('global.aesKey64Ip:%s', global.aesKey64Ip)
             }
 
             function encrypt(plainText) {
