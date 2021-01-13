@@ -14,7 +14,7 @@ async function authenticate(req, res) {
     //log('authenticationData: %s', authenticationData);
     if (authenticationData) {
       let cookie = domainType === 'ip' ? global.cookieIp : global.cookie;
-      if (cookie && isAuthenticatedCookies([cookie])) {
+      if (cookie && await isAuthenticatedCookies([cookie])) {
         let encodedCookie = encodeURIComponent(cookie);
         // share cookie to other browser client
         let cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1';
