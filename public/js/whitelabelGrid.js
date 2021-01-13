@@ -87,7 +87,7 @@ let Groups,
 Ext.onReady(function () {
   // prevent browser call loadScript('js/gridWL.js') at console log
   authenticate((isAuthenticated) => {
-    if (!isAuthenticated) location.reload();
+    //if (!isAuthenticated) location.reload();
   });
   Ext.tip.QuickTipManager.init();
   Ext.define('WL', {
