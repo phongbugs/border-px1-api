@@ -46,9 +46,7 @@ let storeDomain = Ext.create('Ext.data.Store', {
   autoLoad: true,
   listeners: {
     load: (store, records, successful, operation, eOpts) => {
-      log(successful)
-      log(records)
-      Ext.getCmp('btnCheckDomain').fireEvent('click');
+      if (successful) Ext.getCmp('btnCheckDomain').fireEvent('click');
     },
   },
 });
