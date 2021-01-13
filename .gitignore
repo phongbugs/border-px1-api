@@ -23,3 +23,5 @@ en.js
 sites.map.ip.json
 
 sites.map.name.json
+
+handlers/servers.ip.map.js

@@ -282,8 +282,11 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           handler: function (grid, rowIndex, colIndex, item, e, record) {
             rowIndex = grid.getStore().indexOf(record);
             record = grid.getStore().getAt(rowIndex);
-            var ip = record.get('specificServer');
             let domainType = getDomainType();
+            var ip =
+              domainType === 'ip'
+                ? record.get('specificServer').replace('10.168.106', '1.32.194')
+                : record.get('specificServer');
             record.set('specificServerSpinner', true);
             Ext.Ajax.request({
               method: 'POST',

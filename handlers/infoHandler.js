@@ -1,9 +1,10 @@
 const log = console.log,
   CryptoJS = require('crypto-js'),
   crawler = require('../crawler'),
-  allServers = require('./servers.map')['allServers'],
+  allServers = require('./servers'),
   fetch = require('node-fetch'),
-  findServerIdByIp = (ip) => allServers.find((server) => server.Name === ip).ID,
+  findServerIdByIp = (ip, domainType) =>
+    allServers(domainType).find((server) => server.Name === ip).ID,
   fetchBackendId = async (req, res) => {
     try {
       let serverIp = req.params.serverIp,
@@ -14,7 +15,7 @@ const log = console.log,
       //log('domainType: %s', domainType);
       if (cookie) {
         let result = await crawler.fetchBackendId(
-          findServerIdByIp(serverIp),
+          findServerIdByIp(serverIp, domainType),
           [decodeURIComponent(cookie)],
           domainType
         );
