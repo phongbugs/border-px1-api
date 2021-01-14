@@ -86,6 +86,7 @@ let Groups,
     ],
   });
 Ext.onReady(function () {
+  currentVersion = '1.1.1'
   // prevent browser call loadScript('js/gridWL.js') at console log
   authenticate((isAuthenticated) => {
     if (!isAuthenticated) location.reload();
