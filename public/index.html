@@ -129,12 +129,13 @@
                 });
             }
         window.onload = () => {
-            loadScript('js/utils.js?v=3')
+            let currentVersion = '1.0.1'
+            loadScript('js/utils.js?v=' + currentVersion)
             authenticate((isAuthenticated) => {
                 if (isAuthenticated)
-                    loadScript('js/whitelabelGrid.js?v=26')
+                    loadScript('js/whitelabelGrid.js?v=' + currentVersion)
                 else
-                    loadScript('js/loginForm.js?v=5')
+                    loadScript('js/loginForm.js?v=' + currentVersion)
                 Ext.tip.QuickTipManager.init();
             })
         }

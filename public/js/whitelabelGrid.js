@@ -270,8 +270,8 @@ Ext.onReady(function () {
         }
       },
       viewready: (grid) => {
-        loadScript('js/authForm.js?v=11');
-        loadScript('js/domainGrid.js?v=10');
+        loadScript('js/authForm.js?v=' + currentVersion);
+        loadScript('js/domainGrid.js?v=' + currentVersion);
       },
     },
     // dockedItems: [
