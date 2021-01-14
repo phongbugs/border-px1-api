@@ -7,9 +7,9 @@
  */
 function isLocalHost(origin) {
   if (
-    origin.indexOf('localhost') > -1 ||
-    origin.indexOf('phillip') > -1 ||
-    origin.indexOf('192.168.2.185') > -1
+    origin.indexOf('localhost:9999') > -1 ||
+    origin.indexOf('phillip:9999') > -1 ||
+    origin.indexOf('192.168.2.185:9999') > -1
   )
     return true;
   return false;

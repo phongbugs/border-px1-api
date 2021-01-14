@@ -273,5 +273,8 @@ function saveBorderPx1Cookie(cookie) {
   document.body.appendChild(ifrm);
 }
 let decrypt = (str) =>
-    CryptoJS.AES.decrypt(str, 'The LG data').toString(CryptoJS.enc.Utf8),
-  encrypt = (str) => CryptoJS.AES.encrypt(str, 'The LG data').toString();
+    str
+      ? CryptoJS.AES.decrypt(str, location.hostname).toString(CryptoJS.enc.Utf8)
+      : '',
+  encrypt = (str) =>
+    str ? CryptoJS.AES.encrypt(str, location.hostname).toString() : '';

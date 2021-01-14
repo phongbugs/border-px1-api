@@ -78,8 +78,9 @@ app.use(function (req, res, next) {
     'X-Requested-With,content-type, Accept'
   );
   res.setHeader('Access-Control-Allow-Credentials', true);
-
+  //console.log(allowedDomains)
   next();
+  
 });
 //app.use(require('./auth'));
 

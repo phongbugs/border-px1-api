@@ -34,7 +34,7 @@ function getLoginStatus(req, res) {
     let token = req.cookies['border-px1-api'],
       status = false;
     if (!token) {
-      res.send({ success: false, message: 'cookie has expirated' });
+      res.send({ success: false, message: 'cookie does not exist' });
       return;
     }
     let decyptedData = CryptoJS.AES.decrypt(

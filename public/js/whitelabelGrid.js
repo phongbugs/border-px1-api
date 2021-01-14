@@ -87,7 +87,7 @@ let Groups,
 Ext.onReady(function () {
   // prevent browser call loadScript('js/gridWL.js') at console log
   authenticate((isAuthenticated) => {
-    //if (!isAuthenticated) location.reload();
+    if (!isAuthenticated) location.reload();
   });
   Ext.tip.QuickTipManager.init();
   Ext.define('WL', {
@@ -274,13 +274,25 @@ Ext.onReady(function () {
         loadScript('js/domainGrid.js?v=10');
       },
     },
+    // dockedItems: [
+    //   {
+    //     xtype: 'toolbar',
+    //     dock: 'top',
+    //     items: [{ text: 'Toolbar 1 Button 1' }, { text: 'Toolbar 1 Button 2' }],
+    //   },
+    //   {
+    //     xtype: 'toolbar',
+    //     dock: 'top',
+    //     items: [{ text: 'Toolbar 2 Button 1' }],
+    //   },
+    // ],
     tbar: [
       {
         xtype: 'button',
         id: 'btnRefresh',
         icon:
           'https://icons.iconarchive.com/icons/graphicloads/100-flat/16/reload-icon.png',
-        text: 'Refresh',
+        text: '',
         // other component can not fireEvent to
         // handler: () => { storeWLs.clearFilter(); storeWLs.loadData(data) },
         listeners: {
@@ -312,7 +324,7 @@ Ext.onReady(function () {
       },
       {
         xtype: 'combo',
-        width: 90,
+        width: 85,
         store: new Ext.data.ArrayStore({
           fields: ['id', 'name'],
           data: [
@@ -423,7 +435,7 @@ Ext.onReady(function () {
       },
       {
         xtype: 'button',
-        text: 'Find',
+        text: '',
         id: 'btnFind',
         icon:
           'https://icons.iconarchive.com/icons/zerode/plump/16/Search-icon.png',
@@ -514,7 +526,7 @@ Ext.onReady(function () {
       },
       {
         xtype: 'button',
-        text: 'Open new tabs',
+        text: 'Open',
         icon:
           'https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png',
         handler: () => {
@@ -550,7 +562,7 @@ Ext.onReady(function () {
       {
         xtype: 'button',
         id: 'btnOpenAuthForm',
-        text: 'Login BORDER PX1',
+        text: 'BORDER PX1',
         dock: 'right',
         icon:
           'https://icons.iconarchive.com/icons/shlyapnikova/toolbar-2/32/brick-wall-icon.png',
