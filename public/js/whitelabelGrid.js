@@ -86,7 +86,7 @@ let Groups,
     ],
   });
 Ext.onReady(function () {
-  currentVersion = '1.1.1'
+  //currentVersion = '1.1.1'
   // prevent browser call loadScript('js/gridWL.js') at console log
   authenticate((isAuthenticated) => {
     if (!isAuthenticated) location.reload();
@@ -234,7 +234,7 @@ Ext.onReady(function () {
                 })
               );
               Ext.getCmp('btnCheckDomain').fireEvent('click');
-              fetchWhitelabelServers(domainStore)
+              fetchWhitelabelServers(domainStore);
             } else
               Ext.Msg.alert(
                 'Caution',
@@ -274,8 +274,11 @@ Ext.onReady(function () {
         }
       },
       viewready: (grid) => {
-        loadScript('js/authForm.js?v=' + currentVersion);
-        loadScript('js/domainGrid.js?v=' + currentVersion);
+        loadScript(
+          'js/authForm.js?v=' + currentVersion() || new Date().getTime()
+        );
+        loadScript('js/domainGrid.js?v=' + currentVersion()) ||
+          new Date().getTime();
       },
     },
     // dockedItems: [
@@ -924,7 +927,7 @@ Ext.onReady(function () {
               record.set('remoteDesktopSpinner', true);
               Ext.Ajax.request({
                 method: 'GET',
-                url: remoteDesktopServiceUrl + ip.replace('192.','10.'),
+                url: remoteDesktopServiceUrl + ip.replace('192.', '10.'),
                 success: function (response) {
                   record.set('remoteDesktopSpinner', false);
                 },

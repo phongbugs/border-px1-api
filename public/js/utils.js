@@ -2,7 +2,7 @@
  *
  * Login form and Grid Whitelabel use
  */
-function saveBorderPx1ApiCookie(cookie) {
+function saveBorderPx1ApiCookie(cookie, callback) {
   var ifrm = document.createElement('iframe');
   ifrm.setAttribute('style', 'width:0;height:0;border:0; border:none');
   ifrm.setAttribute(
@@ -10,6 +10,7 @@ function saveBorderPx1ApiCookie(cookie) {
     borderPx1ApiHost + '/user/login?cookie=' + encodeURIComponent(cookie)
   );
   document.body.appendChild(ifrm);
+  if (callback) callback();
 }
 
 let getDomainType = () =>
