@@ -14,6 +14,7 @@ Ext.define('Domain', {
     { name: 'specificServer', type: 'string' },
   ],
 });
+// default domainType
 let domainType = getDomainType();
 let storeDomain = Ext.create('Ext.data.Store', {
   model: 'Domain',
@@ -86,16 +87,34 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
     loadMask: true,
   },
   listeners: {
-    // show: (grid) => {
-    //   if (Ext.getCmp('ckbLoadFromCache').getValue())
-    //     setTimeout(() => Ext.getCmp('btnCheckDomain').fireEvent('click'), 500);
-    // },
-    hide: () => Ext.getCmp('gridWLs').setDisabled(false),
-    beforeedit: function (editor, context) {
-      selectedServerGroupStore.loadData(
-        serverStores[context.record.get('servers')]
-      );
+    // beforeedit: function (editor, context) {},
+    show: (grid) => {
+      // if (Ext.getCmp('ckbLoadFromCache').getValue())
+      //   setTimeout(() => Ext.getCmp('btnCheckDomain').fireEvent('click'), 500);
+      let siteTypeValue = getSiteTypeValue(),
+        siteName =
+          siteTypeValue + selectedWhiteLabelName.toLowerCase() + '.bpx';
+      domainType = getDomainType();
+      Ext.Ajax.request({
+        url: borderPx1ApiHost + '/info/server/' + domainType + '/' + siteName,
+        success: function (response) {
+          let result = JSON.parse(response.responseText);
+          let success = result.success;
+          if (success) {
+            log(result.servers);
+            let servers = result.servers.map((server) => [server.Addr]);
+            log(servers);
+            selectedServerGroupStore.loadData(servers);
+            if (domainType === 'ip')
+              grid.getStore().getAt(0).set('specificServer', servers[0][0]);
+          }
+        },
+        failure: function (response) {
+          log('server-side failure with status code ' + response.status);
+        },
+      });
     },
+    hide: () => Ext.getCmp('gridWLs').setDisabled(false),
   },
   tbar: [
     {
@@ -257,7 +276,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
     },
     {
       text: 'Specific Server',
-      width: 130,
+      width: 140,
       dataIndex: 'specificServer',
       editor: {
         xtype: 'combo',
@@ -283,10 +302,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
             rowIndex = grid.getStore().indexOf(record);
             record = grid.getStore().getAt(rowIndex);
             let domainType = getDomainType();
-            var ip =
-              domainType === 'ip'
-                ? record.get('specificServer').replace('10.168.106', '1.32.194')
-                : record.get('specificServer');
+            var ip = record.get('specificServer');
             record.set('specificServerSpinner', true);
             Ext.Ajax.request({
               method: 'POST',

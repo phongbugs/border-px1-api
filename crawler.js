@@ -257,7 +257,6 @@ async function fetchSites(nameWhiteLabel, authenticatedCookie, domainType) {
 async function fetchDomainsBySiteId(siteId, authenticatedCookie, domainType) {
   try {
     Message = Utils.Http.Message({ domainType });
-    //await sleep(1000);
     let data = {
       siteId: siteId,
     };
@@ -292,19 +291,21 @@ async function fetchDomainsBySiteId(siteId, authenticatedCookie, domainType) {
   }
 }
 
-async function fetchServerBySiteId(siteId, isSkippedValidationCookies) {
-  await skipValidationCookies(isSkippedValidationCookies);
+async function fetchServerBySiteId(siteId, authenticatedCookie, domainType) {
+  Message = Utils.Http.Message({ domainType });
   let data = {
     siteId: siteId,
   };
-  let url = cfg.listWLServerBySiteUrl;
+  let url =
+    (domainType === 'ip' ? global.hostBorderPx1Ip : global.hostBorderPx1Name) +
+    cfg.listWLServerBySitePath;
   log(`|==> Fetch Site Addrs: ${url}`);
   let options = {
     method: 'POST',
     url: url,
     headers: cfg.headers,
     form: Message.encryptParams(data),
-    jar: createJar(authenticatedCookies, rp, url),
+    jar: createJar(authenticatedCookie, rp, url),
     resolveWithFullResponse: true,
     transform: (body, res) => {
       return {
@@ -316,7 +317,7 @@ async function fetchServerBySiteId(siteId, isSkippedValidationCookies) {
   let res = await rp(options);
   let servers = decrypt(res.body);
   log(`servers.length = ${servers.length}`);
-  return servers;
+  return { success: true, servers: servers };
 }
 
 async function fetchAllServers(isSkippedValidationCookies) {
@@ -356,9 +357,8 @@ async function fetchBackendId(serverId, authenticatedCookie, domainType) {
     backend_id: +serverId,
   };
   let url =
-  (domainType === 'ip'
-    ? global.hostBorderPx1Ip
-    : global.hostBorderPx1Name) + cfg.backendIdPath;
+    (domainType === 'ip' ? global.hostBorderPx1Ip : global.hostBorderPx1Name) +
+    cfg.backendIdPath;
   log(`|==> Fetch BackendId: ${url}`);
   let options = {
     method: 'POST',
@@ -424,4 +424,5 @@ module.exports = {
   isAuthenticatedCookies: isAuthenticatedCookies,
   cfg: cfg,
   setPKey: setPKey,
+  fetchServerBySiteId: fetchServerBySiteId,
 };

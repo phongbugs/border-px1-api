@@ -25,8 +25,9 @@ let serverStores = {
     data: [[]],
   }),
   // send to grid domain selected specific server from white label grid
-  selectedSpecificServer = '',
-  selectedServers = '',
+  selectedWhiteLabelName = '',
+  selectedSpecificServer = '', // full server ip
+  selectedServers = '', // short hand ip 177-178-179
   sortAndToList = (array) => {
     let strWLs = array
       .map((record) => record.name)
@@ -137,7 +138,7 @@ Ext.onReady(function () {
             record['specificServer'] =
               servers !== '10.168.109.6'
                 ? servers
-                  ? '10.168.106.' + servers.split('-')[0]
+                  ? '192.168.106.' + servers.split('-')[0]
                   : undefined
                 : servers;
           }
@@ -201,6 +202,7 @@ Ext.onReady(function () {
         } else if (cellIndex < 13) {
           Ext.getCmp('gridWLs').setDisabled(true);
           // send to grid domain two columns
+          selectedWhiteLabelName = record.get('name');
           selectedSpecificServer = record.get('specificServer');
           selectedServers = record.get('servers');
 
@@ -919,7 +921,7 @@ Ext.onReady(function () {
               record.set('remoteDesktopSpinner', true);
               Ext.Ajax.request({
                 method: 'GET',
-                url: remoteDesktopServiceUrl + ip,
+                url: remoteDesktopServiceUrl + ip.replace('192.','10.'),
                 success: function (response) {
                   record.set('remoteDesktopSpinner', false);
                 },

@@ -57,7 +57,7 @@ var Utils = {
             var mode = "";
             var pemKey = pemKey;
             var aesKey64 = null;
-            console.log('domainType:%s', domainType)
+            console.log('Message => domainType:%s', domainType)
             // TODO: need another condition for non-encrypt
             if (pemKey) {
                 mode = "rsa*aes";

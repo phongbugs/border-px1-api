@@ -65,9 +65,9 @@ async function authenticate(req, res) {
               id: site.ID,
               name: site.Host,
             }));
-            if (domainType === 'ip') global.sitesIp = sites;
-            else global.sites = sites;
+            global.sites = sites
           }
+          // log('global.sites: ');
           // log(global.sites);
           // await require('../Utils').File.saveTextFile(
           //   './sites.map.' + domainType + '.json',

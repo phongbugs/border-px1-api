@@ -114,6 +114,41 @@ const log = console.log,
       res.send({ success: false, message: error.message });
     }
   },
+  fetchServers = async (req, res) => {
+    try {
+      if (global.sites) {
+        let siteName = req.params.siteName,
+          domainType = req.params.domainType,
+          sites = global.sites,
+          siteId = sites.find((site) => site.name === siteName).id,
+          cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
+          cookie = req.cookies[cookieName];
+        if (cookie) {
+          let result = await crawler.fetchServerBySiteId(
+            siteId,
+            [decodeURIComponent(cookie)],
+            domainType
+          );
+          if (result.success)
+            res.send({
+              success: true,
+              servers: result.servers,
+            });
+          else res.send({ success: false, message: result.message });
+        } else
+          res.send({
+            success: false,
+            message: 'Cookie has expired',
+          });
+      } else
+        res.send({
+          success: false,
+          message: 'Global sites data has not had data yet !',
+        });
+    } catch (error) {
+      res.send({ success: false, message: error.message });
+    }
+  },
   getServerInfo = async (req, res) => {
     try {
       let info = {
@@ -121,8 +156,8 @@ const log = console.log,
         cookieName: global.cookie || 'undefined',
         hostIp: global.hostBorderPx1Ip || 'undefined',
         cookieIp: global.cookieIp || 'undefined',
+        sites: global.sites || [],
       };
-
       if (global.hostBorderPx1Name)
         info.isExpiredCookieName = !(await crawler.isAuthenticatedCookies([
           global.cookie,
@@ -131,7 +166,6 @@ const log = console.log,
         info.isExpiredCookieIp = !(await crawler.isAuthenticatedCookies([
           global.cookieIp,
         ]));
-
       res.send(info);
     } catch (error) {
       res.send({ success: false, message: error.message });
@@ -143,4 +177,5 @@ module.exports = {
   fetchFolderPath,
   fetchMobileJson,
   getServerInfo,
+  fetchServers,
 };
