@@ -14,7 +14,7 @@ async function authenticate(req, res) {
     //log('authenticationData: %s', authenticationData);
     if (authenticationData) {
       let cookie = domainType === 'ip' ? global.cookieIp : global.cookie;
-      if (cookie && await isAuthenticatedCookies([cookie])) {
+      if (cookie && (await isAuthenticatedCookies([cookie], domainType))) {
         let encodedCookie = encodeURIComponent(cookie);
         // share cookie to other browser client
         let cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1';
@@ -57,15 +57,17 @@ async function authenticate(req, res) {
           let encodedCookie = encodeURIComponent(cookie);
           let cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1';
           sendResponseCookie(req, res, encodedCookie, cookieName);
-          
+
           //=> fetch latest sites from border-px1-site
           let response = await crawler.fetchSites('', [cookie], domainType);
+          let sites = [];
           if (response.success) {
-            let sites = response.sites.map((site) => ({
+            sites = response.sites.map((site) => ({
               id: site.ID,
               name: site.Host,
             }));
-            global.sites = sites
+            if (domainType === 'ip') global.sitesIp = sites;
+            else global.sites = sites;
           }
           // log('global.sites: ');
           // log(global.sites);
@@ -77,7 +79,7 @@ async function authenticate(req, res) {
             success: true,
             cookie: encodedCookie,
             message: response.success
-              ? 'Sites Fetched'
+              ? 'Sites Fetched(' + sites.length + ' sites)'
               : 'Sites are not latest',
           });
         } else res.send({ success: false, message: result.message });

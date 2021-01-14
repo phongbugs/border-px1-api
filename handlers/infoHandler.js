@@ -36,10 +36,10 @@ const log = console.log,
   },
   fetchDomains = async (req, res) => {
     try {
-      if (global.sites) {
+      let domainType = req.params.domainType,
+        sites = domainType === 'ip' ? global.sitesIp : global.sites;
+      if (sites) {
         let siteName = req.params.siteName,
-          domainType = req.params.domainType,
-          sites = domainType === 'ip' ? global.sitesIp : global.sites,
           siteId = sites.find((site) => site.name === siteName).id,
           cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
           cookie = req.cookies[cookieName];
@@ -116,10 +116,12 @@ const log = console.log,
   },
   fetchServers = async (req, res) => {
     try {
-      if (global.sites) {
+      let domainType = req.params.domainType,
+        sites = domainType === 'ip' ? global.sitesIp : global.sites;
+      if (sites) {
         let siteName = req.params.siteName,
           domainType = req.params.domainType,
-          sites = global.sites,
+          sites = domainType === 'ip' ? global.sitesIp : global.sites,
           siteId = sites.find((site) => site.name === siteName).id,
           cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
           cookie = req.cookies[cookieName];

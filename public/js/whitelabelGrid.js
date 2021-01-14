@@ -233,6 +233,7 @@ Ext.onReady(function () {
                 })
               );
               Ext.getCmp('btnCheckDomain').fireEvent('click');
+              fetchWhitelabelServers(domainStore)
             } else
               Ext.Msg.alert(
                 'Caution',
@@ -796,6 +797,7 @@ Ext.onReady(function () {
         width: 30,
         tooltip: 'Open link by specific server',
         text: 'O',
+        hidden: true,
         items: [
           {
             iconCls: 'openLink',
@@ -1049,7 +1051,7 @@ function syncDomainsOneWhiteLabel(whiteLabelName, record, callback) {
       let result = JSON.parse(response.responseText);
       let success = result.success;
       if (success) localStorage.setItem(cacheName, result.domains);
-      else log('Please login BORDER PX1 site !');
+      else log(response.responseText);
       callback(success);
     },
     failure: function (response) {

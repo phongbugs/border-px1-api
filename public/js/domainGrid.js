@@ -47,7 +47,10 @@ let storeDomain = Ext.create('Ext.data.Store', {
   autoLoad: true,
   listeners: {
     load: (store, records, successful, operation, eOpts) => {
-      if (successful) Ext.getCmp('btnCheckDomain').fireEvent('click');
+      if (successful) {
+        Ext.getCmp('btnCheckDomain').fireEvent('click');
+        fetchWhitelabelServers(store);
+      }
     },
   },
 });
@@ -88,32 +91,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
   },
   listeners: {
     // beforeedit: function (editor, context) {},
-    show: (grid) => {
-      // if (Ext.getCmp('ckbLoadFromCache').getValue())
-      //   setTimeout(() => Ext.getCmp('btnCheckDomain').fireEvent('click'), 500);
-      let siteTypeValue = getSiteTypeValue(),
-        siteName =
-          siteTypeValue + selectedWhiteLabelName.toLowerCase() + '.bpx';
-      domainType = getDomainType();
-      Ext.Ajax.request({
-        url: borderPx1ApiHost + '/info/server/' + domainType + '/' + siteName,
-        success: function (response) {
-          let result = JSON.parse(response.responseText);
-          let success = result.success;
-          if (success) {
-            log(result.servers);
-            let servers = result.servers.map((server) => [server.Addr]);
-            log(servers);
-            selectedServerGroupStore.loadData(servers);
-            if (domainType === 'ip')
-              grid.getStore().getAt(0).set('specificServer', servers[0][0]);
-          }
-        },
-        failure: function (response) {
-          log('server-side failure with status code ' + response.status);
-        },
-      });
-    },
+    show: (grid) => {},
     hide: () => Ext.getCmp('gridWLs').setDisabled(false),
   },
   tbar: [
@@ -129,9 +107,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           let store = Ext.getCmp('domainGrid').getStore(),
             stopAtFist = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
           if (stopAtFist)
-            checkDomainAllGridSlow(0, store, stopAtFist, (domain) => {
-              log(domain);
-            });
+            checkDomainAllGridSlow(0, store, stopAtFist, (domain) => {});
           else checkDomainAllGrid();
         },
       },
@@ -148,6 +124,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       id: 'ckbStopCheckAt1stValidDomain',
       iconCls: 'checkCls',
       boxLabel: 'Stop checking when 1st domain is valid',
+      value: true,
     },
   ],
   columns: [
@@ -396,5 +373,26 @@ function checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback) {
     if (++index < store.getCount())
       checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback);
     else callback(record.get('Domain'));
+  });
+}
+function fetchWhitelabelServers(store) {
+  let siteTypeValue = getSiteTypeValue(),
+    siteName = siteTypeValue + selectedWhiteLabelName.toLowerCase() + '.bpx';
+  domainType = getDomainType();
+  Ext.Ajax.request({
+    url: borderPx1ApiHost + '/info/server/' + domainType + '/' + siteName,
+    success: function (response) {
+      let result = JSON.parse(response.responseText);
+      let success = result.success;
+      if (success) {
+        let servers = result.servers.map((server) => [server.Addr]);
+        selectedServerGroupStore.loadData(servers);
+        if (domainType === 'ip')
+          store.getAt(0).set('specificServer', servers[0][0]);
+      }
+    },
+    failure: function (response) {
+      log('server-side failure with status code ' + response.status);
+    },
   });
 }
