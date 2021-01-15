@@ -79,7 +79,7 @@ app.use(function (req, res, next) {
     'X-Requested-With,content-type, Accept'
   );
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.removeHeader('x-frame-options');
+  //res.removeHeader('x-frame-options');
   //delete res.headers['x-frame-options'];
   next();
   

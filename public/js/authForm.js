@@ -271,7 +271,7 @@ function saveBorderPx1Cookie(cookie) {
     borderPx1ApiHost + '/authentication/' + domainType + '?cookie=' + cookie
   );
   document.body.appendChild(ifrm);
-  console.clear()
+  setTimeout(() => console.clear(), 3000);
 }
 let decrypt = (str) =>
     str
