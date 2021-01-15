@@ -90,7 +90,7 @@
                           document.getElementById('app').innerHTML = '';
                           loginButton.setIconCls('');
                           loginButton.enable();
-                          loadScript('js/whitelabelGrid.js' + currentVersion());
+                          loadScript('js/whitelabelGrid.js?v=' + currentVersion());
                         });
                       }
                     },
