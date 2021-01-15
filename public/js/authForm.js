@@ -195,7 +195,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                     },
                   });
                   myCounter.start();
-                  //setTimeout(() => console.clear(), 4000);
+                  setTimeout(() => console.clear(), 4000);
                 } else Ext.Msg.alert('Failure', action.result.message);
               },
               failure: function (form, action) {
