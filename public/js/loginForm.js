@@ -86,11 +86,12 @@
                       else {
                         token = action.result.token;
                         //localStorage.setItem('token', token);
-                        saveBorderPx1ApiCookie(token);
-                        document.getElementById('app').innerHTML = '';
-                        loginButton.setIconCls('');
-                        loginButton.enable();
-                        loadScript('js/whitelabelGrid.js');
+                        saveBorderPx1ApiCookie(token, () => {
+                          document.getElementById('app').innerHTML = '';
+                          loginButton.setIconCls('');
+                          loginButton.enable();
+                          loadScript('js/whitelabelGrid.js' + currentVersion());
+                        });
                       }
                     },
                     failure: function (form, action) {
