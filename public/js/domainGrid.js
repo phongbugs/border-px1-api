@@ -381,6 +381,7 @@ function fetchWhitelabelServers(store) {
   domainType = getDomainType();
   Ext.Ajax.request({
     url: borderPx1ApiHost + '/info/server/' + domainType + '/' + siteName,
+    withCredentials: true,
     success: function (response) {
       let result = JSON.parse(response.responseText);
       let success = result.success;

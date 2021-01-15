@@ -130,7 +130,7 @@
             }
         let currentVersion = () => new Date().getTime();
         window.onload = () => {
-            loadScript('js/utils.js?v=' + currentVersion)
+            loadScript('js/utils.js?v=' + currentVersion())
             authenticate((isAuthenticated) => {
                 if (isAuthenticated)
                     loadScript('js/whitelabelGrid.js?v=' + currentVersion())
