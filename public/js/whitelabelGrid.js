@@ -240,7 +240,7 @@ Ext.onReady(function () {
                 'Caution',
                 'Cache data of <b>' +
                   whiteLabelName +
-                  "</b>'s domain doesn't exist<br/> Please uncheck Load From Cache checkbox"
+                  "</b>'s domain doesn't exist<br/> Please uncheck <b>Load From Cache</b> checkbox"
               );
           } else {
             let proxy = domainStore.getProxy();
@@ -258,12 +258,19 @@ Ext.onReady(function () {
                 try {
                   let result = JSON.parse(operation.getResponse().responseText);
                   if (!result.success) {
-                    Ext.Msg.alert(
-                      result.message,
-                      `Please login <b>BORDER PX1</b> site<br/>
+                    if (
+                      result.message.indexOf(
+                        "Cannot read property 'id' of undefined"
+                      ) > -1
+                    )
+                      Ext.Msg.alert(result.message, 'NO DATA');
+                    else
+                      Ext.Msg.alert(
+                        result.message,
+                        `Please login <b>BORDER PX1</b> site<br/>
                         OR <br/>
                         Check to <b>Load From Cache</b> then close popup and open again`
-                    );
+                      );
                   } else localStorage.setItem(cacheName, result.domains);
                 } catch (error) {
                   log(error);
