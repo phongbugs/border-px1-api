@@ -40,7 +40,6 @@ async function authenticate(req, res) {
           crawler.setPKey(crawler.cfg.pKeyName);
           global.hostBorderPx1Name = hostBorderPx1;
         }
-
         let result = await crawler.login(
           decryptedData.username,
           decryptedData.password,

@@ -8,9 +8,10 @@ var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user');
 var authenticationRouter = require('./routes/authentication');
 var infoRouter = require('./routes/info');
+var deploymentRouter = require('./routes/deployment');
 
 const bodyParser = require('body-parser');
-
+var busboy = require('connect-busboy');
 var app = express();
 
 const swaggerUi = require('swagger-ui-express');
@@ -45,6 +46,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(busboy());
 // const cors = require('cors');
 // //app.use(cors())
 // app.use(cors({
@@ -91,6 +93,7 @@ app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/authentication', authenticationRouter);
 app.use('/info', infoRouter);
+app.use('/deployment', deploymentRouter);
 
 // catch 404 and forward to error handler
 app.use(function (_, _, next) {
