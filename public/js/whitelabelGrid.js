@@ -150,10 +150,11 @@ Ext.onReady(function () {
           record['isSyncedFolder'] = false;
           record['folderPath'] = '';
           record['backupDate'] = '';
+          record['zipUpload'] = '';
           data.push(record);
         }
         Groups = storeWLs.getGroups();
-        log(Groups);
+        if (Groups) log(Groups);
         storeWLs.loadData(data);
         listNameWLs = sortAndToList(data);
         Ext.getCmp('txtNameWLs').getStore().loadData(listNameWLs);
@@ -281,11 +282,9 @@ Ext.onReady(function () {
         }
       },
       viewready: (grid) => {
-        loadScript(
-          'js/authForm.js?v=' + currentVersion() || new Date().getTime()
-        );
-        loadScript('js/domainGrid.js?v=' + currentVersion()) ||
-          new Date().getTime();
+        loadScript('js/authForm.js?v=' + currentVersion());
+        loadScript('js/domainGrid.js?v=' + currentVersion());
+        loadScript('js/deploymentForm.js?v=' + currentVersion());
       },
     },
     // dockedItems: [
@@ -304,11 +303,7 @@ Ext.onReady(function () {
       {
         xtype: 'button',
         id: 'btnRefresh',
-        icon:
-          'https://icons.iconarchive.com/icons/graphicloads/100-flat/16/reload-icon.png',
-        text: '',
-        // other component can not fireEvent to
-        // handler: () => { storeWLs.clearFilter(); storeWLs.loadData(data) },
+        iconCls: 'refreshCls',
         listeners: {
           click: () => {
             storeWLs.clearFilter();
@@ -364,7 +359,6 @@ Ext.onReady(function () {
           },
         },
       },
-
       {
         xtype: 'combo',
         width: 120,
@@ -392,11 +386,13 @@ Ext.onReady(function () {
         value: 'default',
         editable: false,
         listeners: {
-          change: (_, val) => {
-            if (val !== 'default') {
-              storeWLs.setGroupField(val);
+          change: (_, groupByValue) => {
+            let columnUpload = Ext.getCmp('gridWLs').getColumns()[22];
+            if (groupByValue !== 'default') {
+              storeWLs.setGroupField(groupByValue);
               Groups = storeWLs.getGroups();
-              log('Group By: %s', val);
+              log('Group By: %s', groupByValue);
+              // ======= start show log group info =======
               for (let i = 0; i < Groups.getCount(); i++) {
                 let group = Groups.getAt(i),
                   groupKey = Groups.getAt(i)._groupKey,
@@ -405,12 +401,24 @@ Ext.onReady(function () {
                 for (let j = 0; j < group.getCount(); j++) {
                   let whiteLabelName = group.getAt(j).getData().name;
                   list.push(whiteLabelName);
+                  //  show icon upload
+                  if (groupByValue === 'servers')
+                    group.getAt(0).set('zipUpload', 0);
+                  else group.getAt(0).set('zipUpload', '');
                 }
                 log(list.toString());
               }
+
+              if (groupByValue === 'servers') columnUpload.setHidden(false);
+              else columnUpload.setHidden(true);
+              // ======= end show log group info =======
+
               storeWLs.loadData(data);
               featureGrouping.collapseAll();
-            } else storeWLs.setGroupField(undefined);
+            } else {
+              storeWLs.setGroupField(undefined);
+              columnUpload.setHidden(true);
+            }
           },
         },
       },
@@ -630,6 +638,15 @@ Ext.onReady(function () {
           },
         },
         hidden: true,
+      },
+      {
+        xtype: 'button',
+        text: 'Deployment',
+        iconCls: 'checkCls',
+        id: 'btnDeployment',
+        listeners: {
+          click: () => Ext.getCmp('deploymentForm').show(),
+        },
       },
       '->',
       {
@@ -987,6 +1004,146 @@ Ext.onReady(function () {
           },
         ],
       },
+      {
+        xtype: 'actioncolumn',
+        width: 30,
+        tooltip: 'Upload zip file to server for deploying',
+        sortable: false,
+        menuDisabled: true,
+        text: 'Zip Upload',
+        hidden: true,
+        items: [
+          {
+            iconCls: 'zipUploadCls',
+            getClass: function (value, meta, record, rowIndex, colIndex) {
+              var iconCls = '';
+              var zipUpload = record.get('zipUpload');
+              switch (zipUpload) {
+                case 0:
+                  iconCls = 'zipUploadCls';
+                  break;
+                case 1:
+                  iconCls = 'spinner';
+                  break;
+                case 2:
+                  iconCls = 'zipUploadedCls';
+                  break;
+                case 3:
+                  iconCls = 'zipUploadErrCls';
+                  break;
+                case 4:
+                  iconCls = 'zipUploadEmptyCls';
+                  break;
+              }
+              return iconCls;
+            },
+            handler: function (grid, rowIndex, colIndex, item, e, record) {
+              rowIndex = grid.getStore().indexOf(record);
+              // var dzFileName = Ext.getCmp('dzFileName').getValue();
+              // if (dzFileName == '') {
+              //   Ext.Msg.alert(
+              //     'Missing params',
+              //     "Zip File haven't uploaded yet"
+              //   );
+              //   return;
+              // }
+
+              var doAction = +grid.getStore().getAt(rowIndex).get('zipUpload');
+              if (doAction === 3 || doAction === 4) return;
+              else if (doAction === 2) {
+                var siteName =
+                  Ext.getCmp('txtUrlCheckingDefault').getValue() +
+                  '/Public/GetDateModifiedOfFiles.aspx';
+                var serverId = grid.getStore().getAt(rowIndex).get('serverId');
+                var isUseUrlCheckingDefault = Ext.getCmp(
+                  'useUrlCheckingDefault'
+                ).getValue();
+                if (isUseUrlCheckingDefault == false) {
+                  siteName =
+                    getHttpHttps() +
+                    grid.getStore().getAt(rowIndex).get('siteUrl') +
+                    '/Public/GetDateModifiedOfFiles.aspx';
+                }
+                grid.getStore().getAt(rowIndex).set('zipUpload', 1);
+                Ext.Ajax.request({
+                  url: 'checkdate/upload-zip-deploy',
+                  params: {
+                    siteName: siteName,
+                    serverId: serverId,
+                    skipAuth: !Ext.getCmp('cbbAuth').getValue(),
+                    dzFileName: dzFileName,
+                    action: 'e',
+                  },
+                  success: function (response) {
+                    // parse jsonString from server
+                    var jsonR = JSON.parse(response.responseText);
+                    if (jsonR.success == true)
+                      grid.getStore().getAt(rowIndex).set('zipUpload', 4);
+                    else {
+                      grid.getStore().getAt(rowIndex).set('zipUpload', 3);
+                      Ext.Msg.alert('Error Upload', jsonR.msg);
+                    }
+                  },
+                  failure: function (response) {
+                    console.log(
+                      'server-side failure with status code ' + response.status
+                    );
+                    grid.getStore().getAt(rowIndex).set('zipUpload', 3);
+                    Ext.Msg.alert(
+                      'Error Upload',
+                      'server-side failure with status code ' + response.status
+                    );
+                  },
+                });
+              }
+              // upload
+              else if (doAction == '') {
+                // check url
+                var siteName =
+                  Ext.getCmp('txtUrlCheckingDefault').getValue() +
+                  '/Public/GetDateModifiedOfFiles.aspx';
+                var serverId = grid.getStore().getAt(rowIndex).get('serverId');
+                var isUseUrlCheckingDefault = Ext.getCmp(
+                  'useUrlCheckingDefault'
+                ).getValue();
+                if (isUseUrlCheckingDefault == false) {
+                  siteName =
+                    getHttpHttps() +
+                    grid.getStore().getAt(rowIndex).get('siteUrl') +
+                    '/Public/GetDateModifiedOfFiles.aspx';
+                }
+                grid.getStore().getAt(rowIndex).set('zipUpload', 1);
+                Ext.Ajax.request({
+                  url: 'checkdate/upload-zip-deploy',
+                  params: {
+                    siteName: siteName,
+                    serverId: serverId,
+                    skipAuth: !Ext.getCmp('cbbAuth').getValue(),
+                    dzFileName: dzFileName,
+                    action: 'u',
+                  },
+                  success: function (response) {
+                    // parse jsonString from server
+                    var jsonR = JSON.parse(response.responseText);
+                    if (jsonR.success == true)
+                      grid.getStore().getAt(rowIndex).set('zipUpload', 2);
+                    else {
+                      grid.getStore().getAt(rowIndex).set('zipUpload', 3);
+                      Ext.Msg.alert('Error Upload', jsonR.msg);
+                    }
+                  },
+                  failure: function (response) {
+                    log(
+                      'server-side failure with status code ' + response.status
+                    );
+                    grid.getStore().getAt(rowIndex).set('zipUpload', 3);
+                  },
+                });
+              }
+            },
+          },
+        ],
+      },
       // {
       //   xtype: 'actioncolumn',
       //   width: 40,
@@ -1043,6 +1200,30 @@ Ext.onReady(function () {
       //   dataIndex: 'backupDate',
       //   hidden: true,
       // },
+      {
+        xtype: 'actioncolumn',
+        width: 30,
+        sortable: false,
+        menuDisabled: true,
+        tooltip: 'Refresh row',
+        text: 'Refresh',
+        items: [
+          {
+            iconCls: 'refreshCls',
+            handler: function (grid, rowIndex, colIndex, item, e, record) {
+              rowIndex = grid.getStore().indexOf(record);
+              record = grid.getStore().getAt(rowIndex);
+              if (record.get('zipUpload') !== 0)
+                record.set({
+                  checked: 0,
+                  folderPath: '',
+                  zipUpload: 0,
+                  modifiedDateOfBKFile: '',
+                });
+            },
+          },
+        ],
+      },
     ],
   });
 });
