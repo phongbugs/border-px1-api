@@ -85,6 +85,77 @@ let Groups,
       },
     ],
   });
+Ext.define('WL', {
+  extend: 'Ext.data.Model',
+  fields: [
+    'name',
+    'compType',
+    'prefix',
+    'defaultNumber',
+    'headerNumber',
+    'referredWL',
+    'mainColor',
+    'servers',
+    'hasTogel',
+    'closedPlaytech',
+    'closedMail',
+    'referralFunction',
+    'oldNames',
+    'mobileRedirect',
+    'dynamicFooter',
+    'securityQuestion',
+  ],
+});
+let storeWLs = Ext.create('Ext.data.Store', {
+  model: 'WL',
+  proxy: {
+    type: 'ajax',
+    url: 'WLs.json',
+    reader: {
+      type: 'json',
+    },
+  },
+  listeners: {
+    load: function (_, records, successful, operation, eOpts) {
+      let whiteLabels = records[0].data;
+      delete whiteLabels['id'];
+      for (var whitelabelName in whiteLabels) {
+        let record = whiteLabels[whitelabelName];
+        record['name'] = whitelabelName;
+        if (!record['servers']) record['servers'] = '10.168.109.6';
+        if (!record['status']) record['status'] = 'live';
+        record['isResponsive'] = record['isResponsive']
+          ? 'Responsive'
+          : 'Non-Responsive';
+        if (record['servers']) {
+          let servers = record['servers'];
+          record['specificServer'] =
+            servers !== '10.168.109.6'
+              ? servers
+                ? '192.168.106.' + servers.split('-')[0]
+                : undefined
+              : servers;
+        }
+        // icon spniner cols
+        record['specificServerSpinner'] = false;
+        record['remoteDesktopSpinner'] = false;
+        record['isSyncedDomain'] = false;
+        record['isSyncedFolder'] = false;
+        record['folderPath'] = '';
+        record['backupDate'] = '';
+        record['zipUpload'] = '';
+        record['checked'] = 0;
+        data.push(record);
+      }
+      Groups = storeWLs.getGroups();
+      if (Groups) log(Groups);
+      storeWLs.loadData(data);
+      listNameWLs = sortAndToList(data);
+      Ext.getCmp('txtNameWLs').getStore().loadData(listNameWLs);
+    },
+  },
+  autoLoad: true,
+});
 Ext.onReady(function () {
   //currentVersion = '1.1.1'
   // prevent browser call loadScript('js/gridWL.js') at console log
@@ -92,77 +163,6 @@ Ext.onReady(function () {
     if (!isAuthenticated) location.reload();
   });
   Ext.tip.QuickTipManager.init();
-  Ext.define('WL', {
-    extend: 'Ext.data.Model',
-    fields: [
-      'name',
-      'compType',
-      'prefix',
-      'defaultNumber',
-      'headerNumber',
-      'referredWL',
-      'mainColor',
-      'servers',
-      'hasTogel',
-      'closedPlaytech',
-      'closedMail',
-      'referralFunction',
-      'oldNames',
-      'mobileRedirect',
-      'dynamicFooter',
-      'securityQuestion',
-    ],
-  });
-  var storeWLs = Ext.create('Ext.data.Store', {
-    model: 'WL',
-    proxy: {
-      type: 'ajax',
-      url: 'WLs.json',
-      reader: {
-        type: 'json',
-      },
-    },
-    listeners: {
-      load: function (_, records, successful, operation, eOpts) {
-        let whiteLabels = records[0].data;
-        delete whiteLabels['id'];
-        for (var whitelabelName in whiteLabels) {
-          let record = whiteLabels[whitelabelName];
-          record['name'] = whitelabelName;
-          if (!record['servers']) record['servers'] = '10.168.109.6';
-          if (!record['status']) record['status'] = 'live';
-          record['isResponsive'] = record['isResponsive']
-            ? 'Responsive'
-            : 'Non-Responsive';
-          if (record['servers']) {
-            let servers = record['servers'];
-            record['specificServer'] =
-              servers !== '10.168.109.6'
-                ? servers
-                  ? '192.168.106.' + servers.split('-')[0]
-                  : undefined
-                : servers;
-          }
-          // icon spniner cols
-          record['specificServerSpinner'] = false;
-          record['remoteDesktopSpinner'] = false;
-          record['isSyncedDomain'] = false;
-          record['isSyncedFolder'] = false;
-          record['folderPath'] = '';
-          record['backupDate'] = '';
-          record['zipUpload'] = '';
-          data.push(record);
-        }
-        Groups = storeWLs.getGroups();
-        if (Groups) log(Groups);
-        storeWLs.loadData(data);
-        listNameWLs = sortAndToList(data);
-        Ext.getCmp('txtNameWLs').getStore().loadData(listNameWLs);
-      },
-    },
-    autoLoad: true,
-  });
-
   var girdWLs = Ext.create('Ext.grid.Panel', {
     renderTo: 'app',
     id: 'gridWLs',
@@ -627,22 +627,9 @@ Ext.onReady(function () {
       },
       {
         xtype: 'button',
-        id: 'btnCheckDomains',
-        text: 'Check Domains',
-        dock: 'right',
-        iconCls: 'folderCls',
-        listeners: {
-          click: (btn) => {
-            btn.setIconCls('spinner');
-            fetchFolderAllWLs(2, storeWLs, () => btn.setIconCls('folderCls'));
-          },
-        },
-        hidden: true,
-      },
-      {
-        xtype: 'button',
         text: 'Deployment',
-        iconCls: 'checkCls',
+        icon:
+          'https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-3/16/web-management-icon.png',
         id: 'btnDeployment',
         listeners: {
           click: () => Ext.getCmp('deploymentForm').show(),
@@ -1144,62 +1131,182 @@ Ext.onReady(function () {
           },
         ],
       },
-      // {
-      //   xtype: 'actioncolumn',
-      //   width: 40,
-      //   tooltip: 'Sync Folders',
-      //   text: 'SF',
-      //   dataIndex: 'isSyncedFolder',
-      //   hidden: true,
-      //   items: [
-      //     {
-      //       getClass: function (value, meta, record, rowIndex, colIndex) {
-      //         var iconCls = '';
-      //         switch (value) {
-      //           case 'spinner':
-      //             iconCls = 'spinner';
-      //             break;
-      //           case 'checkKoCls':
-      //             iconCls = 'checkKoCls';
-      //             break;
-      //           case false:
-      //             iconCls = 'folderCls';
-      //             break;
-      //           default:
-      //             iconCls = 'folderOkCls';
-      //             break;
-      //         }
-      //         return iconCls;
-      //       },
-      //       handler: function (grid, rowIndex, colIndex, item, e, record, row) {
-      //         rowIndex = grid.getStore().indexOf(record);
-      //         record = grid.getStore().getAt(rowIndex);
-      //         record.set('isSyncedFolder', 'spinner');
-      //         //log(row.children[1].innerHTML);
-      //         fetchFolderOneRecord(record, (success) =>
-      //           record.set(
-      //             'isSyncedFolder',
-      //             success ? 'folderOkCls' : 'checkKoCls'
-      //           )
-      //         );
-      //       },
-      //     },
-      //   ],
-      // },
-      // {
-      //   text: 'Folder',
-      //   tooltip: 'Folder Path',
-      //   width: 300,
-      //   dataIndex: 'folderPath',
-      //   hidden: true,
-      // },
-      // {
-      //   text: 'Backup Date',
-      //   tooltip: 'Backup Date',
-      //   width: 222,
-      //   dataIndex: 'backupDate',
-      //   hidden: true,
-      // },
+      {
+        xtype: 'actioncolumn',
+        width: 30,
+        tooltip: 'Sync Folders',
+        text: 'F',
+        dataIndex: 'isSyncedFolder',
+        hidden: false,
+        items: [
+          {
+            getClass: function (value, meta, record, rowIndex, colIndex) {
+              var iconCls = '';
+              switch (value) {
+                case 'spinner':
+                  iconCls = 'spinner';
+                  break;
+                case 'checkKoCls':
+                  iconCls = 'checkKoCls';
+                  break;
+                case false:
+                  iconCls = 'folderCls';
+                  break;
+                default:
+                  iconCls = 'folderOkCls';
+                  break;
+              }
+              return iconCls;
+            },
+            handler: function (grid, rowIndex, colIndex, item, e, record, row) {
+              rowIndex = grid.getStore().indexOf(record);
+              record = grid.getStore().getAt(rowIndex);
+              record.set('isSyncedFolder', 'spinner');
+              //log(row.children[1].innerHTML);
+              fetchFolderOneRecord(record, (success) =>
+                record.set(
+                  'isSyncedFolder',
+                  success ? 'folderOkCls' : 'checkKoCls'
+                )
+              );
+            },
+          },
+        ],
+      },
+      {
+        xtype: 'actioncolumn',
+        width: 30,
+        sortable: false,
+        tooltip: 'Check latest deployed and bakup files',
+        menuDisabled: true,
+        text: 'Check',
+        items: [
+          {
+            iconCls: 'checkFileCls',
+            getClass: function (value, meta, record, rowIndex, colIndex) {
+              var checked = record.get('checked');
+              var iconCls = '';
+              switch (checked) {
+                case 0:
+                  iconCls = 'checkFileCls';
+                  break;
+                case 'spinner':
+                  iconCls = 'spinner';
+                  break;
+                case 'ok':
+                  iconCls = 'checkOkCls';
+                  break;
+                case 'error':
+                  iconCls = 'checkKoCls';
+                  break;
+              }
+              return iconCls;
+            },
+            handler: function (grid, rowIndex, colIndex, item, e, record, row) {
+              rowIndex = grid.getStore().indexOf(record);
+              record = grid.getStore().getAt(rowIndex);
+              if (record.get('checked') === 'ok') return;
+              if (record.get('checked') === 'error') {
+                alert(JSON.stringify(listFailedFile[rowIndex]));
+                return;
+              }
+              if (!listFileFromLocal) {
+                Ext.Msg.alert('Information', 'Zip file has not been uploaded yet');
+                return;
+              }
+              record.set('checked', 'spinner');
+              Ext.Ajax.request({
+                method: 'GET',
+                url: 'deployment/date-modified-files',
+                params: {
+                  listFile: listFileFromLocal
+                    .map((file) => file.fileName)
+                    .toString(),
+                  whitelabelUrl: genUrl(record),
+                },
+                success: function (response) {
+                  var rsText = response.responseText.replace(/\\/g, '\\\\');
+                  var listFileFromServer = JSON.parse(rsText);
+                  if (!listFileFromServer.files) {
+                    record.set('backupDate', listFileFromServer.msg);
+                    var path = listFileFromServer.msg.substr(
+                      21,
+                      listFileFromServer.msg.length - 3
+                    );
+                    record.set('folderPath', path.substr(0, path.length - 6));
+                    record.set('checked', 'error');
+                    return;
+                  }
+                  var result = compare2Json(
+                    listFileFromServer.files,
+                    listFileFromLocal
+                  );
+
+                  if (result.success) {
+                    record.set('checked', 'ok');
+                    if (
+                      listFileFromServer.path.indexOf('Could not find file') !=
+                      -1
+                    )
+                      record.set(
+                        'backupDate',
+                        listFileFromServer.path.replace(/\//g, '\\')
+                      );
+                    else
+                      record.set(
+                        'folderPath',
+                        listFileFromServer.path.replace(/\//g, '\\')
+                      );
+                  } else {
+                    record.set('checked', 'error');
+                    record.set(
+                      'folderPath',
+                      listFileFromServer.path.replace(/\//g, '\\')
+                    );
+                    listFailedFile[rowIndex] = result;
+                  }
+                  if (listFileFromServer.modifiedDateOfBKFile) {
+                    var fileInfo = listFileFromServer.modifiedDateOfBKFile.split(
+                      '-'
+                    );
+                    var sizeOfFile = new Intl.NumberFormat().format(
+                      ~~(fileInfo[1] / 1024)
+                    );
+                    record.set(
+                      'backupDate',
+                      fileInfo[0] + ' - ' + sizeOfFile + ' KB'
+                    );
+                  }
+                },
+                failure: function (response) {
+                  log(
+                    'server-side failure with status code ' + response.status
+                  );
+                  record.set('checked', 'error');
+                  Ext.Msg.alert(
+                    'Error genbat',
+                    'server-side failure with status code ' + response.status
+                  );
+                },
+              });
+            },
+          },
+        ],
+      },
+      {
+        text: 'Folder',
+        tooltip: 'Folder Path',
+        width: 300,
+        dataIndex: 'folderPath',
+        hidden: false,
+      },
+      {
+        text: 'Backup Date',
+        tooltip: 'Backup Date',
+        width: 222,
+        dataIndex: 'backupDate',
+        hidden: false,
+      },
       {
         xtype: 'actioncolumn',
         width: 30,
@@ -1294,7 +1401,9 @@ function fetchFolderOneRecord(record, callback) {
       var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
       if (result.success) {
         record.set('folderPath', result.path.replace(/\//g, '\\'));
-        record.set('backupDate', result.modifiedDateOfBKFile);
+        let info = result.modifiedDateOfBKFile.split('-');
+        let sizeOfBKFile = new Intl.NumberFormat().format(~~(info[1] / 1024));
+        record.set('backupDate', info[0] + ' - ' + sizeOfBKFile + ' KB');
       } else {
         record.set('folderPath', result.msg);
         record.set('backupDate', result.msg);

@@ -1,4 +1,6 @@
 let filesParam;
+let listFileFromLocal;
+let listFailedFile = []
 Ext.create('Ext.form.Panel', {
   id: 'deploymentForm',
   title: 'Deployment',
@@ -238,6 +240,7 @@ Ext.create('Ext.form.Panel', {
                 // jsonObjsZipFile = result.listFile;
                 // Ext.getCmp('filesParam').setValue(filesParam);
                 let result = action.result;
+                listFileFromLocal = result.listFile;
                 Ext.getCmp('fileListPanel').setHtml(
                   '<div style="height: 95%" id="fileList"></div>'
                 );
@@ -272,11 +275,11 @@ Ext.create('Ext.form.Panel', {
       width: 120,
       text: 'Get All Folder',
       tooltip: 'Get All Folder',
-      iconCls: 'hasNotFolderCls',
+      iconCls: 'folderCls',
       listeners: {
-        click: function () {
-          // call event click of all button in grid
-          getAllFolderSite();
+        click: (btn) => {
+          btn.setIconCls('spinner');
+          fetchFolderAllWLs(2, storeWLs, () => btn.setIconCls('folderCls'));
         },
       },
     },
@@ -285,7 +288,7 @@ Ext.create('Ext.form.Panel', {
       width: 100,
       //style:{marginLeft:'100px'},
       text: 'Check All',
-      iconCls: 'checkCls',
+      iconCls: 'checkFileCls',
       listeners: {
         click: function () {
           // call event click of all button in grid
@@ -329,46 +332,48 @@ function exportToFilesParam(json) {
   // remove comma sign
   return fileNames.substr(0, fileNames.length - 1);
 }
-// use compare file live and zip deploy
-// json1 : site
-// json2 : zip
-//var jsonFailed = [] ; // ==> moved to top
-function compare2Json2(json1, json2) {
+// fix format date from server : https://msdn.microsoft.com/en-us/library/az4se3k1(v=vs.110).aspx
+// 2009-06-15T13:45:30 -> 2009/6/15 13:45 (zh-CN)
+// 12/15/2015, 3:23:41 PM --> convert to 12/15/2015 3:23:41 PM
+function compare2Json(json1, json2) {
   if (json1.length == undefined || json2 == undefined) {
-    Ext.Msg.alert('JSON ERROR', 'site or zip file not exists');
-    return;
+      Ext.Msg.alert('JSON ERROR', 'site or zip file not exists');
+      return;
   }
   if (json1.length != json2.length) {
-    Ext.Msg.alert(
-      'Error',
-      'Error JSON jsonSite.length(' +
-        json1.length +
-        ')!=jsonZip.length(' +
-        json2.length +
-        ')'
-    );
-    return;
-  } else {
-    var json = { success: true, files: [] };
-    for (var i = 0; i < json1.length; i++) {
-      // cause datetime in zip is greater than datetime on site one second for odd number ( not even)
-      var dateSite = new Date(json1[i]['modifiedDate']);
-      var secondOfDateSite = dateSite.getSeconds();
-      // fix one second - .net with nodejs time stamp
-      if (secondOfDateSite % 2 != 0) dateSite.setSeconds(secondOfDateSite - 1);
+      Ext.Msg.alert('Error', 'Error JSON jsonSite.length(' + json1.length + ')!=jsonZip.length(' + json2.length + ')');
+      return;
+  }
+  else {
+      var json = { success: true, files: [] }
+      for (var i = 0; i < json1.length; i++) {
+          // cause datetime in zip is greater than datetime on site one second for odd number ( not even)
+          var dateSite = new Date(json1[i]["modifiedDate"]);
+          dateSite.setSeconds(0);
+          var dateZip = new Date(json2[i]["modifiedDate"].replace(', ', ' '));
+          dateZip.setSeconds(0);
 
-      // Malaysia Time & Vietnam Time
-      var hourMalaysia = dateSite.getHours();
-      dateSite.setHours(hourMalaysia - 1);
+          // Malaysia Time & Vietnam Time
+          var hourMalaysia = dateSite.getHours();
+          dateSite.setHours(hourMalaysia - 1);
 
-      // fix one minute
-      if (dateSite != json2[i]['modifiedDate']) {
-        json['success'] = false;
-        json['files'].push(
-          json1[i]['fileName'] + '(' + dateSite.toString().substr(3, 21) + ')'
-        );
+          // fix one minute
+          if (dateSite.getHours() == dateZip.getHours() && dateSite.getSeconds() == dateZip.getSeconds())
+              if (dateZip.getMinutes() - dateSite.getMinutes() == 1) {
+                  var minute = dateSite.getMinutes() + 1;
+                  dateSite.setMinutes(minute, 0, 0);
+              }
+
+          if (dateSite.toLocaleString() != dateZip.toLocaleString()) {
+              if (dateSite.toLocaleDateString() == dateZip.toLocaleDateString() && dateSite.getHours() < dateZip.getHours() && dateSite.getMinutes() == dateZip.getMinutes()) {
+                  console.log('server setup Vietnam TimeZone');
+              }
+              else {
+                  json["success"] = false;
+                  json["files"].push(json1[i]["fileName"] + '(' + dateSite.toLocaleString() + ')')
+              }
+          }
       }
-    }
-    return json;
+      return json;
   }
 }

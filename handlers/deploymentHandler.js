@@ -1,5 +1,6 @@
 const fs = require('fs'),
   yauzl = require('yauzl'),
+  fetch = require('node-fetch'),
   getModifiedDateOfFileInZip = (fileName, callback) => {
     var jsonObjs = '';
     var i = 0;
@@ -78,7 +79,31 @@ function uploadFileToIIS(req, res) {
   }
 }
 
+// Need change to POST (body) when listFile is large
+async function fetchDateModifiedFiles(req, res) {
+  try {
+    let url =
+      decodeURIComponent(req.query.whitelabelUrl) +
+      '/Public/GetDateModifiedOfFiles.aspx?';
+    console.log(url);
+    const response = await fetch(
+      url +
+        new URLSearchParams({
+          cmd: 'GetModifiedDate',
+          files: req.query.listFile,
+        }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+    res.status(200).json(await response.json());
+  } catch (error) {
+    res.send({ success: false, message: error.message });
+  }
+}
+
 module.exports = {
   uploadFileToExpress,
   uploadFileToIIS,
+  fetchDateModifiedFiles,
 };
