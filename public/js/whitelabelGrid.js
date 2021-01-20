@@ -1211,84 +1211,13 @@ Ext.onReady(function () {
                 return;
               }
               if (!listFileFromLocal) {
-                Ext.Msg.alert('Information', 'Zip file has not been uploaded yet');
+                Ext.Msg.alert(
+                  'Information',
+                  'Zip file has not been uploaded yet'
+                );
                 return;
               }
-              record.set('checked', 'spinner');
-              Ext.Ajax.request({
-                method: 'GET',
-                url: 'deployment/date-modified-files',
-                params: {
-                  listFile: listFileFromLocal
-                    .map((file) => file.fileName)
-                    .toString(),
-                  whitelabelUrl: genUrl(record),
-                },
-                success: function (response) {
-                  var rsText = response.responseText.replace(/\\/g, '\\\\');
-                  var listFileFromServer = JSON.parse(rsText);
-                  if (!listFileFromServer.files) {
-                    record.set('backupDate', listFileFromServer.msg);
-                    var path = listFileFromServer.msg.substr(
-                      21,
-                      listFileFromServer.msg.length - 3
-                    );
-                    record.set('folderPath', path.substr(0, path.length - 6));
-                    record.set('checked', 'error');
-                    return;
-                  }
-                  var result = compare2Json(
-                    listFileFromServer.files,
-                    listFileFromLocal
-                  );
-
-                  if (result.success) {
-                    record.set('checked', 'ok');
-                    if (
-                      listFileFromServer.path.indexOf('Could not find file') !=
-                      -1
-                    )
-                      record.set(
-                        'backupDate',
-                        listFileFromServer.path.replace(/\//g, '\\')
-                      );
-                    else
-                      record.set(
-                        'folderPath',
-                        listFileFromServer.path.replace(/\//g, '\\')
-                      );
-                  } else {
-                    record.set('checked', 'error');
-                    record.set(
-                      'folderPath',
-                      listFileFromServer.path.replace(/\//g, '\\')
-                    );
-                    listFailedFile[rowIndex] = result;
-                  }
-                  if (listFileFromServer.modifiedDateOfBKFile) {
-                    var fileInfo = listFileFromServer.modifiedDateOfBKFile.split(
-                      '-'
-                    );
-                    var sizeOfFile = new Intl.NumberFormat().format(
-                      ~~(fileInfo[1] / 1024)
-                    );
-                    record.set(
-                      'backupDate',
-                      fileInfo[0] + ' - ' + sizeOfFile + ' KB'
-                    );
-                  }
-                },
-                failure: function (response) {
-                  log(
-                    'server-side failure with status code ' + response.status
-                  );
-                  record.set('checked', 'error');
-                  Ext.Msg.alert(
-                    'Error genbat',
-                    'server-side failure with status code ' + response.status
-                  );
-                },
-              });
+              checkFilesOneRecord(record);
             },
           },
         ],
@@ -1418,13 +1347,57 @@ function fetchFolderOneRecord(record, callback) {
     },
   });
 }
-// Safe slowly one by one
-function fetchFolderAllWLs(index, store, callback) {
-  let record = store.getAt(index);
-  record.set('isSyncedFolder', 'spinner');
-  fetchFolderOneRecord(record, (success) => {
-    record.set('isSyncedFolder', success ? 'checkOkCls' : 'checkKoCls');
-    if (++index < store.getCount()) fetchFolderAllWLs(index, store, callback);
-    else callback();
+function checkFilesOneRecord(record) {
+  record.set('checked', 'spinner');
+  Ext.Ajax.request({
+    method: 'GET',
+    url: 'deployment/date-modified-files',
+    params: {
+      listFile: listFileFromLocal.map((file) => file.fileName).toString(),
+      whitelabelUrl: genUrl(record),
+    },
+    success: function (response) {
+      var rsText = response.responseText.replace(/\\/g, '\\\\');
+      var listFileFromServer = JSON.parse(rsText);
+      if (!listFileFromServer.files) {
+        record.set('backupDate', listFileFromServer.msg);
+        var path = listFileFromServer.msg.substr(
+          21,
+          listFileFromServer.msg.length - 3
+        );
+        record.set('folderPath', path.substr(0, path.length - 6));
+        record.set('checked', 'error');
+        return;
+      }
+      var result = compare2Json(listFileFromServer.files, listFileFromLocal);
+
+      if (result.success) {
+        record.set('checked', 'ok');
+        if (listFileFromServer.path.indexOf('Could not find file') != -1)
+          record.set(
+            'backupDate',
+            listFileFromServer.path.replace(/\//g, '\\')
+          );
+        else
+          record.set(
+            'folderPath',
+            listFileFromServer.path.replace(/\//g, '\\')
+          );
+      } else {
+        record.set('checked', 'error');
+        record.set('folderPath', listFileFromServer.path.replace(/\//g, '\\'));
+        listFailedFile[rowIndex] = result;
+      }
+      if (listFileFromServer.modifiedDateOfBKFile) {
+        var fileInfo = listFileFromServer.modifiedDateOfBKFile.split('-');
+        var sizeOfFile = new Intl.NumberFormat().format(~~(fileInfo[1] / 1024));
+        record.set('backupDate', fileInfo[0] + ' - ' + sizeOfFile + ' KB');
+      }
+    },
+    failure: function (response) {
+      log('server-side failure with status code ' + response.status);
+      record.set('checked', 'error');
+    },
   });
 }
+

@@ -286,13 +286,19 @@ Ext.create('Ext.form.Panel', {
     {
       xtype: 'button',
       width: 100,
-      //style:{marginLeft:'100px'},
       text: 'Check All',
       iconCls: 'checkFileCls',
       listeners: {
-        click: function () {
-          // call event click of all button in grid
-          checkAllDeployingSite();
+        click: (btn) => {
+          if (!listFileFromLocal) {
+            Ext.Msg.alert(
+              'Information',
+              'Zip file has not been uploaded yet'
+            );
+            return;
+          }
+          btn.setIconCls('spinner');
+          checkFilesAllWLs(2, storeWLs, () => btn.setIconCls('checkFileCls'));
         },
       },
     },
@@ -376,4 +382,22 @@ function compare2Json(json1, json2) {
       }
       return json;
   }
+}
+
+// Safe slowly one by one
+function fetchFolderAllWLs(index, store, callback) {
+  let record = store.getAt(index);
+  record.set('isSyncedFolder', 'spinner');
+  fetchFolderOneRecord(record, (success) => {
+    record.set('isSyncedFolder', success ? 'checkOkCls' : 'checkKoCls');
+    if (++index < store.getCount()) fetchFolderAllWLs(index, store, callback);
+    else callback();
+  });
+}
+function checkFilesAllWLs(index, store, callback) {
+  let record = store.getAt(index);
+  checkFilesOneRecord(record, (success) => {
+    if (++index < store.getCount()) checkFilesAllWLs(index, store, callback);
+    else callback();
+  });
 }
