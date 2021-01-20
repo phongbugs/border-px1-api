@@ -203,82 +203,8 @@ Ext.onReady(function () {
           }
         } else if (cellIndex < 13) {
           Ext.getCmp('gridWLs').setDisabled(true);
-          // send to grid domain two columns
-          selectedWhiteLabelName = record.get('name');
-          selectedSpecificServer = record.get('specificServer');
-          selectedServers = record.get('servers');
-
-          let domainGrid = Ext.getCmp('domainGrid'),
-            domainStore = domainGrid.getStore(),
-            siteTypeValue = getSiteTypeValue(),
-            whiteLabelName = record.get('name'),
-            siteTypeName = getSiteTypeName(),
-            domainType = getDomainType(),
-            cacheName = whiteLabelName + '_' + domainType + '_' + siteTypeName,
-            siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
-
-          domainGrid.show();
-          domainGrid.setTitle('🌍 ' + whiteLabelName + "'s Domains");
-          domainStore.loadData([]);
-          if (Ext.getCmp('ckbLoadFromCache').getValue()) {
-            if (localStorage.getItem(cacheName)) {
-              domainStore.loadData(
-                JSON.parse(
-                  CryptoJS.AES.decrypt(
-                    localStorage.getItem(cacheName),
-                    'The domain data'
-                  ).toString(CryptoJS.enc.Utf8)
-                ).map((e) => {
-                  e['specificServer'] = selectedSpecificServer;
-                  e['servers'] = selectedServers;
-                  return e;
-                })
-              );
-              Ext.getCmp('btnCheckDomain').fireEvent('click');
-              fetchWhitelabelServers(domainStore);
-            } else
-              Ext.Msg.alert(
-                'Caution',
-                'Cache data of <b>' +
-                  whiteLabelName +
-                  "</b>'s domain doesn't exist<br/> Please uncheck <b>Load From Cache</b> checkbox"
-              );
-          } else {
-            let proxy = domainStore.getProxy();
-            let domainType =
-              Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
-                ? 'ip'
-                : 'name';
-            proxy.setConfig('url', [
-              borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
-            ]);
-            proxy.setConfig('withCredentials', [true]);
-            // show loadMask purpose
-            domainStore.load({
-              callback: function (records, operation, success) {
-                try {
-                  let result = JSON.parse(operation.getResponse().responseText);
-                  if (!result.success) {
-                    if (
-                      result.message.indexOf(
-                        "Cannot read property 'id' of undefined"
-                      ) > -1
-                    )
-                      Ext.Msg.alert(result.message, 'NO DATA');
-                    else
-                      Ext.Msg.alert(
-                        result.message,
-                        `Please login <b>BORDER PX1</b> site<br/>
-                        OR <br/>
-                        Check to <b>Load From Cache</b> then close popup and open again`
-                      );
-                  } else localStorage.setItem(cacheName, result.domains);
-                } catch (error) {
-                  log(error);
-                }
-              },
-            });
-          }
+          let isShowDomainGrid = true;
+          handleDomainStoreAndGrid({ isShowDomainGrid, record });
         }
       },
       viewready: (grid) => {
@@ -583,6 +509,16 @@ Ext.onReady(function () {
       },
       {
         xtype: 'button',
+        text: 'Deployment',
+        icon:
+          'https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-3/16/web-management-icon.png',
+        id: 'btnDeployment',
+        listeners: {
+          click: () => Ext.getCmp('deploymentForm').show(),
+        },
+      },
+      {
+        xtype: 'button',
         id: 'btnOpenAuthForm',
         text: 'BORDER PX1',
         dock: 'right',
@@ -623,16 +559,6 @@ Ext.onReady(function () {
               }, 1000);
             });
           },
-        },
-      },
-      {
-        xtype: 'button',
-        text: 'Deployment',
-        icon:
-          'https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-3/16/web-management-icon.png',
-        id: 'btnDeployment',
-        listeners: {
-          click: () => Ext.getCmp('deploymentForm').show(),
         },
       },
       '->',
@@ -800,7 +726,6 @@ Ext.onReady(function () {
         editor: {
           xtype: 'combo',
           store: selectedServerGroupStore,
-          //serverStores['101-102-103'],
           displayField: 'name',
           valueField: 'name',
           queryMode: 'local',
@@ -823,62 +748,14 @@ Ext.onReady(function () {
             handler: function (grid, rowIndex, colIndex, item, e, record) {
               rowIndex = grid.getStore().indexOf(record);
               record = grid.getStore().getAt(rowIndex);
-              var ip = record.get('specificServer');
-              record.set('specificServerSpinner', true);
-              let domainType = getDomainType();
-              Ext.Ajax.request({
-                method: 'POST',
-                url:
-                  borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
-                withCredentials: true,
-                success: function (response) {
-                  record.set('specificServerSpinner', false);
-                  let result = JSON.parse(response.responseText);
-                  if (result.success) {
-                    let defaultDomain = record.get('defaultDomain'),
-                      whiteLabelName = record.get('name'),
-                      status = record.get('status'),
-                      protocol = Ext.getCmp('cbbProtocol').getValue(),
-                      backendId = result.backendId,
-                      siteType = Ext.getCmp('cbbSiteType').getValue();
-                    if (!defaultDomain) defaultDomain = whiteLabelName + '.com';
-                    defaultDomain =
-                      siteType === 'member'
-                        ? defaultDomain
-                        : siteType + defaultDomain;
-                    if (status === 'testing') {
-                      defaultDomain = whiteLabelName + 'main.playliga.com';
-                      protocol = 'http';
-                    }
-                    let columnName = Ext.getCmp('cbbColumn').getValue();
-                    let url = protocol + '://' + defaultDomain + '/';
-                    switch (columnName) {
-                      case 'default':
-                      case 'defaultDomain':
-                        break;
-                      default:
-                        url += columnName;
-                        break;
-                    }
-                    url += '?bpx-backend-id=' + backendId;
-                    window.open(url, '_blank');
-                  } else {
-                    if (
-                      result.message.indexOf(
-                        'Invalid URI "/api/domainEdit/token'
-                      ) > -1
+              fetchBackendId(record, (backendId) =>
+                backendId
+                  ? window.open(
+                      genUrl(record) + '?bpx-backend-id' + backendId,
+                      '_blank'
                     )
-                      Ext.Msg.alert(
-                        result.message,
-                        `Please login <b>BORDER PX1</b> site<br/>`
-                      );
-                    else alert(result.message);
-                  }
-                },
-                failure: function (response) {
-                  alert(JSON.stringify(response));
-                },
-              });
+                  : null
+              );
             },
           },
         ],
@@ -997,7 +874,7 @@ Ext.onReady(function () {
         tooltip: 'Upload zip file to server for deploying',
         sortable: false,
         menuDisabled: true,
-        text: 'Zip Upload',
+        text: 'U',
         hidden: true,
         items: [
           {
@@ -1009,16 +886,16 @@ Ext.onReady(function () {
                 case 0:
                   iconCls = 'zipUploadCls';
                   break;
-                case 1:
+                case 'spinner':
                   iconCls = 'spinner';
                   break;
-                case 2:
+                case 'ok':
                   iconCls = 'zipUploadedCls';
                   break;
-                case 3:
+                case 'error':
                   iconCls = 'zipUploadErrCls';
                   break;
-                case 4:
+                case 'empty':
                   iconCls = 'zipUploadEmptyCls';
                   break;
               }
@@ -1026,96 +903,33 @@ Ext.onReady(function () {
             },
             handler: function (grid, rowIndex, colIndex, item, e, record) {
               rowIndex = grid.getStore().indexOf(record);
-              // var dzFileName = Ext.getCmp('dzFileName').getValue();
-              // if (dzFileName == '') {
-              //   Ext.Msg.alert(
-              //     'Missing params',
-              //     "Zip File haven't uploaded yet"
-              //   );
-              //   return;
-              // }
-
-              var doAction = +grid.getStore().getAt(rowIndex).get('zipUpload');
-              if (doAction === 3 || doAction === 4) return;
-              else if (doAction === 2) {
-                var siteName =
-                  Ext.getCmp('txtUrlCheckingDefault').getValue() +
-                  '/Public/GetDateModifiedOfFiles.aspx';
-                var serverId = grid.getStore().getAt(rowIndex).get('serverId');
-                var isUseUrlCheckingDefault = Ext.getCmp(
-                  'useUrlCheckingDefault'
-                ).getValue();
-                if (isUseUrlCheckingDefault == false) {
-                  siteName =
-                    getHttpHttps() +
-                    grid.getStore().getAt(rowIndex).get('siteUrl') +
-                    '/Public/GetDateModifiedOfFiles.aspx';
-                }
-                grid.getStore().getAt(rowIndex).set('zipUpload', 1);
-                Ext.Ajax.request({
-                  url: 'checkdate/upload-zip-deploy',
-                  params: {
-                    siteName: siteName,
-                    serverId: serverId,
-                    skipAuth: !Ext.getCmp('cbbAuth').getValue(),
-                    dzFileName: dzFileName,
-                    action: 'e',
-                  },
-                  success: function (response) {
-                    // parse jsonString from server
-                    var jsonR = JSON.parse(response.responseText);
-                    if (jsonR.success == true)
-                      grid.getStore().getAt(rowIndex).set('zipUpload', 4);
-                    else {
-                      grid.getStore().getAt(rowIndex).set('zipUpload', 3);
-                      Ext.Msg.alert('Error Upload', jsonR.msg);
-                    }
-                  },
-                  failure: function (response) {
-                    console.log(
-                      'server-side failure with status code ' + response.status
-                    );
-                    grid.getStore().getAt(rowIndex).set('zipUpload', 3);
-                    Ext.Msg.alert(
-                      'Error Upload',
-                      'server-side failure with status code ' + response.status
-                    );
-                  },
-                });
+              record = grid.getStore().getAt(rowIndex);
+              var action = record.get('zipUpload');
+              if (action === 'error' || action === 'empty') return;
+              if (!listFileFromLocal) {
+                showUploadedFileInfo();
+                return;
               }
-              // upload
-              else if (doAction == '') {
-                // check url
-                var siteName =
-                  Ext.getCmp('txtUrlCheckingDefault').getValue() +
-                  '/Public/GetDateModifiedOfFiles.aspx';
-                var serverId = grid.getStore().getAt(rowIndex).get('serverId');
-                var isUseUrlCheckingDefault = Ext.getCmp(
-                  'useUrlCheckingDefault'
-                ).getValue();
-                if (isUseUrlCheckingDefault == false) {
-                  siteName =
-                    getHttpHttps() +
-                    grid.getStore().getAt(rowIndex).get('siteUrl') +
-                    '/Public/GetDateModifiedOfFiles.aspx';
-                }
-                grid.getStore().getAt(rowIndex).set('zipUpload', 1);
+
+              record.set('zipUpload', 'spinner');
+              fetchBackendId(record, (backendId) => {
                 Ext.Ajax.request({
-                  url: 'checkdate/upload-zip-deploy',
+                  method: 'POST',
+                  url: 'deployment/upload-file-to-iis',
                   params: {
-                    siteName: siteName,
-                    serverId: serverId,
-                    skipAuth: !Ext.getCmp('cbbAuth').getValue(),
-                    dzFileName: dzFileName,
-                    action: 'u',
+                    whitelabelUrl: genUrl(record),
+                    uploadedFileName: Ext.getCmp(
+                      'txtUploadedFileName'
+                    ).getValue(),
+                    action: action == 'ok' ? 'e' : 'u',
+                    backendId: backendId,
                   },
                   success: function (response) {
-                    // parse jsonString from server
                     var jsonR = JSON.parse(response.responseText);
-                    if (jsonR.success == true)
-                      grid.getStore().getAt(rowIndex).set('zipUpload', 2);
+                    if (jsonR.success)
+                      record.set('zipUpload', action === 'ok' ? 'empty' : 'ok');
                     else {
-                      grid.getStore().getAt(rowIndex).set('zipUpload', 3);
+                      record.set('zipUpload', 'error');
                       Ext.Msg.alert('Error Upload', jsonR.msg);
                     }
                   },
@@ -1123,10 +937,10 @@ Ext.onReady(function () {
                     log(
                       'server-side failure with status code ' + response.status
                     );
-                    grid.getStore().getAt(rowIndex).set('zipUpload', 3);
+                    record.set('zipUpload', 'error');
                   },
                 });
-              }
+              });
             },
           },
         ],
@@ -1211,13 +1025,21 @@ Ext.onReady(function () {
                 return;
               }
               if (!listFileFromLocal) {
-                Ext.Msg.alert(
-                  'Information',
-                  'Zip file has not been uploaded yet'
-                );
+                showUploadedFileInfo();
                 return;
               }
-              checkFilesOneRecord(record);
+              let stopAtFist = Ext.getCmp(
+                'ckbStopCheckAt1stValidDomain'
+              ).getValue();
+              if (stopAtFist) {
+                record.set('checked', 'spinner');
+                find1stValidDomain(record, (domain) => {
+                  log('find1stValidDomain(record):', domain);
+                  let url =
+                    Ext.getCmp('cbbProtocol').getValue() + '://' + domain;
+                  checkFilesOneRecord({ record, rowIndex, url });
+                });
+              } else checkFilesOneRecord({ record, rowIndex, url });
             },
           },
         ],
@@ -1254,7 +1076,14 @@ Ext.onReady(function () {
                   checked: 0,
                   folderPath: '',
                   zipUpload: 0,
-                  modifiedDateOfBKFile: '',
+                  bakupDate: '',
+                });
+              else
+                record.set({
+                  checked: 0,
+                  folderPath: '',
+                  zipUpload: '',
+                  bakupDate: '',
                 });
             },
           },
@@ -1347,28 +1176,30 @@ function fetchFolderOneRecord(record, callback) {
     },
   });
 }
-function checkFilesOneRecord(record) {
+function checkFilesOneRecord({ record, rowIndex, url }, callback) {
   record.set('checked', 'spinner');
   Ext.Ajax.request({
     method: 'GET',
     url: 'deployment/date-modified-files',
     params: {
       listFile: listFileFromLocal.map((file) => file.fileName).toString(),
-      whitelabelUrl: genUrl(record),
+      whitelabelUrl: url ? url : genUrl(record),
     },
     success: function (response) {
       var rsText = response.responseText.replace(/\\/g, '\\\\');
       var listFileFromServer = JSON.parse(rsText);
-      if (!listFileFromServer.files) {
-        record.set('backupDate', listFileFromServer.msg);
-        var path = listFileFromServer.msg.substr(
-          21,
-          listFileFromServer.msg.length - 3
-        );
-        record.set('folderPath', path.substr(0, path.length - 6));
-        record.set('checked', 'error');
-        return;
-      }
+      // if (!listFileFromServer.files) {
+      // record.set('backupDate', listFileFromServer.msg);
+      // var path = listFileFromServer.msg.substr(
+      //   21,
+      //   listFileFromServer.msg.length - 3
+      // );
+      // record.set('folderPath', path.substr(0, path.length - 6));
+      //   record.set('backupDate', listFileFromServer.message);
+      //   record.set('checked', 'error');
+      //   if (callback) callback();
+      //   return;
+      // }
       var result = compare2Json(listFileFromServer.files, listFileFromLocal);
 
       if (result.success) {
@@ -1393,11 +1224,132 @@ function checkFilesOneRecord(record) {
         var sizeOfFile = new Intl.NumberFormat().format(~~(fileInfo[1] / 1024));
         record.set('backupDate', fileInfo[0] + ' - ' + sizeOfFile + ' KB');
       }
+      if (callback) callback();
     },
     failure: function (response) {
       log('server-side failure with status code ' + response.status);
       record.set('checked', 'error');
+      if (callback) callback();
     },
   });
 }
 
+function fetchBackendId(record, callback) {
+  var ip = record.get('specificServer');
+  record.set('specificServerSpinner', true);
+  let domainType = getDomainType();
+  Ext.Ajax.request({
+    method: 'POST',
+    url: borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
+    withCredentials: true,
+    success: function (response) {
+      record.set('specificServerSpinner', false);
+      let result = JSON.parse(response.responseText);
+      if (result.success) callback(result.backendId);
+      else {
+        if (result.message.indexOf('Invalid URI "/api/domainEdit/token') > -1)
+          Ext.Msg.alert(
+            result.message,
+            `Please login <b>BORDER PX1</b> site<br/>`
+          );
+        else alert(result.message);
+        callback();
+      }
+    },
+    failure: function (response) {
+      alert(JSON.stringify(response));
+    },
+  });
+}
+function showUploadedFileInfo() {
+  Ext.Msg.alert('Information', 'Zip file has not been uploaded yet');
+}
+
+function handleDomainStoreAndGrid({ record, isShowDomainGrid }, callback) {
+  // send to grid domain two columns by golbal variables
+  selectedWhiteLabelName = record.get('name');
+  selectedSpecificServer = record.get('specificServer');
+  selectedServers = record.get('servers');
+  let domainGrid = Ext.getCmp('domainGrid'),
+    domainStore = domainGrid.getStore(),
+    siteTypeValue = getSiteTypeValue(),
+    whiteLabelName = record.get('name'),
+    siteTypeName = getSiteTypeName(),
+    domainType = getDomainType(),
+    cacheName = whiteLabelName + '_' + domainType + '_' + siteTypeName,
+    siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
+
+  if (isShowDomainGrid) domainGrid.show();
+  domainGrid.setTitle('🌍 ' + whiteLabelName + "'s Domains");
+  domainStore.loadData([]);
+  if (Ext.getCmp('ckbLoadFromCache').getValue()) {
+    if (localStorage.getItem(cacheName)) {
+      domainStore.loadData(
+        JSON.parse(
+          CryptoJS.AES.decrypt(
+            localStorage.getItem(cacheName),
+            'The domain data'
+          ).toString(CryptoJS.enc.Utf8)
+        ).map((e) => {
+          e['specificServer'] = selectedSpecificServer;
+          e['servers'] = selectedServers;
+          return e;
+        })
+      );
+      if (!callback) {
+        Ext.getCmp('btnCheckDomain').fireEvent('click');
+        fetchWhitelabelServers(domainStore);
+      } else callback(domainStore);
+    } else
+      Ext.Msg.alert(
+        'Caution',
+        'Cache data of <b>' +
+          whiteLabelName +
+          "</b>'s domain doesn't exist<br/> Please uncheck <b>Load From Cache</b> checkbox"
+      );
+    callback(domainStore);
+  } else {
+    let proxy = domainStore.getProxy();
+    let domainType =
+      Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+        ? 'ip'
+        : 'name';
+    proxy.setConfig('url', [
+      borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
+    ]);
+    proxy.setConfig('withCredentials', [true]);
+    // show loadMask purpose
+    domainStore.load({
+      callback: function (records, operation, success) {
+        try {
+          let result = JSON.parse(operation.getResponse().responseText);
+          if (!result.success) {
+            if (
+              result.message.indexOf("Cannot read property 'id' of undefined") >
+              -1
+            )
+              Ext.Msg.alert(result.message, 'NO DATA');
+            else
+              Ext.Msg.alert(
+                result.message,
+                `Please login <b>BORDER PX1</b> site<br/>
+              OR <br/>
+              Check to <b>Load From Cache</b> then close popup and open again`
+              );
+          } else localStorage.setItem(cacheName, result.domains);
+          callback();
+        } catch (error) {
+          log(error);
+        }
+      },
+    });
+  }
+}
+
+function find1stValidDomain(record, callback) {
+  return handleDomainStoreAndGrid({ record }, (domainStore) => {
+    return checkDomainAllGridSlow(0, domainStore, true, (domain) =>
+      callback(domain)
+    );
+  });
+}

@@ -1,6 +1,5 @@
-let filesParam;
 let listFileFromLocal;
-let listFailedFile = []
+let listFailedFile = [];
 Ext.create('Ext.form.Panel', {
   id: 'deploymentForm',
   title: 'Deployment',
@@ -60,21 +59,13 @@ Ext.create('Ext.form.Panel', {
           value: '',
         },
         {
-          xtype: 'hiddenfield',
-          fieldLabel: 'Files param',
-          id: 'filesParam',
-          labelWidth: 75,
-          width: 300,
-          value: filesParam,
-        },
-        {
           xtype: 'textfield',
-          fieldLabel: 'Zip File Name',
-          id: 'dzFileName',
+          fieldLabel: 'Uploaded file name',
+          id: 'txtUploadedFileName',
           editable: false,
           labelWidth: 100,
           width: 400,
-          value: filesParam,
+          value: '',
         },
         {
           // Fieldset in Column 2 - collapsible via checkbox, collapsed by default, contains a panel
@@ -201,11 +192,9 @@ Ext.create('Ext.form.Panel', {
       buttonText: 'Select .zip file to deploy',
       listeners: {
         change: function () {
-          // need filter at client also
-          // https://www.sencha.com/forum/showthread.php?286958-How-to-filter-file-types-in-extjs-5
           var dzFileNamePath = Ext.getCmp('zipFile').getValue().split('\\');
-          var dzFileName = dzFileNamePath[dzFileNamePath.length - 1];
-          Ext.getCmp('dzFileName').setValue(dzFileName);
+          var uploadedFileName = dzFileNamePath[dzFileNamePath.length - 1];
+          Ext.getCmp('txtUploadedFileName').setValue(uploadedFileName);
           Ext.getCmp('btnUpload').fireEvent('click');
         },
       },
@@ -221,37 +210,19 @@ Ext.create('Ext.form.Panel', {
           if (form.isValid()) {
             form.submit({
               url: 'deployment/upload-file-to-express',
-              // ?fileUserUpload=' +
-              // $('#txtUserName').val() +
-              // '&fileClientName=' +
-              // Ext.getCmp('txtSubClientNames').getRawValue() +
-              // '&fileWsType=' +
-              // Ext.getCmp('txtWsType').getRawValue(),
-              // params: {
-              //     fileUserUpload: $('#txtUserName').val(),
-              //     fileClientName:  Ext.getCmp('txtSubClientNames').getRawValue(),
-              //     fileWsType: Ext.getCmp('txtWsType').getRawValue(),
-              // },
               waitMsg: 'Uploading your file...',
               success: function (_, action) {
-                // filesParam =
-                //   '/Public/GetDateModifiedOfFiles.aspx?files=' +
-                //   exportToFilesParam(result.listFile);
-                // jsonObjsZipFile = result.listFile;
-                // Ext.getCmp('filesParam').setValue(filesParam);
                 let result = action.result;
                 listFileFromLocal = result.listFile;
                 Ext.getCmp('fileListPanel').setHtml(
                   '<div style="height: 95%" id="fileList"></div>'
                 );
-                // create store
                 var store = Ext.create('Ext.data.TreeStore', {
                   root: {
                     expanded: true,
                     children: addMoreTextAndLeafAttr(result.listFile),
                   },
                 });
-                // create tree file list
                 Ext.create('Ext.tree.Panel', {
                   header: false,
                   title: 'file list',
@@ -291,10 +262,7 @@ Ext.create('Ext.form.Panel', {
       listeners: {
         click: (btn) => {
           if (!listFileFromLocal) {
-            Ext.Msg.alert(
-              'Information',
-              'Zip file has not been uploaded yet'
-            );
+            Ext.Msg.alert('Information', 'Zip file has not been uploaded yet');
             return;
           }
           btn.setIconCls('spinner');
@@ -343,44 +311,58 @@ function exportToFilesParam(json) {
 // 12/15/2015, 3:23:41 PM --> convert to 12/15/2015 3:23:41 PM
 function compare2Json(json1, json2) {
   if (json1.length == undefined || json2 == undefined) {
-      Ext.Msg.alert('JSON ERROR', 'site or zip file not exists');
-      return;
+    Ext.Msg.alert('JSON ERROR', 'site or zip file not exists');
+    return;
   }
   if (json1.length != json2.length) {
-      Ext.Msg.alert('Error', 'Error JSON jsonSite.length(' + json1.length + ')!=jsonZip.length(' + json2.length + ')');
-      return;
-  }
-  else {
-      var json = { success: true, files: [] }
-      for (var i = 0; i < json1.length; i++) {
-          // cause datetime in zip is greater than datetime on site one second for odd number ( not even)
-          var dateSite = new Date(json1[i]["modifiedDate"]);
-          dateSite.setSeconds(0);
-          var dateZip = new Date(json2[i]["modifiedDate"].replace(', ', ' '));
-          dateZip.setSeconds(0);
+    Ext.Msg.alert(
+      'Error',
+      'Error JSON jsonSite.length(' +
+        json1.length +
+        ')!=jsonZip.length(' +
+        json2.length +
+        ')'
+    );
+    return;
+  } else {
+    var json = { success: true, files: [] };
+    for (var i = 0; i < json1.length; i++) {
+      // cause datetime in zip is greater than datetime on site one second for odd number ( not even)
+      var dateSite = new Date(json1[i]['modifiedDate']);
+      dateSite.setSeconds(0);
+      var dateZip = new Date(json2[i]['modifiedDate'].replace(', ', ' '));
+      dateZip.setSeconds(0);
 
-          // Malaysia Time & Vietnam Time
-          var hourMalaysia = dateSite.getHours();
-          dateSite.setHours(hourMalaysia - 1);
+      // Malaysia Time & Vietnam Time
+      var hourMalaysia = dateSite.getHours();
+      dateSite.setHours(hourMalaysia - 1);
 
-          // fix one minute
-          if (dateSite.getHours() == dateZip.getHours() && dateSite.getSeconds() == dateZip.getSeconds())
-              if (dateZip.getMinutes() - dateSite.getMinutes() == 1) {
-                  var minute = dateSite.getMinutes() + 1;
-                  dateSite.setMinutes(minute, 0, 0);
-              }
+      // fix one minute
+      if (
+        dateSite.getHours() == dateZip.getHours() &&
+        dateSite.getSeconds() == dateZip.getSeconds()
+      )
+        if (dateZip.getMinutes() - dateSite.getMinutes() == 1) {
+          var minute = dateSite.getMinutes() + 1;
+          dateSite.setMinutes(minute, 0, 0);
+        }
 
-          if (dateSite.toLocaleString() != dateZip.toLocaleString()) {
-              if (dateSite.toLocaleDateString() == dateZip.toLocaleDateString() && dateSite.getHours() < dateZip.getHours() && dateSite.getMinutes() == dateZip.getMinutes()) {
-                  console.log('server setup Vietnam TimeZone');
-              }
-              else {
-                  json["success"] = false;
-                  json["files"].push(json1[i]["fileName"] + '(' + dateSite.toLocaleString() + ')')
-              }
-          }
+      if (dateSite.toLocaleString() != dateZip.toLocaleString()) {
+        if (
+          dateSite.toLocaleDateString() == dateZip.toLocaleDateString() &&
+          dateSite.getHours() < dateZip.getHours() &&
+          dateSite.getMinutes() == dateZip.getMinutes()
+        ) {
+          console.log('server setup Vietnam TimeZone');
+        } else {
+          json['success'] = false;
+          json['files'].push(
+            json1[i]['fileName'] + '(' + dateSite.toLocaleString() + ')'
+          );
+        }
       }
-      return json;
+    }
+    return json;
   }
 }
 
@@ -395,9 +377,25 @@ function fetchFolderAllWLs(index, store, callback) {
   });
 }
 function checkFilesAllWLs(index, store, callback) {
-  let record = store.getAt(index);
-  checkFilesOneRecord(record, (success) => {
-    if (++index < store.getCount()) checkFilesAllWLs(index, store, callback);
-    else callback();
-  });
+  let record = store.getAt(index),
+    stopAtFist = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
+  if (stopAtFist) {
+    // use 1st valid url
+    record.set('checked', 'spinner');
+    find1stValidDomain(record, (domain) => {
+      log('find1stValidDomain(record):', domain);
+      let url = Ext.getCmp('cbbProtocol').getValue() + '://' + domain;
+      checkFilesOneRecord({ record: record, rowIndex: index }, () => {
+        if (++index < store.getCount())
+          checkFilesAllWLs(index, store, callback);
+        else callback();
+      });
+    });
+  }
+  // use default url
+  else
+    checkFilesOneRecord({ record: record, rowIndex: index }, () => {
+      if (++index < store.getCount()) checkFilesAllWLs(index, store, callback);
+      else callback();
+    });
 }
