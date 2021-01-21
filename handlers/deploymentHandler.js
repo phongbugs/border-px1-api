@@ -1,6 +1,7 @@
 const fs = require('fs'),
   yauzl = require('yauzl'),
   fetch = require('node-fetch'),
+  FormData = require('form-data'),
   getModifiedDateOfFileInZip = (fileName, callback) => {
     var jsonObjs = '';
     var i = 0;
@@ -40,6 +41,32 @@ const fs = require('fs'),
       });
     });
   };
+
+// Need change to POST (body) when listFile is large
+async function fetchDateModifiedFiles(req, res) {
+  try {
+    let url =
+      decodeURIComponent(req.query.whitelabelUrl) +
+      '/Public/GetDateModifiedOfFiles.aspx?';
+    console.log(url);
+    const response = await fetch(
+      url +
+        new URLSearchParams({
+          cmd: 'GetModifiedDate',
+          files: req.query.listFile,
+        }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+    let text = (await response.text()).replace(/\\/g, '\\\\').replace(/'/g, '');
+    //log(text);
+    res.send(JSON.parse(text));
+  } catch (error) {
+    res.send({ success: false, message: error.message });
+  }
+}
+
 function uploadFileToExpress(req, res) {
   try {
     let fstream;
@@ -72,31 +99,37 @@ function uploadFileToExpress(req, res) {
   }
 }
 
-function uploadFileToIIS(req, res) {
-  try {
-  } catch (error) {
-    res.send({ success: false, message: error.message });
-  }
-}
-
-// Need change to POST (body) when listFile is large
-async function fetchDateModifiedFiles(req, res) {
+async function uploadFileToIIS(req, res) {
   try {
     let url =
-      decodeURIComponent(req.query.whitelabelUrl) +
-      '/Public/GetDateModifiedOfFiles.aspx?';
+      req.body.whitelabelUrl +
+      '/Public/GetDateModifiedOfFiles.aspx/?' +
+      new URLSearchParams({
+        cmd: 'GetModifiedDate2',
+        'bpx-backend-id': req.body.backendId,
+      });
     console.log(url);
-    const response = await fetch(
-      url +
-        new URLSearchParams({
-          cmd: 'GetModifiedDate',
-          files: req.query.listFile,
-        }),
-      {
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-    res.status(200).json(await response.json());
+    const form = new FormData();
+    if (req.body.action === 'u') {
+      const filePath = './public/files/' + req.body.uploadedFileName;
+      const stats = fs.statSync(filePath);
+      const fileSizeInBytes = stats.size;
+      const fileStream = fs.createReadStream(filePath);
+      form.append('dzFile', fileStream, { knownLength: fileSizeInBytes });
+    }
+    form.append('action', req.body.action);
+    const options = {
+      method: 'POST',
+      body: form,
+    };
+    fetch(url, { ...options }).then(async (response) => {
+      if (response.ok) res.send(await response.text());
+      else
+        res.send({
+          success: false,
+          message: 'action.' + req.body.action + ' -> ' + response.statusText,
+        });
+    });
   } catch (error) {
     res.send({ success: false, message: error.message });
   }
