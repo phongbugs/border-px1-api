@@ -376,20 +376,54 @@ function fetchFolderAllWLs(index, store, callback) {
     else callback();
   });
 }
+// function checkFilesAllWLs(index, store, callback) {
+//   let record = store.getAt(index),
+//     stopAtFist = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
+//   if (stopAtFist) {
+//     // use 1st valid url
+//     record.set('checked', 'spinner');
+//     find1stValidDomain(record, (domain) => {
+//       log('find1stValidDomain(record):', domain);
+//       let url = Ext.getCmp('cbbProtocol').getValue() + '://' + domain;
+//       checkFilesOneRecord({ record: record, rowIndex: index }, () => {
+//         if (++index < store.getCount())
+//           checkFilesAllWLs(index, store, callback);
+//         else callback();
+//       });
+//     });
+//   }
+//   // use default url
+//   else
+//     checkFilesOneRecord({ record: record, rowIndex: index }, () => {
+//       if (++index < store.getCount()) checkFilesAllWLs(index, store, callback);
+//       else callback();
+//     });
+// }
+
 function checkFilesAllWLs(index, store, callback) {
   let record = store.getAt(index),
     stopAtFist = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
   if (stopAtFist) {
     // use 1st valid url
     record.set('checked', 'spinner');
-    find1stValidDomain(record, (domain) => {
-      log('find1stValidDomain(record):', domain);
-      let url = Ext.getCmp('cbbProtocol').getValue() + '://' + domain;
-      checkFilesOneRecord({ record: record, rowIndex: index }, () => {
+    findFirstValidDomain({ index: 0, record: record }, (url) => {
+      log('valid domain: %s', url);
+      if (url)
+        checkFilesOneRecord(
+          { record: record, rowIndex: index, url: url },
+          () => {
+            if (++index < store.getCount())
+              checkFilesAllWLs(index, store, callback);
+            else callback();
+          }
+        );
+      else {
+        record.set('checked', 'error');
+        record.set('folderPath', 'Cannot find any a valid domain');
         if (++index < store.getCount())
           checkFilesAllWLs(index, store, callback);
         else callback();
-      });
+      }
     });
   }
   // use default url

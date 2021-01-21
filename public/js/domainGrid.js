@@ -335,16 +335,14 @@ function checkDomainOneRecord(record, callback) {
       failure: function (response) {
         log('server-side failure with status code ' + response.status);
         record.set('folderPath', 'checkKoCls');
-        callback(result.success);
+        callback(false);
       },
     });
   } else {
     Ext.Ajax.request({
       url: borderPx1ApiHost + '/info/folder?' + new URLSearchParams({ url }),
       success: function (response) {
-        // parse jsonString from server
         var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
-        log;
         if (result.success)
           record.set('folderPath', result.path.replace(/\//g, '\\'));
         else record.set('folderPath', 'checkKoCls');
@@ -353,7 +351,7 @@ function checkDomainOneRecord(record, callback) {
       failure: function (response) {
         log('server-side failure with status code ' + response.status);
         record.set('folderPath', 'checkKoCls');
-        callback(result.success);
+        callback(false);
       },
     });
   }
@@ -367,13 +365,16 @@ function checkDomainAllGrid() {
 }
 
 function checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback) {
-  let record = store.getAt(index);
-  checkDomainOneRecord(record, (success) => {
-    if (success && stopAtFistVailDomain) index = store.getCount();
-    if (++index < store.getCount())
-      checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback);
-    else callback(record.get('Domain'));
-  });
+  if (store) {
+    let record = store.getAt(index);
+    checkDomainOneRecord(record, (success) => {
+      if (success && stopAtFistVailDomain) index = store.getCount();
+      if (++index < store.getCount())
+        checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback);
+      else callback(record.get('Domain'));
+    });
+  }
+  else callback()
 }
 function fetchWhitelabelServers(store) {
   let siteTypeValue = getSiteTypeValue(),

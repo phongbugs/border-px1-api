@@ -233,7 +233,16 @@ Ext.onReady(function () {
         listeners: {
           click: () => {
             storeWLs.clearFilter();
-            storeWLs.loadData(data);
+            storeWLs.loadData(
+              data.map((e) => {
+                e.checked = 0;
+                e.folderPath = '';
+                e.zipUpload = e.zipUpload === '' ? '' : 0;
+                e.backupDate = '';
+                e.isSyncedFolder = false;
+                return e;
+              })
+            );
           },
         },
       },
@@ -973,16 +982,18 @@ Ext.onReady(function () {
               return iconCls;
             },
             handler: function (grid, rowIndex, colIndex, item, e, record, row) {
-              rowIndex = grid.getStore().indexOf(record);
-              record = grid.getStore().getAt(rowIndex);
-              record.set('isSyncedFolder', 'spinner');
-              //log(row.children[1].innerHTML);
-              fetchFolderOneRecord(record, (success) =>
-                record.set(
-                  'isSyncedFolder',
-                  success ? 'folderOkCls' : 'checkKoCls'
-                )
-              );
+              if (!record.get('isSyncedFolder')) {
+                rowIndex = grid.getStore().indexOf(record);
+                record = grid.getStore().getAt(rowIndex);
+                record.set('isSyncedFolder', 'spinner');
+                //log(row.children[1].innerHTML);
+                fetchFolderOneRecord(record, (success) =>
+                  record.set(
+                    'isSyncedFolder',
+                    success ? 'folderOkCls' : 'checkKoCls'
+                  )
+                );
+              }
             },
           },
         ],
@@ -1031,6 +1042,7 @@ Ext.onReady(function () {
               let stopAtFist = Ext.getCmp(
                 'ckbStopCheckAt1stValidDomain'
               ).getValue();
+              // ================ method 1 use "check one" icon ================
               if (stopAtFist) {
                 record.set('checked', 'spinner');
                 find1stValidDomain(record, (domain) => {
@@ -1039,7 +1051,19 @@ Ext.onReady(function () {
                     Ext.getCmp('cbbProtocol').getValue() + '://' + domain;
                   checkFilesOneRecord({ record, rowIndex, url });
                 });
-              } else checkFilesOneRecord({ record, rowIndex, url });
+              } else checkFilesOneRecord({ record, rowIndex });
+
+              // ================ method 2 use for "check all" button ===================
+              // if (stopAtFist) {
+              //   findFirstValidDomain({ index: 0, record: record }, (url) => {
+              //     log('valid domain: %s', url);
+              //     if (url) checkFilesOneRecord({ record, rowIndex, url });
+              //     else {
+              //       record.set('checked', 'error');
+              //       record.set('folderPath', 'Cannot find any a valid domain');
+              //     }
+              //   });
+              // }
             },
           },
         ],
@@ -1071,20 +1095,13 @@ Ext.onReady(function () {
             handler: function (grid, rowIndex, colIndex, item, e, record) {
               rowIndex = grid.getStore().indexOf(record);
               record = grid.getStore().getAt(rowIndex);
-              if (record.get('zipUpload') !== 0)
-                record.set({
-                  checked: 0,
-                  folderPath: '',
-                  zipUpload: 0,
-                  bakupDate: '',
-                });
-              else
-                record.set({
-                  checked: 0,
-                  folderPath: '',
-                  zipUpload: '',
-                  bakupDate: '',
-                });
+              record.set({
+                checked: 0,
+                folderPath: '',
+                zipUpload: record.get('zipUpload') === '' ? '' : 0,
+                backupDate: '',
+                isSyncedFolder: false,
+              });
             },
           },
         ],
@@ -1180,47 +1197,37 @@ function checkFilesOneRecord({ record, rowIndex, url }, callback) {
   record.set('checked', 'spinner');
   Ext.Ajax.request({
     method: 'GET',
-    url: 'deployment/date-modified-files',
+    url: borderPx1ApiHost + '/deployment/date-modified-files',
     params: {
       listFile: listFileFromLocal.map((file) => file.fileName).toString(),
       whitelabelUrl: url ? url : genUrl(record),
     },
     success: function (response) {
-      var rsText = response.responseText.replace(/\\/g, '\\\\');
-      var listFileFromServer = JSON.parse(rsText);
-      // if (!listFileFromServer.files) {
-      // record.set('backupDate', listFileFromServer.msg);
-      // var path = listFileFromServer.msg.substr(
-      //   21,
-      //   listFileFromServer.msg.length - 3
-      // );
-      // record.set('folderPath', path.substr(0, path.length - 6));
-      //   record.set('backupDate', listFileFromServer.message);
-      //   record.set('checked', 'error');
-      //   if (callback) callback();
-      //   return;
-      // }
-      var result = compare2Json(listFileFromServer.files, listFileFromLocal);
-
+      var data = response.responseText.replace(/\\/g, '\\\\');
+      data = JSON.parse(data);
+      if (!data.success) {
+        if (!data.files && data.msg) {
+          record.set('backupDate', data.msg);
+          record.set('folderPath', data.msg);
+        }
+        record.set('checked', 'error');
+        if (callback) callback();
+        return;
+      }
+      let listFileFromServer = data.files;
+      var result = compare2Json(listFileFromServer, listFileFromLocal);
       if (result.success) {
         record.set('checked', 'ok');
-        if (listFileFromServer.path.indexOf('Could not find file') != -1)
-          record.set(
-            'backupDate',
-            listFileFromServer.path.replace(/\//g, '\\')
-          );
-        else
-          record.set(
-            'folderPath',
-            listFileFromServer.path.replace(/\//g, '\\')
-          );
+        if (data.path.indexOf('Could not find file') != -1)
+          record.set('backupDate', data.path.replace(/\//g, '\\'));
+        else record.set('folderPath', data.path.replace(/\//g, '\\'));
       } else {
         record.set('checked', 'error');
-        record.set('folderPath', listFileFromServer.path.replace(/\//g, '\\'));
+        record.set('folderPath', data.path.replace(/\//g, '\\'));
         listFailedFile[rowIndex] = result;
       }
-      if (listFileFromServer.modifiedDateOfBKFile) {
-        var fileInfo = listFileFromServer.modifiedDateOfBKFile.split('-');
+      if (data.modifiedDateOfBKFile) {
+        var fileInfo = data.modifiedDateOfBKFile.split('-');
         var sizeOfFile = new Intl.NumberFormat().format(~~(fileInfo[1] / 1024));
         record.set('backupDate', fileInfo[0] + ' - ' + sizeOfFile + ' KB');
       }
@@ -1307,7 +1314,7 @@ function handleDomainStoreAndGrid({ record, isShowDomainGrid }, callback) {
           whiteLabelName +
           "</b>'s domain doesn't exist<br/> Please uncheck <b>Load From Cache</b> checkbox"
       );
-    callback(domainStore);
+    if (callback) callback();
   } else {
     let proxy = domainStore.getProxy();
     let domainType =
@@ -1337,7 +1344,7 @@ function handleDomainStoreAndGrid({ record, isShowDomainGrid }, callback) {
               Check to <b>Load From Cache</b> then close popup and open again`
               );
           } else localStorage.setItem(cacheName, result.domains);
-          callback();
+          if (callback) callback();
         } catch (error) {
           log(error);
         }
@@ -1353,3 +1360,75 @@ function find1stValidDomain(record, callback) {
     );
   });
 }
+function findFirstValidDomain({ index, record, domains }, callback) {
+  if (!domains)
+    fetchDomainsBySiteName(record, (domains) => {
+      isValidDomain(domains[index], (isValid) => {
+        if (isValid)
+          callback(
+            Ext.getCmp('cbbProtocol').getValue() + '://' + domains[index]
+          );
+        else if (++index > domains.length) callback();
+        else findFirstValidDomain({ index, record, domains }, callback);
+      });
+    });
+  else {
+    // don't fetch domain again
+    isValidDomain(domains[index], (isValid) => {
+      if (isValid)
+        callback(Ext.getCmp('cbbProtocol').getValue() + '://' + domains[index]);
+      else if (++index > domains.length) callback();
+      else findFirstValidDomain({ index, record, domains }, callback);
+    });
+  }
+}
+
+function fetchDomainsBySiteName(record, callback) {
+  let siteTypeValue = getSiteTypeValue(),
+    whiteLabelName = record.get('name'),
+    domainType = getDomainType(),
+    siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
+  Ext.Ajax.request({
+    method: 'GET',
+    withCredentials: true,
+    url: borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
+    success: function (response) {
+      let result = JSON.parse(response.responseText);
+      if (result.success) {
+        let domains = JSON.parse(
+          CryptoJS.AES.decrypt(result.domains, 'The domain data').toString(
+            CryptoJS.enc.Utf8
+          )
+        ).map((e) => e.Domain);
+        log(domains);
+        callback(domains);
+      } else callback([]);
+    },
+    failure: function (response) {
+      log('server-side failure with status code ' + response.status);
+      callback([]);
+    },
+  });
+}
+
+function isValidDomain(domain, callback) {
+  let siteType = getSiteTypeName();
+  domain = encodeURIComponent(
+    Ext.getCmp('cbbProtocol').getValue() + '://' + domain
+  );
+  let url =
+    borderPx1ApiHost +
+    '/info/' +
+    (siteType === 'mobile' ? 'mobile' : 'folder') +
+    '?' +
+    new URLSearchParams({ url: domain });
+  Ext.Ajax.request({
+    url: url,
+    success: (response) => callback(JSON.parse(response.responseText).success),
+    failure: function (response) {
+      log('isValidDomain: %s', response);
+      callback(false);
+    },
+  });
+}
+
