@@ -135,8 +135,35 @@ async function uploadFileToIIS(req, res) {
   }
 }
 
+async function deploy(req, res) {
+  try {
+    let url =
+        req.body.whitelabelUrl +
+        '/Public/GetDateModifiedOfFiles.aspx?' +
+        new URLSearchParams({
+          cmd: 'GetModifiedDate3',
+          'bpx-backend-id': req.body.backendId,
+        }),
+      form = new FormData();
+    form.append('dzFileName', req.body.dzFileName);
+    form.append('dzFileNameList', req.body.dzFileNameList);
+    form.append('nameBatFile', req.body.nameBatFile);
+    form.append('batMode', req.body.batMode);
+    form.append('isBKFull', req.body.isBKFull);
+    form.append('isStart', req.body.isStart ? 1 : 0);
+    let response = await fetch(url, {
+      // removed header
+      method: 'POST',
+      body: form,
+    });
+    res.send(await response.text());
+  } catch (error) {
+    res.send({ success: false, message: error.message });
+  }
+}
 module.exports = {
   uploadFileToExpress,
   uploadFileToIIS,
   fetchDateModifiedFiles,
+  deploy,
 };
