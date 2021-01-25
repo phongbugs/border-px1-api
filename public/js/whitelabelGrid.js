@@ -491,17 +491,20 @@ Ext.onReady(function () {
           let startIndex = +Ext.getCmp('txtStartIndex').getValue() - 1,
             endIndex = +Ext.getCmp('txtEndIndex').getValue() - 1,
             url = '',
-            stopAtFist = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
+            stopAtFirst = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
           for (let i = startIndex; i <= endIndex; i++) {
             let record = storeWLs.getAt(i);
-            if (stopAtFist) {
-              findFirstValidDomain({ index: 0, record: record }, (domain) => {
-                log('valid domain: %s', domain);
-                if (domain) {
-                  url = domain + '/' + getSelectedPage();
-                  window.open(url, '_blank');
-                } else log('Cannot find any a valid domain');
-              });
+            if (stopAtFirst) {
+              findFirstValidDomain(
+                { index: 0, record: record },
+                ({ domain }) => {
+                  log('valid domain: %s', domain);
+                  if (domain) {
+                    url = domain + '/' + getSelectedPage();
+                    window.open(url, '_blank');
+                  } else log('Cannot find any a valid domain');
+                }
+              );
             } else {
               let defaultDomain = record.get('defaultDomain') || undefined,
                 name = record.get('name'),
@@ -512,11 +515,7 @@ Ext.onReady(function () {
                   ? defaultDomain
                   : siteType + defaultDomain;
               url =
-                Ext.getCmp('cbbProtocol').getValue() +
-                '://' +
-                defaultDomain +
-                '/' +
-                getSelectedPage();
+                getProtocol() + '://' + defaultDomain + '/' + getSelectedPage();
               window.open(url, '_blank');
             }
           }
@@ -609,7 +608,7 @@ Ext.onReady(function () {
             mobileRedirect = !record.get('mobileRedirect') ? '📵' : '',
             securityQuestion = record.get('securityQuestion') ? '🔒' : '',
             status = record.get('status'),
-            protocol = Ext.getCmp('cbbProtocol').getValue(),
+            protocol = getProtocol(),
             siteType = Ext.getCmp('cbbSiteType').getValue();
           if (!defaultDomain) defaultDomain = val + '.com';
           defaultDomain =
@@ -1046,82 +1045,36 @@ Ext.onReady(function () {
                 return;
               }
 
-              var folderPath = record.get('folderPath');
-              if (folderPath === '') {
-                Ext.Msg.alert('Miss params', 'Folder path not exist');
-                return;
-              }
-              if (Ext.getCmp('useUrlCheckingDefault').getValue()) {
-                // use customize url
-              }
-              record.set('batUpload', 'spinner');
-              fetchBackendId(record, (backendId) => {
-                // default agent site
-                let bkFile =
-                  folderPath.substr(0, folderPath.length - 1) + '.zip';
-                // handle member site
-                if (folderPath.indexOf('WebUI') > -1)
-                  bkFile = folderPath.substr(0, folderPath.length - 7) + '.zip';
-                let nameBatFile =
-                  record.get('name') +
-                  '_' +
-                  getSiteTypeName() +
-                  '_' +
-                  Ext.getCmp('rbBatMode').getValue().rb +
-                  '.bat';
-                let whitelabelUrl = genUrl(record);
-                var params = {
-                  whitelabelUrl: whitelabelUrl,
-                  backendId: backendId,
-                  dzFileName: Ext.getCmp('txtUploadedFileName').getValue(),
-                  dzFileNameList: dzFileNameListGen(
-                    listFileFromLocal,
-                    folderPath
-                  ),
-                  bkFile: bkFile,
-                  pathFolder: folderPath,
-                  nameBatFile: nameBatFile,
-                  batMode: Ext.getCmp('rbBatMode').getValue().rb,
-                  isBKFull: Ext.getCmp('cbBackupFull').getValue(),
-                  isStart: Ext.getCmp('cbIsStart').getValue(),
-                };
-                Ext.Ajax.request({
-                  method: 'POST',
-                  url: borderPx1ApiHost + '/deployment/run',
-                  params: params,
-                  withCredentials: true,
-                  success: function (response) {
-                    var result = JSON.parse(response.responseText);
-                    if (result.success) {
-                      record.set('batUpload', 'ok');
-                      // automatic checking after runbat
-                      if (Ext.getCmp('cbAutoCheck').getValue()) {
-                        var seconds =
-                          Ext.getCmp('txtCheckingTime').getValue() * 1000;
-                        if (isNaN(seconds)) return;
-                        // start check auto
-                        record.set('checked', 'spinner');
-                        setTimeout(
-                          () =>
-                            checkFilesOneRecord({
-                              record,
-                              rowIndex,
-                              whitelabelUrl,
-                            }),
-                          seconds
-                        );
-                      }
+              let stopAtFirst = getStopAtFirst();
+              if (stopAtFirst) {
+                record.set('batUpload', 'spinner');
+                findFirstValidDomain(
+                  { index: 0, record: record },
+                  ({ domain, folderPath }) => {
+                    if (domain) {
+                      executeDeployment({
+                        record,
+                        rowIndex,
+                        domain,
+                        folderPath,
+                      });
                     } else {
-                      log(result.msg);
                       record.set('batUpload', 'error');
+                      record.set(
+                        'folderPath',
+                        'Cannot find any a valid domain'
+                      );
                     }
-                  },
-                  failure: function (response) {
-                    log('failure with status code ' + response.status);
-                    record.set('batUpload', 'error');
-                  },
-                });
-              });
+                  }
+                );
+              } else {
+                var folderPath = record.get('folderPath');
+                if (folderPath === '') {
+                  Ext.Msg.alert('Miss params', 'Folder path not exist');
+                  return;
+                }
+                executeDeployment({ record, rowIndex, folderPath });
+              }
             },
           },
         ],
@@ -1167,11 +1120,9 @@ Ext.onReady(function () {
                 showUploadedFileInfo();
                 return;
               }
-              let stopAtFist = Ext.getCmp(
-                'ckbStopCheckAt1stValidDomain'
-              ).getValue();
+              let stopAtFirst = getStopAtFirst();
               // ================ method 1 use "check one" icon ================
-              // if (stopAtFist) {
+              // if (stopAtFirst) {
               //   record.set('checked', 'spinner');
               //   find1stValidDomain(record, (domain) => {
               //     log('find1stValidDomain(record):', domain);
@@ -1182,16 +1133,23 @@ Ext.onReady(function () {
               // } else checkFilesOneRecord({ record, rowIndex });
 
               // ================ method 2 use for "check all" button ===================
-              if (stopAtFist) {
+              if (stopAtFirst) {
                 record.set('checked', 'spinner');
-                findFirstValidDomain({ index: 0, record: record }, (url) => {
-                  log('valid domain: %s', url);
-                  if (url) checkFilesOneRecord({ record, rowIndex, url });
-                  else {
-                    record.set('checked', 'error');
-                    record.set('folderPath', 'Cannot find any a valid domain');
+                findFirstValidDomain(
+                  { index: 0, record: record },
+                  ({ domain }) => {
+                    log('valid domain: %s', domain);
+                    let url = domain;
+                    if (domain) checkFilesOneRecord({ record, rowIndex, url });
+                    else {
+                      record.set('checked', 'error');
+                      record.set(
+                        'folderPath',
+                        'Cannot find any a valid domain'
+                      );
+                    }
                   }
-                });
+                );
               } else checkFilesOneRecord({ record, rowIndex });
             },
           },
@@ -1276,7 +1234,7 @@ function syncDomainsAllWLs(index, store, callback) {
 function genUrl(record) {
   let defaultDomain = record.get('defaultDomain'),
     status = record.get('status'),
-    protocol = Ext.getCmp('cbbProtocol').getValue(),
+    protocol = getProtocol(),
     siteType = Ext.getCmp('cbbSiteType').getValue(),
     whiteLabelName = record.get('name');
   if (!defaultDomain) defaultDomain = whiteLabelName + '.com';
@@ -1493,20 +1451,24 @@ function find1stValidDomain(record, callback) {
 function findFirstValidDomain({ index, record, domains }, callback) {
   if (!domains)
     fetchDomainsBySiteName(record, (domains) => {
-      isValidDomain(domains[index], (isValid) => {
+      isValidDomain(domains[index], ({ isValid, path }) => {
         if (isValid)
-          callback(
-            Ext.getCmp('cbbProtocol').getValue() + '://' + domains[index]
-          );
+          callback({
+            domain: getProtocol() + '://' + domains[index],
+            folderPath: path.replace(/\//g, '\\'),
+          });
         else if (++index > domains.length) callback();
         else findFirstValidDomain({ index, record, domains }, callback);
       });
     });
   else {
     // don't fetch domain again
-    isValidDomain(domains[index], (isValid) => {
+    isValidDomain(domains[index], ({ isValid, path }) => {
       if (isValid)
-        callback(Ext.getCmp('cbbProtocol').getValue() + '://' + domains[index]);
+        callback({
+          domain: getProtocol() + '://' + domains[index],
+          folderPath: path.replace(/\//g, '\\'),
+        });
       else if (++index > domains.length) callback();
       else findFirstValidDomain({ index, record, domains }, callback);
     });
@@ -1543,9 +1505,7 @@ function fetchDomainsBySiteName(record, callback) {
 
 function isValidDomain(domain, callback) {
   let siteType = getSiteTypeName();
-  domain = encodeURIComponent(
-    Ext.getCmp('cbbProtocol').getValue() + '://' + domain
-  );
+  domain = encodeURIComponent(getProtocol() + '://' + domain);
   let url =
     borderPx1ApiHost +
     '/info/' +
@@ -1554,7 +1514,10 @@ function isValidDomain(domain, callback) {
     new URLSearchParams({ url: domain });
   Ext.Ajax.request({
     url: url,
-    success: (response) => callback(JSON.parse(response.responseText).success),
+    success: (response) => {
+      let result = JSON.parse(response.responseText);
+      callback({ isValid: result.success, path: result.path });
+    },
     failure: function (response) {
       log('isValidDomain: %s', response);
       callback(false);
@@ -1581,4 +1544,76 @@ function getSelectedPage() {
     default:
       return columnName;
   }
+}
+
+function getProtocol() {
+  return Ext.getCmp('cbbProtocol').getValue();
+}
+function getStopAtFirst() {
+  return Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
+}
+
+function executeDeployment({ record, rowIndex, domain, folderPath }) {
+  fetchBackendId(record, (backendId) => {
+    // default agent site
+    let bkFile = folderPath.substr(0, folderPath.length - 1) + '.zip';
+    // handle member site
+    if (folderPath.indexOf('WebUI') > -1)
+      bkFile = folderPath.substr(0, folderPath.length - 7) + '.zip';
+    let nameBatFile =
+      record.get('name') +
+      '_' +
+      getSiteTypeName() +
+      '_' +
+      Ext.getCmp('rbBatMode').getValue().rb +
+      '.bat';
+    let url = domain || genUrl(record);
+    var params = {
+      whitelabelUrl: url,
+      backendId: backendId,
+      dzFileName: Ext.getCmp('txtUploadedFileName').getValue(),
+      dzFileNameList: dzFileNameListGen(listFileFromLocal, folderPath),
+      bkFile: bkFile,
+      pathFolder: folderPath,
+      nameBatFile: nameBatFile,
+      batMode: Ext.getCmp('rbBatMode').getValue().rb,
+      isBKFull: Ext.getCmp('cbBackupFull').getValue(),
+      isStart: Ext.getCmp('cbIsStart').getValue(),
+    };
+    Ext.Ajax.request({
+      method: 'POST',
+      url: borderPx1ApiHost + '/deployment/run',
+      params: params,
+      withCredentials: true,
+      success: function (response) {
+        var result = JSON.parse(response.responseText);
+        if (result.success) {
+          record.set('batUpload', 'ok');
+          // automatic checking after runbat
+          if (Ext.getCmp('cbAutoCheck').getValue()) {
+            var seconds = Ext.getCmp('txtCheckingTime').getValue() * 1000;
+            if (isNaN(seconds)) return;
+            // start check auto
+            record.set('checked', 'spinner');
+            setTimeout(
+              () =>
+                checkFilesOneRecord({
+                  record,
+                  rowIndex,
+                  url,
+                }),
+              seconds
+            );
+          }
+        } else {
+          log(result.msg);
+          record.set('batUpload', 'error');
+        }
+      },
+      failure: function (response) {
+        log('failure with status code ' + response.status);
+        record.set('batUpload', 'error');
+      },
+    });
+  });
 }
