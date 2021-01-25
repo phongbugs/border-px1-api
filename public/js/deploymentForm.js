@@ -265,10 +265,32 @@ Ext.create('Ext.form.Panel', {
             Ext.Msg.alert('Information', 'Zip file has not been uploaded yet');
             return;
           }
-          btn.setIconCls('spinner');
-          checkFilesAllWLs(2, storeWLs, () => btn.setIconCls('checkFileCls'));
+          //btn.setIconCls('spinner');
+          START = !START
+            ? setSTART(true, btn)
+            : setSTART(false, btn, 'checkFileCls');
+          log('START: %s', START);
+          if (START)
+            checkFilesAllWLs(
+              Ext.getCmp('txtRowIndex').getValue() - 1 || 1,
+              storeWLs,
+              () => {
+                START = setSTART(false, btn, 'checkFileCls');
+              }
+            );
         },
       },
+    },
+    {
+      xtype: 'textfield',
+      fieldLabel: 'Start Row',
+      labelWidth: 70,
+      width: 110,
+      id: 'txtRowIndex',
+      name: 'txtRowIndex',
+      value: 1,
+      maxLength: 3,
+      allowBlank: false,
     },
   ],
   listeners: {
@@ -400,17 +422,23 @@ function fetchFolderAllWLs(index, store, callback) {
 //     });
 // }
 
+let START = false;
 function checkFilesAllWLs(index, store, callback) {
   let record = store.getAt(index),
     stopAtFirst = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
   if (stopAtFirst) {
     // use 1st valid url
     record.set('checked', 'spinner');
-    findFirstValidDomain({ index: 0, record: record }, (url) => {
-      log('valid domain: %s', url);
-      if (url)
+    findFirstValidDomain({ index: 0, record: record }, ({ domain }) => {
+      log('valid domain: %s', domain);
+      if (!START) {
+        setRowIndex(++index);
+        index = store.getCount();
+        callback();
+      }
+      if (domain)
         checkFilesOneRecord(
-          { record: record, rowIndex: index, url: url },
+          { record: record, rowIndex: index, url: domain },
           () => {
             if (++index < store.getCount())
               checkFilesAllWLs(index, store, callback);
@@ -433,3 +461,9 @@ function checkFilesAllWLs(index, store, callback) {
       else callback();
     });
 }
+
+let setSTART = (isStop, btn, btnCls) => {
+    btn.setIconCls(btnCls || 'spinner');
+    return isStop;
+  },
+  setRowIndex = (val) => Ext.getCmp('txtRowIndex').setValue(val);

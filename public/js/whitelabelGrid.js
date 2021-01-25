@@ -202,6 +202,7 @@ Ext.onReady(function () {
             cellClickCount = 1;
             Ext.getCmp('txtEndIndex').setValue(td.innerText);
           }
+          Ext.getCmp('txtRowIndex').setValue(td.innerText);
         } else if (cellIndex > 1 && cellIndex < 13) {
           Ext.getCmp('gridWLs').setDisabled(true);
           let isShowDomainGrid = true;
@@ -1457,7 +1458,7 @@ function findFirstValidDomain({ index, record, domains }, callback) {
             domain: getProtocol() + '://' + domains[index],
             folderPath: path.replace(/\//g, '\\'),
           });
-        else if (++index > domains.length) callback();
+        else if (++index > domains.length) callback({ domain: null });
         else findFirstValidDomain({ index, record, domains }, callback);
       });
     });
@@ -1469,7 +1470,7 @@ function findFirstValidDomain({ index, record, domains }, callback) {
           domain: getProtocol() + '://' + domains[index],
           folderPath: path.replace(/\//g, '\\'),
         });
-      else if (++index > domains.length) callback();
+      else if (++index > domains.length) callback({ domain: null });
       else findFirstValidDomain({ index, record, domains }, callback);
     });
   }
