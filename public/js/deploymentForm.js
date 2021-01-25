@@ -4,7 +4,7 @@ Ext.create('Ext.form.Panel', {
   id: 'deploymentForm',
   title: 'Deployment',
   bodyPadding: 5,
-  width: 850,
+  width: 800,
   height: 400,
   style: {
     marginTop: '20px',
@@ -29,7 +29,7 @@ Ext.create('Ext.form.Panel', {
       id: 'fileListPanel',
       width: 350,
       height: 300,
-      //html: '<div style="height:300px; overflow: scroll" id="fileList"></div>',
+      html: '<div style="height:300px; overflow: scroll" id="fileList"></div>',
     },
     {
       xtype: 'panel',
@@ -60,7 +60,7 @@ Ext.create('Ext.form.Panel', {
         },
         {
           xtype: 'textfield',
-          fieldLabel: 'Uploaded file name',
+          fieldLabel: 'File name',
           id: 'txtUploadedFileName',
           editable: false,
           labelWidth: 100,
@@ -243,21 +243,34 @@ Ext.create('Ext.form.Panel', {
     },
     {
       xtype: 'button',
-      width: 120,
-      text: 'Get All Folder',
-      tooltip: 'Get All Folder',
+      width: 65,
+      text: 'Start',
+      tooltip: 'Get folder all whitelabel',
       iconCls: 'folderCls',
       listeners: {
         click: (btn) => {
-          btn.setIconCls('spinner');
-          fetchFolderAllWLs(2, storeWLs, () => btn.setIconCls('folderCls'));
+          // btn.setIconCls('spinner');
+          // fetchFolderAllWLs(0, storeWLs, () => btn.setIconCls('folderCls'));
+          START = !START
+            ? setSTART(true, btn)
+            : setSTART(false, btn, 'folderCls');
+          log('START: %s', START);
+          if (START)
+            fetchFolderAllWLs(
+              Ext.getCmp('txtRowIndex').getValue() - 1 || 1,
+              storeWLs,
+              () => {
+                START = setSTART(false, btn, 'folderCls');
+              }
+            );
         },
       },
     },
     {
       xtype: 'button',
-      width: 100,
-      text: 'Check All',
+      width: 65,
+      text: 'Start',
+      tooltip: 'Check files all whitelabels',
       iconCls: 'checkFileCls',
       listeners: {
         click: (btn) => {
@@ -265,7 +278,6 @@ Ext.create('Ext.form.Panel', {
             Ext.Msg.alert('Information', 'Zip file has not been uploaded yet');
             return;
           }
-          //btn.setIconCls('spinner');
           START = !START
             ? setSTART(true, btn)
             : setSTART(false, btn, 'checkFileCls');
@@ -282,8 +294,35 @@ Ext.create('Ext.form.Panel', {
       },
     },
     {
+      xtype: 'button',
+      width: 65,
+      text: 'Start',
+      tooltip: 'Deploy all whitelabels',
+      iconCls: 'batUploadCls',
+      listeners: {
+        click: (btn) => {
+          if (!listFileFromLocal) {
+            Ext.Msg.alert('Information', 'Zip file has not been uploaded yet');
+            return;
+          }
+          START = !START
+            ? setSTART(true, btn)
+            : setSTART(false, btn, 'batUploadCls');
+          log('START: %s', START);
+          if (START)
+            deployAllWhitelabels(
+              Ext.getCmp('txtRowIndex').getValue() - 1 || 1,
+              storeWLs,
+              () => {
+                START = setSTART(false, btn, 'batUploadCls');
+              }
+            );
+        },
+      },
+    },
+    {
       xtype: 'textfield',
-      fieldLabel: 'Start Row',
+      fieldLabel: 'From Row',
       labelWidth: 70,
       width: 110,
       id: 'txtRowIndex',
@@ -390,6 +429,11 @@ function compare2Json(json1, json2) {
 
 // Safe slowly one by one
 function fetchFolderAllWLs(index, store, callback) {
+  if (!START) {
+    setRowIndex(++index);
+    index = store.getCount();
+    callback();
+  }
   let record = store.getAt(index);
   record.set('isSyncedFolder', 'spinner');
   fetchFolderOneRecord(record, (success) => {
@@ -425,7 +469,7 @@ function fetchFolderAllWLs(index, store, callback) {
 let START = false;
 function checkFilesAllWLs(index, store, callback) {
   let record = store.getAt(index),
-    stopAtFirst = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
+    stopAtFirst = getStopAtFirst();
   if (stopAtFirst) {
     // use 1st valid url
     record.set('checked', 'spinner');
@@ -460,6 +504,57 @@ function checkFilesAllWLs(index, store, callback) {
       if (++index < store.getCount()) checkFilesAllWLs(index, store, callback);
       else callback();
     });
+}
+
+function deployAllWhitelabels(index, store, callback) {
+  let record = store.getAt(index),
+    stopAtFirst = getStopAtFirst();
+  if (stopAtFirst) {
+    // use 1st valid url
+    record.set('batUpload', 'spinner');
+    findFirstValidDomain(
+      { index: 0, record: record },
+      ({ domain, folderPath }) => {
+        log('valid domain: %s', domain);
+        if (!START) {
+          setRowIndex(++index);
+          index = store.getCount();
+          callback();
+        }
+        if (domain)
+          deployOneWhitelabel(
+            {
+              record: record,
+              rowIndex: index,
+              domain: domain,
+              folderPath: folderPath,
+            },
+            () => {
+              if (++index < store.getCount())
+                deployAllWhitelabels(index, store, callback);
+              else callback();
+            }
+          );
+        else {
+          record.set('batUpload', 'error');
+          record.set('folderPath', 'Cannot find any a valid domain');
+          if (++index < store.getCount())
+            deployAllWhitelabels(index, store, callback);
+          else callback();
+        }
+      }
+    );
+  }
+  // use default url
+  // else
+  //   deployOneWhitelabel(
+  //     { record: record, rowIndex: index, folderPath: folderPath },
+  //     () => {
+  //       if (++index < store.getCount())
+  //         deployAllWhitelabels(index, store, callback);
+  //       else callback();
+  //     }
+  //   );
 }
 
 let setSTART = (isStop, btn, btnCls) => {

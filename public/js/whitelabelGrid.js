@@ -1053,7 +1053,7 @@ Ext.onReady(function () {
                   { index: 0, record: record },
                   ({ domain, folderPath }) => {
                     if (domain) {
-                      executeDeployment({
+                      deployOneWhitelabel({
                         record,
                         rowIndex,
                         domain,
@@ -1074,7 +1074,7 @@ Ext.onReady(function () {
                   Ext.Msg.alert('Miss params', 'Folder path not exist');
                   return;
                 }
-                executeDeployment({ record, rowIndex, folderPath });
+                deployOneWhitelabel({ record, rowIndex, folderPath });
               }
             },
           },
@@ -1278,7 +1278,7 @@ function fetchFolderOneRecord(record, callback) {
       log('server-side failure with status code ' + response.status);
       record.set('folderPath', 'failure...');
       record.set('backupDate', 'failure...');
-      callback(result.success);
+      callback(false);
     },
   });
 }
@@ -1331,31 +1331,35 @@ function checkFilesOneRecord({ record, rowIndex, url }, callback) {
 }
 
 function fetchBackendId(record, callback) {
-  var ip = record.get('specificServer');
-  record.set('specificServerSpinner', true);
-  let domainType = getDomainType();
-  Ext.Ajax.request({
-    method: 'POST',
-    url: borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
-    withCredentials: true,
-    success: function (response) {
-      record.set('specificServerSpinner', false);
-      let result = JSON.parse(response.responseText);
-      if (result.success) callback(result.backendId);
-      else {
-        if (result.message.indexOf('Invalid URI "/api/domainEdit/token') > -1)
-          Ext.Msg.alert(
-            result.message,
-            `Please login <b>BORDER PX1</b> site<br/>`
-          );
-        else alert(result.message);
-        callback();
-      }
-    },
-    failure: function (response) {
-      alert(JSON.stringify(response));
-    },
-  });
+  try {
+    var ip = record.get('specificServer');
+    record.set('specificServerSpinner', true);
+    let domainType = getDomainType();
+    Ext.Ajax.request({
+      method: 'POST',
+      url: borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
+      withCredentials: true,
+      success: function (response) {
+        record.set('specificServerSpinner', false);
+        let result = JSON.parse(response.responseText);
+        if (result.success) callback(result.backendId);
+        else {
+          if (result.message.indexOf('Invalid URI "/api/domainEdit/token') > -1)
+            Ext.Msg.alert(
+              result.message,
+              `Please login <b>BORDER PX1</b> site<br/>`
+            );
+          else alert(result.message);
+          callback();
+        }
+      },
+      failure: function (response) {
+        alert(JSON.stringify(response));
+      },
+    });
+  } catch (error) {
+    callback()
+  }
 }
 function showUploadedFileInfo() {
   Ext.Msg.alert('Information', 'Zip file has not been uploaded yet');
@@ -1554,8 +1558,15 @@ function getStopAtFirst() {
   return Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
 }
 
-function executeDeployment({ record, rowIndex, domain, folderPath }) {
+function deployOneWhitelabel(
+  { record, rowIndex, domain, folderPath },
+  callback
+) {
   fetchBackendId(record, (backendId) => {
+    if (!backendId) {
+      if (callback) callback();
+      return;
+    }
     // default agent site
     let bkFile = folderPath.substr(0, folderPath.length - 1) + '.zip';
     // handle member site
@@ -1610,10 +1621,12 @@ function executeDeployment({ record, rowIndex, domain, folderPath }) {
           log(result.msg);
           record.set('batUpload', 'error');
         }
+        if (callback) callback();
       },
       failure: function (response) {
         log('failure with status code ' + response.status);
         record.set('batUpload', 'error');
+        if (callback) callback();
       },
     });
   });
