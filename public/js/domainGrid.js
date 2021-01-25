@@ -105,9 +105,9 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       listeners: {
         click: () => {
           let store = Ext.getCmp('domainGrid').getStore(),
-            stopAtFist = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
-          if (stopAtFist)
-            checkDomainAllGridSlow(0, store, stopAtFist, (domain) => {});
+            stopAtFirst = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
+          if (stopAtFirst)
+            checkDomainAllGridSlow(0, store, stopAtFirst, (domain) => {});
           else checkDomainAllGrid();
         },
       },
@@ -364,13 +364,13 @@ function checkDomainAllGrid() {
     checkDomainOneRecord(store.getAt(i), () => {});
 }
 
-function checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback) {
+function checkDomainAllGridSlow(index, store, stopAtFirstVailDomain, callback) {
   if (store) {
     let record = store.getAt(index);
     checkDomainOneRecord(record, (success) => {
-      if (success && stopAtFistVailDomain) index = store.getCount();
+      if (success && stopAtFirstVailDomain) index = store.getCount();
       if (++index < store.getCount())
-        checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback);
+        checkDomainAllGridSlow(index, store, stopAtFirstVailDomain, callback);
       else callback(record.get('Domain'));
     });
   }

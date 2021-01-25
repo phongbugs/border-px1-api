@@ -378,8 +378,8 @@ function fetchFolderAllWLs(index, store, callback) {
 }
 // function checkFilesAllWLs(index, store, callback) {
 //   let record = store.getAt(index),
-//     stopAtFist = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
-//   if (stopAtFist) {
+//     stopAtFirst = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
+//   if (stopAtFirst) {
 //     // use 1st valid url
 //     record.set('checked', 'spinner');
 //     find1stValidDomain(record, (domain) => {
@@ -402,8 +402,8 @@ function fetchFolderAllWLs(index, store, callback) {
 
 function checkFilesAllWLs(index, store, callback) {
   let record = store.getAt(index),
-    stopAtFist = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
-  if (stopAtFist) {
+    stopAtFirst = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
+  if (stopAtFirst) {
     // use 1st valid url
     record.set('checked', 'spinner');
     findFirstValidDomain({ index: 0, record: record }, (url) => {
