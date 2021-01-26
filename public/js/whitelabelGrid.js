@@ -158,12 +158,9 @@ let storeWLs = Ext.create('Ext.data.Store', {
   autoLoad: true,
 });
 Ext.onReady(function () {
-  //currentVersion = '1.1.1'
-  // prevent browser call loadScript('js/gridWL.js') at console log
   authenticate((isAuthenticated) => {
     if (!isAuthenticated) location.reload();
   });
-  Ext.tip.QuickTipManager.init();
   var girdWLs = Ext.create('Ext.grid.Panel', {
     renderTo: 'app',
     id: 'gridWLs',
