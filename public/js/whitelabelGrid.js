@@ -129,6 +129,7 @@ Ext.onReady(function () {
         for (var whitelabelName in whiteLabels) {
           let record = whiteLabels[whitelabelName];
           record['name'] = whitelabelName;
+
           if (!record['servers']) record['servers'] = '10.168.109.6';
           if (!record['status']) record['status'] = 'live';
           record['isResponsive'] = record['isResponsive']
@@ -143,6 +144,8 @@ Ext.onReady(function () {
                   : undefined
                 : servers;
           }
+          if (!record['referredIconMenu'])
+            record['referredIconMenu'] = '__TEXT-MENU__';
           // icon spniner cols
           record['specificServerSpinner'] = false;
           record['remoteDesktopSpinner'] = false;
@@ -200,7 +203,7 @@ Ext.onReady(function () {
             cellClickCount = 1;
             Ext.getCmp('txtEndIndex').setValue(td.innerText);
           }
-        } else if (cellIndex < 13) {
+        } else if (cellIndex > 1 && cellIndex < 13) {
           Ext.getCmp('gridWLs').setDisabled(true);
           // send to grid domain two columns
           selectedWhiteLabelName = record.get('name');
@@ -382,6 +385,7 @@ Ext.onReady(function () {
             ['mobileRedirect', 'Mobile Redirect'],
             ['dynamicFooter', 'Dynamic Footer'],
             ['securityQuestion', 'Security Question'],
+            ['referredIconMenu', 'Menu Icon'],
           ],
         }),
         queryMode: 'local',
@@ -413,6 +417,15 @@ Ext.onReady(function () {
             } else storeWLs.setGroupField(undefined);
           },
         },
+      },
+      {
+        xtype: 'button',
+        text: '',
+        id: 'btnExpandAll',
+        tooltip:'Expand all group',
+        icon:
+          'https://icons.iconarchive.com/icons/icons8/ios7/16/Editing-Expand-icon.png',
+        handler: () => featureGrouping.expandAll(),
       },
       {
         xtype: 'combo',
@@ -462,28 +475,6 @@ Ext.onReady(function () {
               .map((e) => e.trim().toUpperCase()),
             operator: 'in',
           }),
-      },
-      {
-        xtype: 'button',
-        text: 'Start RD Service',
-        icon:
-          'https://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/16/Actions-system-run-icon.png',
-        handler: () =>
-          Ext.Ajax.request({
-            method: 'GET',
-            url:
-              window.location.href.substr(0, window.location.href.length - 13) +
-              '/Public/GetDateModifiedOfFiles.aspx?cmd=StartRDService',
-            //url: 'http://localhost:19459/Public/GetDateModifiedOfFiles.aspx?cmd=StartRDService',
-            success: function (response) {
-              log(response);
-            },
-            failure: function (response) {
-              log(response);
-            },
-          }),
-        disabled: true,
-        hidden: true,
       },
       {
         xtype: 'combo',
@@ -594,6 +585,7 @@ Ext.onReady(function () {
         listeners: {
           click: (btn) => {
             btn.setIconCls('spinner');
+            btn.setDisabled(true);
             let cm = Ext.getCmp('gridWLs').getColumns()[21];
             cm.setHidden(false);
             syncDomainsAllWLs(0, storeWLs, () => {
@@ -606,6 +598,7 @@ Ext.onReady(function () {
                     getSiteTypeName() +
                     ' site done !'
                 );
+                btn.setDisabled(false);
                 let store = Ext.getCmp('gridWLs').getStore();
                 for (let i = 0; i < store.getCount(); i++)
                   store.getAt(i).set({
@@ -796,7 +789,6 @@ Ext.onReady(function () {
         editor: {
           xtype: 'combo',
           store: selectedServerGroupStore,
-          //serverStores['101-102-103'],
           displayField: 'name',
           valueField: 'name',
           queryMode: 'local',
@@ -960,7 +952,6 @@ Ext.onReady(function () {
         items: [
           {
             getClass: function (value, meta, record, rowIndex, colIndex) {
-              //var isSynced = record.get('isSyncedDomain');
               var iconCls = '';
               switch (value) {
                 case false:
@@ -982,67 +973,16 @@ Ext.onReady(function () {
               rowIndex = grid.getStore().indexOf(record);
               record = grid.getStore().getAt(rowIndex);
               var name = record.get('name');
-              syncDomainsOneWhiteLabel(name, record, (success) => {});
+              syncDomainsOneWhiteLabel(name, record, (success) =>
+                record.set(
+                  'isSyncedDomain',
+                  success ? 'checkOkCls' : 'checkKoCls'
+                )
+              );
             },
           },
         ],
       },
-      // {
-      //   xtype: 'actioncolumn',
-      //   width: 40,
-      //   tooltip: 'Sync Folders',
-      //   text: 'SF',
-      //   dataIndex: 'isSyncedFolder',
-      //   hidden: true,
-      //   items: [
-      //     {
-      //       getClass: function (value, meta, record, rowIndex, colIndex) {
-      //         var iconCls = '';
-      //         switch (value) {
-      //           case 'spinner':
-      //             iconCls = 'spinner';
-      //             break;
-      //           case 'checkKoCls':
-      //             iconCls = 'checkKoCls';
-      //             break;
-      //           case false:
-      //             iconCls = 'folderCls';
-      //             break;
-      //           default:
-      //             iconCls = 'folderOkCls';
-      //             break;
-      //         }
-      //         return iconCls;
-      //       },
-      //       handler: function (grid, rowIndex, colIndex, item, e, record, row) {
-      //         rowIndex = grid.getStore().indexOf(record);
-      //         record = grid.getStore().getAt(rowIndex);
-      //         record.set('isSyncedFolder', 'spinner');
-      //         //log(row.children[1].innerHTML);
-      //         fetchFolderOneRecord(record, (success) =>
-      //           record.set(
-      //             'isSyncedFolder',
-      //             success ? 'folderOkCls' : 'checkKoCls'
-      //           )
-      //         );
-      //       },
-      //     },
-      //   ],
-      // },
-      // {
-      //   text: 'Folder',
-      //   tooltip: 'Folder Path',
-      //   width: 300,
-      //   dataIndex: 'folderPath',
-      //   hidden: true,
-      // },
-      // {
-      //   text: 'Backup Date',
-      //   tooltip: 'Backup Date',
-      //   width: 222,
-      //   dataIndex: 'backupDate',
-      //   hidden: true,
-      // },
     ],
   });
 });
@@ -1100,16 +1040,12 @@ function genUrl(record) {
   return url;
 }
 function fetchFolderOneRecord(record, callback) {
-  // prevent click after done
   if (record.get('folderPath') !== '') return;
-  // create request to express server
-  record.set('folderPath', ' '); // start checking
-  // check url
+  record.set('folderPath', ' ');
   var url = genUrl(record);
   Ext.Ajax.request({
     url: borderPx1ApiHost + '/info/folder?' + new URLSearchParams({ url }),
     success: function (response) {
-      // parse jsonString from server
       var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
       if (result.success) {
         record.set('folderPath', result.path.replace(/\//g, '\\'));
