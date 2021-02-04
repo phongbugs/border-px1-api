@@ -42,21 +42,28 @@ const fs = require('fs'),
     });
   };
 
-// Need change to POST (body) when listFile is large
 async function fetchDateModifiedFiles(req, res) {
+  //console.log(req.body.whitelabelUrl);
+  //console.log(req.body.listFile);
   try {
     let url =
-      decodeURIComponent(req.query.whitelabelUrl) +
+      decodeURIComponent(req.body.whitelabelUrl) +
       '/Public/GetDateModifiedOfFiles.aspx?';
     console.log(url);
+    let form = new FormData();
+    form.append('cmd', 'GetModifiedDate');
+    form.append('files', req.body.listFile);
     const response = await fetch(
-      url +
-        new URLSearchParams({
-          cmd: 'GetModifiedDate',
-          files: req.query.listFile,
-        }),
+      url,
+      // +
+      //   new URLSearchParams({
+      //     cmd: 'GetModifiedDate',
+      //     files: req.body.listFile,
+      //   })
       {
-        headers: { 'Content-Type': 'application/json' },
+        //headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        body: form,
       }
     );
     let text = (await response.text()).replace(/\\/g, '\\\\').replace(/'/g, '');

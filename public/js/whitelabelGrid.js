@@ -1282,7 +1282,7 @@ function fetchFolderOneRecord(record, callback) {
 function checkFilesOneRecord({ record, rowIndex, url }, callback) {
   record.set('checked', 'spinner');
   Ext.Ajax.request({
-    method: 'GET',
+    method: 'POST',
     url: borderPx1ApiHost + '/deployment/date-modified-files',
     params: {
       listFile: listFileFromLocal.map((file) => file.fileName).toString(),
