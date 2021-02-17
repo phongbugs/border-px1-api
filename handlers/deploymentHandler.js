@@ -48,18 +48,13 @@ async function fetchDateModifiedFiles(req, res) {
   try {
     let url =
       decodeURIComponent(req.body.whitelabelUrl) +
-      '/Public/GetDateModifiedOfFiles.aspx?';
+      '/Public/GetDateModifiedOfFiles.aspx';
     console.log(url);
     let form = new FormData();
     form.append('cmd', 'GetModifiedDate');
     form.append('files', req.body.listFile);
     const response = await fetch(
       url,
-      // +
-      //   new URLSearchParams({
-      //     cmd: 'GetModifiedDate',
-      //     files: req.body.listFile,
-      //   })
       {
         //headers: { 'Content-Type': 'application/json' },
         method: 'POST',
@@ -67,7 +62,7 @@ async function fetchDateModifiedFiles(req, res) {
       }
     );
     let text = (await response.text()).replace(/\\/g, '\\\\').replace(/'/g, '');
-    //log(text);
+    //console.log(text);
     res.send(JSON.parse(text));
   } catch (error) {
     res.send({ success: false, message: error.message });
