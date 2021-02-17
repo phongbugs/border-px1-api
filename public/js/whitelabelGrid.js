@@ -420,12 +420,21 @@ Ext.onReady(function () {
       },
       {
         xtype: 'button',
-        text: '',
-        id: 'btnExpandAll',
-        tooltip:'Expand all group',
-        icon:
-          'https://icons.iconarchive.com/icons/icons8/ios7/16/Editing-Expand-icon.png',
-        handler: () => featureGrouping.expandAll(),
+        tooltip: 'Expand all group',
+        iconCls: 'expandCls',
+        cls: 'expandCls',
+        handler: (btn) => {
+          let cls = btn.cls;
+          if (cls === 'expandCls') {
+            btn.setIconCls('collapseCls');
+            btn.cls = 'collapseCls';
+            featureGrouping.expandAll();
+          } else {
+            btn.setIconCls('expandCls');
+            btn.cls = 'expandCls';
+            featureGrouping.collapseAll();
+          }
+        },
       },
       {
         xtype: 'combo',
