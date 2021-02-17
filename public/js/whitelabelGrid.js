@@ -62,18 +62,18 @@ let Groups,
                   break;
                 //case "77-78-79":
                 case '110-114-115':
-                  name = name + ' [Failed CMD(D)]';
+                  name = name + ' [FC-D]';
                   break;
                 case '116-117-118':
-                  name = name + ' [Failed Touchcan]';
+                  name = name + ' [FT]';
                   break;
                 case '119-120-121':
                 case '173-174-175':
-                  name = name + ' [Failed Touchcan & CMD]';
+                  name = name + ' [FC & FT]';
                   break;
                 case '67-68-69':
                 case '92-96-104':
-                  name = name + ' [Failed CMD(B)]';
+                  name = name + ' [FC-B]';
                   break;
               }
               return (
