@@ -117,7 +117,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       id: 'ckbLoadFromCache',
       iconCls: 'checkCls',
       boxLabel: 'Load From Cache',
-      value: true,
+      value: false,
     },
     {
       xtype: 'checkbox',

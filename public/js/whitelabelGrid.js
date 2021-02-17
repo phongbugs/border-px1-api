@@ -310,6 +310,7 @@ Ext.onReady(function () {
             ['mobileRedirect', 'Mobile Redirect'],
             ['dynamicFooter', 'Dynamic Footer'],
             ['securityQuestion', 'Security Question'],
+            ['referredIconMenu', 'Menu Icon'],
           ],
         }),
         queryMode: 'local',
@@ -354,6 +355,24 @@ Ext.onReady(function () {
               columnUpload.setHidden(true);
             }
           },
+        },
+      },
+      {
+        xtype: 'button',
+        tooltip: 'Expand all group',
+        iconCls: 'expandCls',
+        cls: 'expandCls',
+        handler: (btn) => {
+          let cls = btn.cls;
+          if (cls === 'expandCls') {
+            btn.setIconCls('collapseCls');
+            btn.cls = 'collapseCls';
+            featureGrouping.expandAll();
+          } else {
+            btn.setIconCls('expandCls');
+            btn.cls = 'expandCls';
+            featureGrouping.collapseAll();
+          }
         },
       },
       {
@@ -404,28 +423,6 @@ Ext.onReady(function () {
               .map((e) => e.trim().toUpperCase()),
             operator: 'in',
           }),
-      },
-      {
-        xtype: 'button',
-        text: 'Start RD Service',
-        icon:
-          'https://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/16/Actions-system-run-icon.png',
-        handler: () =>
-          Ext.Ajax.request({
-            method: 'GET',
-            url:
-              window.location.href.substr(0, window.location.href.length - 13) +
-              '/Public/GetDateModifiedOfFiles.aspx?cmd=StartRDService',
-            //url: 'http://localhost:19459/Public/GetDateModifiedOfFiles.aspx?cmd=StartRDService',
-            success: function (response) {
-              log(response);
-            },
-            failure: function (response) {
-              log(response);
-            },
-          }),
-        disabled: true,
-        hidden: true,
       },
       {
         xtype: 'combo',
@@ -550,6 +547,7 @@ Ext.onReady(function () {
         listeners: {
           click: (btn) => {
             btn.setIconCls('spinner');
+            btn.setDisabled(true);
             let cm = Ext.getCmp('gridWLs').getColumns()[21];
             cm.setHidden(false);
             syncDomainsAllWLs(0, storeWLs, () => {
@@ -562,6 +560,7 @@ Ext.onReady(function () {
                     getSiteTypeName() +
                     ' site done !'
                 );
+                btn.setDisabled(false);
                 let store = Ext.getCmp('gridWLs').getStore();
                 for (let i = 0; i < store.getCount(); i++)
                   store.getAt(i).set({
@@ -853,7 +852,6 @@ Ext.onReady(function () {
         items: [
           {
             getClass: function (value, meta, record, rowIndex, colIndex) {
-              //var isSynced = record.get('isSyncedDomain');
               var iconCls = '';
               switch (value) {
                 case false:
@@ -875,7 +873,12 @@ Ext.onReady(function () {
               rowIndex = grid.getStore().indexOf(record);
               record = grid.getStore().getAt(rowIndex);
               var name = record.get('name');
-              syncDomainsOneWhiteLabel(name, record, (success) => {});
+              syncDomainsOneWhiteLabel(name, record, (success) =>
+                record.set(
+                  'isSyncedDomain',
+                  success ? 'checkOkCls' : 'checkKoCls'
+                )
+              );
             },
           },
         ],
@@ -1249,16 +1252,12 @@ function genUrl(record) {
   return url;
 }
 function fetchFolderOneRecord(record, callback) {
-  // prevent click after done
   if (record.get('folderPath') !== '') return;
-  // create request to express server
-  record.set('folderPath', ' '); // start checking
-  // check url
+  record.set('folderPath', ' ');
   var url = genUrl(record);
   Ext.Ajax.request({
     url: borderPx1ApiHost + '/info/folder?' + new URLSearchParams({ url }),
     success: function (response) {
-      // parse jsonString from server
       var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
       if (result.success) {
         record.set('folderPath', result.path.replace(/\//g, '\\'));
