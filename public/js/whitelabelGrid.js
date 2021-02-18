@@ -762,7 +762,7 @@ Ext.onReady(function () {
               fetchBackendId(record, (backendId) =>
                 backendId
                   ? window.open(
-                      genUrl(record) + '?bpx-backend-id' + backendId,
+                      genUrl(record) + '/' + getSelectedPage() + '?bpx-backend-id' + backendId,
                       '_blank'
                     )
                   : null
