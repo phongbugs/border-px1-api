@@ -12,6 +12,9 @@ function saveBorderPx1ApiCookie(cookie, callback) {
   document.body.appendChild(ifrm);
   if (callback) callback();
 }
+function saveBorderPx1ApiCookieIOS(cookie){
+  location.replace(borderPx1ApiHost + '/user/login?isRedirect=1&cookie=' + encodeURIComponent(cookie))
+}
 
 let getDomainType = () =>
   Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1

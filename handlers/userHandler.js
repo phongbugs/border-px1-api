@@ -1,3 +1,5 @@
+const { response } = require('express');
+
 const JSEncrypt = require('node-jsencrypt'),
   crypt = new JSEncrypt(),
   CryptoJS = require('crypto-js'),
@@ -68,7 +70,8 @@ function setCookieToBrowser(req, res) {
     if (cookie) {
       //res.removeHeader('X-Frame-Options');
       sendResponseCookie(req, res, cookie, 'border-px1-api');
-      res.send('cookie was sent');
+      if (req.query.isRedirect) response.send('<script></script>');
+      else res.send('cookie was sent');
     } else res.send("Cookie data doesn't exist");
   } catch (error) {
     res.send(error.message);
