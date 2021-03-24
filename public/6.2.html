@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, WLs-scalable=no" /> -->
+    <title>LIGA's Whitelabel Management</title>
+    <link rel="stylesheet" href="extjs/6.2/classic/theme-neptune/resources/theme-neptune-all.css" />
+    <link rel="stylesheet" href="extjs/6.2/packages/ux/classic/neptune/resources/ux-all.css" />
+    <!--<link rel="stylesheet" href="extjs/6.2/packages/charts/classic/neptune/resources/charts-all.css" />-->
+    <!--<link rel="stylesheet" href="../stylesheets/font-awesome.min.css" />-->
+    <script src="extjs/6.2/ext-all.js"></script>
+    <!--<script src="extjs/6.2/packages/ux/classic/ux.js"></script>
+    <script src="extjs/6.2/packages/charts/classic/charts.js"></script>-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+        integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+        crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <link rel="shortcut icon"
+        href="https://lh3.googleusercontent.com/a-/AOh14GjgiQ5JKAQrLioFlouEN-wAXCv_hU6jKIFU099p9w=s88-c-k-c0x00ffffff-no-rj-mo">
+    <style>
+        body,
+        html {
+            overflow: hidden;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 4px #ddd solid;
+            border-top: 4px #2e93e6 solid;
+            border-radius: 50%;
+            animation: sp-anime 0.8s infinite linear;
+        }
+
+        .refreshCls {
+            background: url(https://icons.iconarchive.com/icons/graphicloads/polygon/16/refresh-4-icon.png) no-repeat center;
+        }
+
+        @keyframes sp-anime {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .openLink {
+            background: url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png) no-repeat center;
+        }
+
+        .remoteDesktop {
+            background: url(https://icons.iconarchive.com/icons/tpdkdesign.net/refresh-cl/16/Network-Remote-Desktop-icon.png) no-repeat center;
+        }
+
+        .checkCls {
+            background: url(https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-2/16/FAQ-icon.png) no-repeat center;
+        }
+
+        .checkFileCls {
+            background: url(https://icons.iconarchive.com/icons/graphicloads/polygon/16/check-2-icon.png) no-repeat center;
+        }
+
+        .checkOkCls {
+            background: url(https://icons.iconarchive.com/icons/hopstarter/sleek-xp-basic/16/Ok-icon.png) no-repeat center;
+        }
+
+        .checkKoCls {
+            background: url(https://icons.iconarchive.com/icons/elegantthemes/beautiful-flat/16/caution-icon.png) no-repeat center;
+        }
+
+        .defaultDomainCls {
+            background: url(https://icons.iconarchive.com/icons/google/noto-emoji-people-bodyparts/16/12003-OK-hand-light-skin-tone-icon.png) no-repeat center
+        }
+
+        .syncDomainCls {
+            background: url(https://icons.iconarchive.com/icons/paomedia/small-n-flat/16/cloud-down-icon.png) no-repeat center
+        }
+
+        .folderCls {
+            background: url(https://icons.iconarchive.com/icons/treetog/i/16/Folder-Downloads-icon.png) no-repeat center
+        }
+
+        .folderOkCls {
+            background: url(https://icons.iconarchive.com/icons/dryicons/aesthetica-2/16/folder-accept-icon.png) no-repeat center
+        }
+
+        .authenticationCls {
+            background: url(https://icons.iconarchive.com/icons/iconsmind/outline/16/Key-Lock-icon.png) no-repeat center
+        }
+
+        .center {
+            position: absolute;
+            left: 50%;
+            top: 10%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+
+        .zipUploadedCls {
+            background: url(img/zipUploaded.png) no-repeat center;
+        }
+
+        .zipUploadCls {
+            background: url(img/zipUpload.png) no-repeat center;
+        }
+
+        .zipUploadErrCls {
+            background: url(img/zipUploadErr.png) no-repeat center;
+        }
+
+        .zipUploadEmptyCls {
+            background: url(img/zipUploadEmpty.png) no-repeat center;
+        }
+
+        .batUploadedCls {
+            background: url(img/run.png) no-repeat center;
+        }
+
+        .batUploadCls {
+            background: url(img/bat.png) no-repeat center;
+        }
+
+        .expandCls {
+            background: url(https://icons.iconarchive.com/icons/icons8/ios7/16/Editing-Expand-icon.png) no-repeat center
+        }
+
+        .collapseCls {
+            background: url(https://icons.iconarchive.com/icons/icons8/ios7/16/Editing-Collapse-icon.png) no-repeat center
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="center" class="center">
+            <div id="loading" class="spinner"></div>
+        </div>
+    </div>
+    <script>
+        let borderPx1ApiHost = 'http://localhost:9999',
+            //let borderPx1ApiHost = 'https://border-px1-api.herokuapp.com',
+            //let borderPx1ApiHost = 'https://border-px1-api.xyz',
+            remoteDesktopServiceUrl = 'http://localhost:3000/remote/',
+            tokenPublicKey =
+                '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQAB-----END PUBLIC KEY-----',
+            log = console.log,
+            loadScript = (pathScript) => {
+                const script = document.createElement('script')
+                script.src = borderPx1ApiHost + '/' + pathScript
+                document.getElementsByTagName('head')[0].appendChild(script)
+            },
+            authenticate = (callback) => {
+                Ext.Ajax.request({
+                    method: 'GET',
+                    withCredentials: true,
+                    url: borderPx1ApiHost + '/user/login/status',
+                    success: function (response) {
+                        let success = JSON.parse(response.responseText).success
+                        if (success)
+                            callback(true)
+                        else
+                            callback(false)
+                    },
+                    failure: function (response) {
+                        Ext.Msg.alert(
+                            'Error',
+                            '/login/status'
+                        );
+                        callback(false)
+                    },
+                });
+            }
+        let currentVersion = () => new Date().getTime();
+        window.onload = () => {
+            loadScript('js/utils.js?v=' + currentVersion())
+            authenticate((isAuthenticated) => {
+                if (isAuthenticated)
+                    loadScript('js/whitelabelGrid.js?v=' + currentVersion())
+                else
+                    loadScript('js/loginForm.js?v=' + currentVersion())
+                Ext.tip.QuickTipManager.init();
+            })
+        }
+    </script>
+</body>
+
+</html>
