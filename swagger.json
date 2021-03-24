@@ -224,13 +224,21 @@
         }
       }
     },
-    "/info/domain/{siteName}": {
+    "/info/domain/{domainType}/{siteName}": {
       "get": {
         "tags": [
           "BORDER PX1 API"
         ],
         "summary": "Get all domains name of site name",
         "parameters": [
+          {
+            "name": "domainType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "siteName",
             "in": "path",
@@ -256,6 +264,110 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/domainResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/info/valid-domain/{client}/{domainType}/{whitelabelName}": {
+      "get": {
+        "tags": [
+          "BORDER PX1 API"
+        ],
+        "summary": "Get valid domain ip/name of whitelabel name",
+        "parameters": [
+          {
+            "name": "client",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "domainType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "whitelabelName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get domain successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/validDomainResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/info/valid-domain/{client}/{domainType}": {
+      "post": {
+        "tags": [
+          "BORDER PX1 API"
+        ],
+        "summary": "Update valid domains",
+        "description": "Update valid domains for each client and domain type",
+        "requestBody": {
+          "description": "The json key value, key is name whitelabel name, value is valid domain",
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "domains": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "domains"
+                ]
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "client",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "domainType",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Update successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/validDomainResponse"
                 }
               }
             }
@@ -427,6 +539,19 @@
             "type": "string"
           },
           "LastChecked": {
+            "type": "string"
+          }
+        }
+      },
+      "validDomainResponse":{
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "boolean"
+          },
+          "message": {
             "type": "string"
           }
         }
