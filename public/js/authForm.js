@@ -77,12 +77,12 @@ let authForm = Ext.create('Ext.form.Panel', {
         fields: ['id', 'name'],
         data: [
           [
-            'https://net-ga.admin.12365.bpx-cdn.cloud',
-            '[NA] https://net-ga.admin.12365.bpx-cdn.cloud',
+            'https://net-ub.admin.28777.cloud-dn.net',
+            '[NA] https://net-ub.admin.28777.cloud-dn.net',
           ],
           [
-            'https://net-gb.admin.22365.bpx-cdn.cloud',
-            '[IP] https://net-gb.admin.22365.bpx-cdn.cloud',
+            'https://net-ub.admin.28777.cloud-dn.net',
+            '[IP] https://net-ub.admin.28777.cloud-dn.net',
           ],
         ],
       }),
@@ -90,12 +90,12 @@ let authForm = Ext.create('Ext.form.Panel', {
       valueField: 'id',
       name: 'cbbBorderPx1Url',
       id: 'cbbBorderPx1Url',
-      value: 'https://net-ga.admin.12365.bpx-cdn.cloud',
+      value: 'https://net-ub.admin.28777.cloud-dn.net',
       editable: false,
       submitValue: false,
       listeners: {
         change: (_, newValue) => {
-          if (newValue === 'https://net-gb.admin.22365.bpx-cdn.cloud') {
+          if (newValue === 'https://net-ub.admin.28777.cloud-dn.net') {
             Ext.getCmp('cbbSiteType').setValue('member');
             Ext.getCmp('cbbProtocol').setValue('http');
           }
