@@ -108,21 +108,12 @@ const log = console.log,
   },
   fetchFolderPath = async (req, res) => {
     try {
-      let url =
-        decodeURIComponent(req.query['url']) +
-        '/Public/GetDateModifiedOfFiles.aspx?';
-      const response = await fetch(
-        url +
-        new URLSearchParams({
-          cmd: 'GetModifiedDate',
-          files: '',
-        })
-      );
-      let text = (await response.text())
-        .replace(/\\/g, '\\\\')
-        .replace(/'/g, '');
-      //log(text);
-      res.send(JSON.parse(text));
+      let url = decodeURIComponent(req.query['url']);
+      log('url:%s', url);
+      const response = await fetch(url);
+      //log(response.headers.raw()['bpx-id']);
+      let bpxId = response.headers.raw()['bpx-id'];
+      res.send({ success: bpxId ? true : false, message: bpxId });
     } catch (error) {
       res.send({ success: false, message: error.message });
     }
