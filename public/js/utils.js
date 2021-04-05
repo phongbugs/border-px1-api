@@ -18,14 +18,14 @@ let getDomainType = () =>
     ? 'ip'
     : 'name';
 
-let getSiteTypeValue = () => {
+let getSiteTypeValue = (sportDomain) => {
   let siteTypeValue = Ext.getCmp('cbbSiteType').getRawValue();
   switch (siteTypeValue) {
     case 'Mobile':
       siteTypeValue = 'mobile.';
       break;
     case 'Member':
-      siteTypeValue = '';
+      siteTypeValue = sportDomain ? 'sport' : '';
       break;
     case 'Agent':
       siteTypeValue = 'ag.';

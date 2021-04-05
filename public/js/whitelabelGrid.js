@@ -212,7 +212,8 @@ Ext.onReady(function () {
 
           let domainGrid = Ext.getCmp('domainGrid'),
             domainStore = domainGrid.getStore(),
-            siteTypeValue = getSiteTypeValue(),
+            sportDomain = record.get('sportDomain'),
+            siteTypeValue = getSiteTypeValue(sportDomain),
             whiteLabelName = record.get('name'),
             siteTypeName = getSiteTypeName(),
             domainType = getDomainType(),
