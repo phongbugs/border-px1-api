@@ -71,7 +71,7 @@ function setCookieToBrowser(req, res) {
     if (cookie) {
       //res.removeHeader('X-Frame-Options');
       sendResponseCookie(req, res, cookie, 'border-px1-api');
-      res.send("<script>window.location.replace('" + req.query.urlRedirect + "')</script>");
+      res.send("<script>window.location.replace('//" + req.query.urlRedirect + "')</script>");
     } else res.send("Cookie data doesn't exist");
   } catch (error) {
     log(error);
