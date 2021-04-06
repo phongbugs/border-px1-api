@@ -16,7 +16,7 @@ function saveBorderPx1ApiCookie(cookie, callback) {
 function saveBorderPx1ApiCookieIOS(cookie) {
   location.replace(
     borderPx1ApiHost +
-      '/user/login?urlRedirect=' + location.protocol + '//' + location.host + '&cookie=' +
+      '/user/login?urlRedirect=' + location.protocol + '://' + location.host + '&cookie=' +
       encodeURIComponent(cookie)
   );
 }
