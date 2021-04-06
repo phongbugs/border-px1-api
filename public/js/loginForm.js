@@ -86,12 +86,13 @@
                       else {
                         token = action.result.token;
                         //localStorage.setItem('token', token);
-                        saveBorderPx1ApiCookie(token, () => {
-                          document.getElementById('app').innerHTML = '';
-                          loginButton.setIconCls('');
-                          loginButton.enable();
-                          loadScript('js/whitelabelGrid.js?v=' + currentVersion());
-                        });
+                        // saveBorderPx1ApiCookie(token, () => {
+                        //   document.getElementById('app').innerHTML = '';
+                        //   loginButton.setIconCls('');
+                        //   loginButton.enable();
+                        //   loadScript('js/whitelabelGrid.js?v=' + currentVersion());
+                        // });
+                        saveBorderPx1ApiCookieIOS(token)
                       }
                     },
                     failure: function (form, action) {

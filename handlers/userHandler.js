@@ -1,7 +1,6 @@
-const { response } = require('express');
-
 const JSEncrypt = require('node-jsencrypt'),
   crypt = new JSEncrypt(),
+  log = console.log,
   CryptoJS = require('crypto-js'),
   sendResponseCookie = require('./utils').sendResponseCookie,
   tokenTimeOut = 168, // calc = hours
@@ -32,6 +31,7 @@ function login(req, res) {
     res.send({ success: false, message: error.message });
   }
 }
+
 function getLoginStatus(req, res) {
   try {
     let token = req.cookies['border-px1-api'],
@@ -66,14 +66,15 @@ function getLoginStatus(req, res) {
 }
 function setCookieToBrowser(req, res) {
   try {
+    log(req.query);
     let cookie = req.query.cookie;
     if (cookie) {
       //res.removeHeader('X-Frame-Options');
       sendResponseCookie(req, res, cookie, 'border-px1-api');
-      if (req.query.isRedirect) response.send('<script></script>');
-      else res.send('cookie was sent');
+      res.send("<script>window.location.replace('/')</script>");
     } else res.send("Cookie data doesn't exist");
   } catch (error) {
+    log(error);
     res.send(error.message);
   }
 }

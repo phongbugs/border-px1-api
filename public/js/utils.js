@@ -12,8 +12,13 @@ function saveBorderPx1ApiCookie(cookie, callback) {
   document.body.appendChild(ifrm);
   if (callback) callback();
 }
-function saveBorderPx1ApiCookieIOS(cookie){
-  location.replace(borderPx1ApiHost + '/user/login?isRedirect=1&cookie=' + encodeURIComponent(cookie))
+
+function saveBorderPx1ApiCookieIOS(cookie) {
+  location.replace(
+    borderPx1ApiHost +
+      '/user/login?cookie=' +
+      encodeURIComponent(cookie)
+  );
 }
 
 let getDomainType = () =>
@@ -26,6 +31,7 @@ let getSiteTypeValue = () => {
   switch (siteTypeValue) {
     case 'Mobile':
       siteTypeValue = 'mobile.';
+
       break;
     case 'Member':
       siteTypeValue = '';
@@ -36,5 +42,6 @@ let getSiteTypeValue = () => {
   }
   return siteTypeValue;
 };
+
 let getSiteTypeName = () =>
   Ext.getCmp('cbbSiteType').getRawValue().toLowerCase();
