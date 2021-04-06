@@ -54,6 +54,8 @@ const log = console.log,
         client = req.params.client.toUpperCase(),
         domains = JSON.parse(req.body.domains)
       global.VALID_DOMAINS[client][domainType] = domains
+      for(whitelabelName in domains)
+      global.VALID_DOMAINS[client][domainType][whitelabelName] = domains[whitelabelName]
         res.send({ success: true, message: 'Domains updated' });
     } catch (error) {
       res.send({ success: false, message: error.message });
