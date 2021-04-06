@@ -38,12 +38,11 @@ const log = console.log,
     try {
       let domainType = req.params.domainType.toUpperCase(),
         whitelabelName = req.params.whitelabelName.toUpperCase(),
-        client = req.params.client.toUpperCase()
-      let validDomain = global.VALID_DOMAINS[client][domainType][whitelabelName]
-      if (validDomain)
-        res.send({ success: true, domain: validDomain });
-      else
-        res.send({ success: false, message: 'domain does not exist' });
+        client = req.params.client.toUpperCase();
+      let validDomain =
+        global.VALID_DOMAINS[client][domainType][whitelabelName];
+      if (validDomain) res.send({ success: true, domain: validDomain });
+      else res.send({ success: false, message: 'domain does not exist' });
     } catch (error) {
       res.send({ success: false, message: error.message });
     }
@@ -52,11 +51,12 @@ const log = console.log,
     try {
       let domainType = req.params.domainType.toUpperCase(),
         client = req.params.client.toUpperCase(),
-        domains = JSON.parse(req.body.domains)
-      global.VALID_DOMAINS[client][domainType] = domains
-      for(whitelabelName in domains)
-      global.VALID_DOMAINS[client][domainType][whitelabelName] = domains[whitelabelName]
-        res.send({ success: true, message: 'Domains updated' });
+        domains = JSON.parse(req.body.domains);
+      //global.VALID_DOMAINS[client][domainType] = domains;
+      for (whitelabelName in domains)
+        global.VALID_DOMAINS[client][domainType][whitelabelName] =
+          domains[whitelabelName];
+      res.send({ success: true, message: 'Domains updated' });
     } catch (error) {
       res.send({ success: false, message: error.message });
     }
@@ -115,10 +115,10 @@ const log = console.log,
         '/Public/GetDateModifiedOfFiles.aspx?';
       const response = await fetch(
         url +
-        new URLSearchParams({
-          cmd: 'GetModifiedDate',
-          files: '',
-        })
+          new URLSearchParams({
+            cmd: 'GetModifiedDate',
+            files: '',
+          })
       );
       let text = (await response.text())
         .replace(/\\/g, '\\\\')
