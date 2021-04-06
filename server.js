@@ -90,3 +90,16 @@ function onListening() {
   var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+global.VALID_DOMAINS = {
+  "LIGA": {
+    'NAME': {
+
+    }
+  },
+  "UBO": {
+    'NAME': {
+
+    }
+  }
+}
