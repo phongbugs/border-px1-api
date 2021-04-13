@@ -38,6 +38,9 @@ let storeDomain = Ext.create('Ext.data.Store', {
               e['servers'] = selectedServers;
               return e;
             });
+            // list only url
+            // let urls = data.domains.map((e) => e.Domain)
+            // log(urls.join('\r\n'))
           }
           return data;
         },
