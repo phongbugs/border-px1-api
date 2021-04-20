@@ -239,6 +239,7 @@ Ext.onReady(function () {
                 e.zipUpload = e.zipUpload === '' ? '' : 0;
                 e.backupDate = '';
                 e.isSyncedFolder = false;
+                e.batUpload = 0;
                 return e;
               })
             );
@@ -762,7 +763,11 @@ Ext.onReady(function () {
               fetchBackendId(record, (backendId) =>
                 backendId
                   ? window.open(
-                      genUrl(record) + '/' + getSelectedPage() + '?bpx-backend-id' + backendId,
+                      genUrl(record) +
+                        '/' +
+                        getSelectedPage() +
+                        '?bpx-backend-id' +
+                        backendId,
                       '_blank'
                     )
                   : null
@@ -1354,7 +1359,7 @@ function fetchBackendId(record, callback) {
       },
     });
   } catch (error) {
-    callback()
+    callback();
   }
 }
 function showUploadedFileInfo() {
@@ -1474,6 +1479,53 @@ function findFirstValidDomain({ index, record, domains }, callback) {
       else findFirstValidDomain({ index, record, domains }, callback);
     });
   }
+}
+function findFirstValidDomainGlobal(
+  { whitelabelName, client, domainType },
+  callback
+) {
+  fetchGlobalValidDomainByWhitelabelName(
+    { whitelabelName, client, domainType },
+    (domain) => {
+      isValidDomain(domain, ({ isValid, path }) => {
+        if (isValid)
+          callback({
+            domain: getProtocol() + '://' + domain,
+            folderPath: path.replace(/\//g, '\\'),
+          });
+        else callback(null);
+      });
+    }
+  );
+}
+function fetchGlobalValidDomainByWhitelabelName(
+  { whitelabelName, client, domainType },
+  callback
+) {
+  Ext.Ajax.request({
+    method: 'GET',
+    url:
+      //borderPx1ApiHost +
+      'https://border-px1-api.xyz' +
+      '/info/valid-domain/' +
+      client +
+      '/' +
+      domainType +
+      '/' +
+      whitelabelName,
+    success: function (response) {
+      let result = JSON.parse(response.responseText);
+      if (result.success) callback(result.domain);
+      callback(null);
+    },
+    failure: function (response) {
+      log(
+        'fetchGlobalValidDomainByWhitelabelName failure with status code ' +
+          response.status
+      );
+      callback(null);
+    },
+  });
 }
 
 function fetchDomainsBySiteName(record, callback) {

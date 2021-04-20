@@ -38,6 +38,14 @@ Ext.create('Ext.form.Panel', {
       items: [
         {
           xtype: 'checkbox',
+          id: 'ckbUseGlobalVD',
+          boxLabel: 'Use global valid domains',
+          labelWidth: 250,
+          width: 300,
+          value: true,
+        },
+        {
+          xtype: 'checkbox',
           id: 'useUrlCheckingDefault',
           boxLabel: 'Use Specific URL',
           labelWidth: 150,
@@ -555,6 +563,50 @@ function deployAllWhitelabels(index, store, callback) {
   //       else callback();
   //     }
   //   );
+}
+
+function deployAllWhitelabels2(index, store, callback) {
+  let record = store.getAt(index),
+    whitelabelName = record.get('name'),
+    client = 'LIGA',
+    domainType = 'name',
+    stopAtFirst = getStopAtFirst();
+  if (stopAtFirst) {
+    // use 1st valid url
+    record.set('batUpload', 'spinner');
+    findFirstValidDomainGlobal(
+      { whitelabelName, client, domainType },
+      ({ domain, folderPath }) => {
+        log('valid domain: %s', domain);
+        if (!START) {
+          setRowIndex(++index);
+          index = store.getCount();
+          callback();
+        }
+        if (domain)
+          deployOneWhitelabel(
+            {
+              record: record,
+              rowIndex: index,
+              domain: domain,
+              folderPath: folderPath,
+            },
+            () => {
+              if (++index < store.getCount())
+                deployAllWhitelabels2(index, store, callback);
+              else callback();
+            }
+          );
+        else {
+          record.set('batUpload', 'error');
+          record.set('folderPath', 'Cannot find any a valid domain');
+          if (++index < store.getCount())
+            deployAllWhitelabels2(index, store, callback);
+          else callback();
+        }
+      }
+    );
+  }
 }
 
 let setSTART = (isStop, btn, btnCls) => {
