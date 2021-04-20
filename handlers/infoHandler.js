@@ -47,6 +47,27 @@ const log = console.log,
       res.send({ success: false, message: error.message });
     }
   },
+  getValidDomainFrom3rdp = async (req, res) => {
+    try {
+      console.log(req.params);
+      let domainType = req.params.domainType.toUpperCase(),
+        whitelabelName = req.params.whitelabelName.toUpperCase(),
+        client = req.params.client.toUpperCase();
+      const response = await fetch(
+        'https://border-px1-api.xyz' +
+          '/info/valid-domain/' +
+          client +
+          '/' +
+          domainType +
+          '/' +
+          whitelabelName
+      );
+      let result = JSON.parse(await response.text());
+      res.send(result);
+    } catch (error) {
+      res.send({ success: false, message: error.message });
+    }
+  },
   updateValidDomains = async (req, res) => {
     try {
       let domainType = req.params.domainType.toUpperCase(),
@@ -209,4 +230,5 @@ module.exports = {
   fetchMobileJson,
   getServerInfo,
   fetchServers,
+  getValidDomainFrom3rdp,
 };

@@ -4,6 +4,7 @@ const express = require('express'),
 router.post('/backendId/:domainType/:serverIp', infoHandler.fetchBackendId);
 router.get('/domain/:domainType/:siteName', infoHandler.fetchDomains);
 router.get('/valid-domain/:client/:domainType/:whitelabelName', infoHandler.getValidDomain);
+router.get('/valid-domain-3rdp/:client/:domainType/:whitelabelName', infoHandler.getValidDomainFrom3rdp);
 router.post('/valid-domain/:client/:domainType', infoHandler.updateValidDomains);
 router.get('/server/:domainType/:siteName', infoHandler.fetchServers);
 router.get('/folder', infoHandler.fetchFolderPath);

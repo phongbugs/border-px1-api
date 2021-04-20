@@ -318,7 +318,7 @@ Ext.create('Ext.form.Panel', {
             : setSTART(false, btn, 'batUploadCls');
           log('START: %s', START);
           if (START)
-            deployAllWhitelabels(
+            deployAllWhitelabels2(
               Ext.getCmp('txtRowIndex').getValue() - 1 || 1,
               storeWLs,
               () => {

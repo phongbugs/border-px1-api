@@ -1505,9 +1505,8 @@ function fetchGlobalValidDomainByWhitelabelName(
   Ext.Ajax.request({
     method: 'GET',
     url:
-      //borderPx1ApiHost +
-      'https://border-px1-api.xyz' +
-      '/info/valid-domain/' +
+      borderPx1ApiHost +
+      '/info/valid-domain-3rdp/' +
       client +
       '/' +
       domainType +
@@ -1515,8 +1514,9 @@ function fetchGlobalValidDomainByWhitelabelName(
       whitelabelName,
     success: function (response) {
       let result = JSON.parse(response.responseText);
+      log(result)
       if (result.success) callback(result.domain);
-      callback(null);
+      else callback(null);
     },
     failure: function (response) {
       log(
