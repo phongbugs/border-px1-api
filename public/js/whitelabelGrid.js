@@ -287,8 +287,14 @@ Ext.onReady(function () {
         loadScript(
           'js/authForm.js?v=' + currentVersion() || new Date().getTime()
         );
+
         loadScript('js/domainGrid.js?v=' + currentVersion()) ||
           new Date().getTime();
+
+        // if it's 6.2 it will show button 7.0
+        if (location.href.indexOf('7.html') === -1)
+          Ext.getCmp('btnSwitchExtjsVesion').setIconCls('extjsVersion7');
+        else Ext.getCmp('btnSwitchExtjsVesion').setIconCls('extjsVersion6');
       },
     },
     // dockedItems: [
@@ -634,6 +640,33 @@ Ext.onReady(function () {
         hidden: true,
       },
       '->',
+      {
+        xtype: 'button',
+        id: 'btnHelp',
+        text: 'Help',
+        iconCls: 'helpCls',
+        handler: () => {
+          let encryptedLink =
+            'U2FsdGVkX1+bpGWuQ3YhYFNhhllVIzDLoO/u3BLYh9Dtv8oQ5pgq9Q5HCubPDdILXNmj+FAfnkt6HelkG50ouFF0mpEyR5gkZb4ryZvdn33T75UJefl5t74+EySU6ORA/x6E+7IgoTfHIlO5QPDCMQtDgO2BtHUJp0VmdCtcEDQ=';
+          window.open(
+            CryptoJS.AES.decrypt(encryptedLink, location.hostname).toString(
+              CryptoJS.enc.Utf8
+            )
+          );
+        },
+      },
+      {
+        xtype: 'button',
+        id: 'btnSwitchExtjsVesion',
+        text: 'Switch Extjs ',
+        dock: 'right',
+        iconCls: 'extjsVersion7',
+        iconAlign: 'right',
+        handler: () => {
+          if (location.href.indexOf('7.html') === -1) location.href = '7.html';
+          else location.href = '/';
+        },
+      },
       {
         xtype: 'button',
         id: 'btnLogout',
