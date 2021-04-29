@@ -317,14 +317,24 @@ Ext.create('Ext.form.Panel', {
             ? setSTART(true, btn)
             : setSTART(false, btn, 'batUploadCls');
           log('START: %s', START);
-          if (START)
-            deployAllWhitelabels2(
-              Ext.getCmp('txtRowIndex').getValue() - 1 || 1,
-              storeWLs,
-              () => {
-                START = setSTART(false, btn, 'batUploadCls');
-              }
-            );
+          if (START) {
+            if (Ext.getCmp('ckbUseGlobalVD').getValue())
+              deployAllWhitelabels2(
+                Ext.getCmp('txtRowIndex').getValue() - 1 || 1,
+                storeWLs,
+                () => {
+                  START = setSTART(false, btn, 'batUploadCls');
+                }
+              );
+            else
+              deployAllWhitelabels(
+                Ext.getCmp('txtRowIndex').getValue() - 1 || 1,
+                storeWLs,
+                () => {
+                  START = setSTART(false, btn, 'batUploadCls');
+                }
+              );
+          }
         },
       },
     },

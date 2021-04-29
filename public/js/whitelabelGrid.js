@@ -1493,7 +1493,11 @@ function findFirstValidDomainGlobal(
             domain: getProtocol() + '://' + domain,
             folderPath: path.replace(/\//g, '\\'),
           });
-        else callback(null);
+        else
+          callback({
+            domain: null,
+            folderPath: null,
+          });
       });
     }
   );
@@ -1514,7 +1518,7 @@ function fetchGlobalValidDomainByWhitelabelName(
       whitelabelName,
     success: function (response) {
       let result = JSON.parse(response.responseText);
-      log(result)
+      log(result);
       if (result.success) callback(result.domain);
       else callback(null);
     },

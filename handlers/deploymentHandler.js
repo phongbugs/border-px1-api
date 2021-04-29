@@ -62,7 +62,7 @@ async function fetchDateModifiedFiles(req, res) {
       }
     );
     let text = (await response.text()).replace(/\\/g, '\\\\').replace(/'/g, '');
-    //console.log(text);
+    console.log(text);
     res.send(JSON.parse(text));
   } catch (error) {
     res.send({ success: false, message: error.message });
