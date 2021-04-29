@@ -16,14 +16,14 @@
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"
         integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-S36WVLYL57"></script>
-	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag() { dataLayer.push(arguments); }
-		gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-S36WVLYL57"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
 
-		gtag('config', 'G-S36WVLYL57');
-	</script>
+        gtag('config', 'G-S36WVLYL57');
+    </script>
     <link rel="shortcut icon"
         href="https://lh3.googleusercontent.com/a-/AOh14GjgiQ5JKAQrLioFlouEN-wAXCv_hU6jKIFU099p9w=s88-c-k-c0x00ffffff-no-rj-mo">
     <style>
@@ -102,15 +102,17 @@
         .collapseCls {
             background: url(https://icons.iconarchive.com/icons/icons8/ios7/16/Editing-Collapse-icon.png) no-repeat center
         }
-        .extjsVersion7{
-            background:url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Numbers-7-icon.png);
+
+        .extjsVersion7 {
+            background: url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Numbers-7-icon.png);
         }
-        
-        .extjsVersion6{
-            background:url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Numbers-6-icon.png);
+
+        .extjsVersion6 {
+            background: url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Numbers-6-icon.png);
         }
-        .helpCls{
-            background:url(https://icons.iconarchive.com/icons/designbolts/ios8-cirtangle-concept/16/Help-icon.png);
+
+        .helpCls {
+            background: url(https://icons.iconarchive.com/icons/designbolts/ios8-cirtangle-concept/16/Help-icon.png);
         }
     </style>
 </head>
@@ -155,7 +157,8 @@
                     },
                 });
             }
-        let currentVersion = () => 1 //new Date().getTime();
+        let date = new Date()
+        let currentVersion = () => date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate();
         window.onload = () => {
             loadScript('js/utils.js?v=' + currentVersion())
             authenticate((isAuthenticated) => {
