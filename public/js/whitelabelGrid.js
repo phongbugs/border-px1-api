@@ -85,6 +85,7 @@ let Groups,
       },
     ],
   });
+
 Ext.onReady(function () {
   //currentVersion = '1.1.1'
   // prevent browser call loadScript('js/gridWL.js') at console log
@@ -123,6 +124,11 @@ Ext.onReady(function () {
       },
     },
     listeners: {
+      beforeload: (store) => {
+        store.getProxy().setHeaders({
+          Authorization: 'Basic ' + localStorage.getItem('token'),
+        });
+      },
       load: function (_, records, successful, operation, eOpts) {
         let whiteLabels = records[0].data;
         delete whiteLabels['id'];
@@ -313,8 +319,7 @@ Ext.onReady(function () {
       {
         xtype: 'button',
         id: 'btnRefresh',
-        icon:
-          'https://icons.iconarchive.com/icons/graphicloads/100-flat/16/reload-icon.png',
+        icon: 'https://icons.iconarchive.com/icons/graphicloads/100-flat/16/reload-icon.png',
         text: '',
         // other component can not fireEvent to
         // handler: () => { storeWLs.clearFilter(); storeWLs.loadData(data) },
@@ -479,8 +484,7 @@ Ext.onReady(function () {
         xtype: 'button',
         text: '',
         id: 'btnFind',
-        icon:
-          'https://icons.iconarchive.com/icons/zerode/plump/16/Search-icon.png',
+        icon: 'https://icons.iconarchive.com/icons/zerode/plump/16/Search-icon.png',
         handler: () =>
           storeWLs.getFilters().add({
             property: 'name',
@@ -547,8 +551,7 @@ Ext.onReady(function () {
       {
         xtype: 'button',
         text: 'Open',
-        icon:
-          'https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png',
+        icon: 'https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png',
         handler: () => {
           let startIndex = +Ext.getCmp('txtStartIndex').getValue() - 1,
             endIndex = +Ext.getCmp('txtEndIndex').getValue() - 1;
@@ -584,8 +587,7 @@ Ext.onReady(function () {
         id: 'btnOpenAuthForm',
         text: 'BORDER PX1',
         dock: 'right',
-        icon:
-          'https://icons.iconarchive.com/icons/shlyapnikova/toolbar-2/32/brick-wall-icon.png',
+        icon: 'https://icons.iconarchive.com/icons/shlyapnikova/toolbar-2/32/brick-wall-icon.png',
         listeners: {
           click: () => authForm.setHidden(false),
         },
@@ -670,8 +672,7 @@ Ext.onReady(function () {
       {
         xtype: 'button',
         id: 'btnLogout',
-        icon:
-          'https://icons.iconarchive.com/icons/saki/nuoveXT-2/16/Apps-session-logout-icon.png',
+        icon: 'https://icons.iconarchive.com/icons/saki/nuoveXT-2/16/Apps-session-logout-icon.png',
         text: 'Logout',
         dock: 'right',
         //width: 100,

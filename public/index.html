@@ -162,6 +162,9 @@
         window.onload = () => {
             loadScript('js/utils.js?v=' + currentVersion())
             authenticate((isAuthenticated) => {
+                // Ext.Ajax.defaultHeaders = {
+                //     Authorization: 'Basic ' + localStorage.getItem('token'),
+                // };
                 if (isAuthenticated)
                     loadScript('js/whitelabelGrid.js?v=' + currentVersion())
                 else
