@@ -112,6 +112,7 @@ Ext.onReady(function () {
       'mobileRedirect',
       'dynamicFooter',
       'securityQuestion',
+      'hasPopup'
     ],
   });
   var storeWLs = Ext.create('Ext.data.Store', {
@@ -397,6 +398,7 @@ Ext.onReady(function () {
             ['dynamicFooter', 'Dynamic Footer'],
             ['securityQuestion', 'Security Question'],
             ['referredIconMenu', 'Menu Icon'],
+            ['hasPopup', 'Has Popup'],
           ],
         }),
         queryMode: 'local',
