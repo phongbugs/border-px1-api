@@ -104,6 +104,7 @@ Ext.define('WL', {
     'mobileRedirect',
     'dynamicFooter',
     'securityQuestion',
+    'hasPopup',
   ],
 });
 let storeWLs = Ext.create('Ext.data.Store', {
@@ -312,6 +313,7 @@ Ext.onReady(function () {
             ['dynamicFooter', 'Dynamic Footer'],
             ['securityQuestion', 'Security Question'],
             ['referredIconMenu', 'Menu Icon'],
+            ['hasPopup', 'Has Popup'],
           ],
         }),
         queryMode: 'local',
