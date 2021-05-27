@@ -117,12 +117,18 @@ let storeWLs = Ext.create('Ext.data.Store', {
     },
   },
   listeners: {
+    beforeload: (store) => {
+      store.getProxy().setHeaders({
+        Authorization: 'Basic ' + localStorage.getItem('token'),
+      });
+    },
     load: function (_, records, successful, operation, eOpts) {
       let whiteLabels = records[0].data;
       delete whiteLabels['id'];
       for (var whitelabelName in whiteLabels) {
         let record = whiteLabels[whitelabelName];
         record['name'] = whitelabelName;
+
         if (!record['servers']) record['servers'] = '10.168.109.6';
         if (!record['status']) record['status'] = 'live';
         record['isResponsive'] = record['isResponsive']
@@ -137,6 +143,8 @@ let storeWLs = Ext.create('Ext.data.Store', {
                 : undefined
               : servers;
         }
+        if (!record['referredIconMenu'])
+          record['referredIconMenu'] = '__TEXT-MENU__';
         // icon spniner cols
         record['specificServerSpinner'] = false;
         record['remoteDesktopSpinner'] = false;
@@ -211,6 +219,10 @@ Ext.onReady(function () {
         loadScript('js/authForm.js?v=' + currentVersion());
         loadScript('js/domainGrid.js?v=' + currentVersion());
         loadScript('js/deploymentForm.js?v=' + currentVersion());
+        // if it's 6.2 it will show button 7.0
+        if (location.href.indexOf('7.html') === -1)
+          Ext.getCmp('btnSwitchExtjsVesion').setIconCls('extjsVersion7');
+        else Ext.getCmp('btnSwitchExtjsVesion').setIconCls('extjsVersion6');
       },
     },
     // dockedItems: [
@@ -415,8 +427,7 @@ Ext.onReady(function () {
         xtype: 'button',
         text: '',
         id: 'btnFind',
-        icon:
-          'https://icons.iconarchive.com/icons/zerode/plump/16/Search-icon.png',
+        icon: 'https://icons.iconarchive.com/icons/zerode/plump/16/Search-icon.png',
         handler: () =>
           storeWLs.getFilters().add({
             property: 'name',
@@ -483,8 +494,7 @@ Ext.onReady(function () {
       {
         xtype: 'button',
         text: 'Open',
-        icon:
-          'https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png',
+        icon: 'https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png',
         handler: () => {
           let startIndex = +Ext.getCmp('txtStartIndex').getValue() - 1,
             endIndex = +Ext.getCmp('txtEndIndex').getValue() - 1,
@@ -522,8 +532,7 @@ Ext.onReady(function () {
       {
         xtype: 'button',
         text: 'Deployment',
-        icon:
-          'https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-3/16/web-management-icon.png',
+        icon: 'https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-3/16/web-management-icon.png',
         id: 'btnDeployment',
         listeners: {
           click: () => Ext.getCmp('deploymentForm').show(),
@@ -534,8 +543,7 @@ Ext.onReady(function () {
         id: 'btnOpenAuthForm',
         text: 'BORDER PX1',
         dock: 'right',
-        icon:
-          'https://icons.iconarchive.com/icons/shlyapnikova/toolbar-2/32/brick-wall-icon.png',
+        icon: 'https://icons.iconarchive.com/icons/shlyapnikova/toolbar-2/32/brick-wall-icon.png',
         listeners: {
           click: () => authForm.setHidden(false),
         },
@@ -578,9 +586,35 @@ Ext.onReady(function () {
       '->',
       {
         xtype: 'button',
+        id: 'btnHelp',
+        text: 'Help',
+        iconCls: 'helpCls',
+        handler: () => {
+          let encryptedLink =
+            'U2FsdGVkX1+bpGWuQ3YhYFNhhllVIzDLoO/u3BLYh9Dtv8oQ5pgq9Q5HCubPDdILXNmj+FAfnkt6HelkG50ouFF0mpEyR5gkZb4ryZvdn33T75UJefl5t74+EySU6ORA/x6E+7IgoTfHIlO5QPDCMQtDgO2BtHUJp0VmdCtcEDQ=';
+          window.open(
+            CryptoJS.AES.decrypt(encryptedLink, location.hostname).toString(
+              CryptoJS.enc.Utf8
+            )
+          );
+        },
+      },
+      {
+        xtype: 'button',
+        id: 'btnSwitchExtjsVesion',
+        text: 'Switch Extjs ',
+        dock: 'right',
+        iconCls: 'extjsVersion7',
+        iconAlign: 'right',
+        handler: () => {
+          if (location.href.indexOf('7.html') === -1) location.href = '7.html';
+          else location.href = '/';
+        },
+      },
+      {
+        xtype: 'button',
         id: 'btnLogout',
-        icon:
-          'https://icons.iconarchive.com/icons/saki/nuoveXT-2/16/Apps-session-logout-icon.png',
+        icon: 'https://icons.iconarchive.com/icons/saki/nuoveXT-2/16/Apps-session-logout-icon.png',
         text: 'Logout',
         dock: 'right',
         //width: 100,
