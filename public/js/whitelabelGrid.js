@@ -85,93 +85,88 @@ let Groups,
       },
     ],
   });
+Ext.define('WL', {
+  extend: 'Ext.data.Model',
+  fields: [
+    'name',
+    'compType',
+    'prefix',
+    'defaultNumber',
+    'headerNumber',
+    'referredWL',
+    'mainColor',
+    'servers',
+    'hasTogel',
+    'closedPlaytech',
+    'closedMail',
+    'referralFunction',
+    'oldNames',
+    'mobileRedirect',
+    'dynamicFooter',
+    'securityQuestion',
+    'hasPopup',
+  ],
+});
+let storeWLs = Ext.create('Ext.data.Store', {
+  model: 'WL',
+  proxy: {
+    type: 'ajax',
+    url: 'WLs.json',
+    reader: {
+      type: 'json',
+    },
+  },
+  listeners: {
+    beforeload: (store) => {
+      store.getProxy().setHeaders({
+        Authorization: 'Basic ' + localStorage.getItem('token'),
+      });
+    },
+    load: function (_, records, successful, operation, eOpts) {
+      let whiteLabels = records[0].data;
+      delete whiteLabels['id'];
+      for (var whitelabelName in whiteLabels) {
+        let record = whiteLabels[whitelabelName];
+        record['name'] = whitelabelName;
 
+        if (!record['servers']) record['servers'] = '10.168.109.6';
+        if (!record['status']) record['status'] = 'live';
+        record['isResponsive'] = record['isResponsive']
+          ? 'Responsive'
+          : 'Non-Responsive';
+        if (record['servers']) {
+          let servers = record['servers'];
+          record['specificServer'] =
+            servers !== '10.168.109.6'
+              ? servers
+                ? '192.168.106.' + servers.split('-')[0]
+                : undefined
+              : servers;
+        }
+        if (!record['referredIconMenu'])
+          record['referredIconMenu'] = '__TEXT-MENU__';
+        // icon spniner cols
+        record['specificServerSpinner'] = false;
+        record['remoteDesktopSpinner'] = false;
+        record['isSyncedDomain'] = false;
+        record['isSyncedFolder'] = false;
+        record['folderPath'] = '';
+        record['backupDate'] = '';
+        data.push(record);
+      }
+      Groups = storeWLs.getGroups();
+      if (Groups) log(Groups);
+      storeWLs.loadData(data);
+      listNameWLs = sortAndToList(data);
+      Ext.getCmp('txtNameWLs').getStore().loadData(listNameWLs);
+    },
+  },
+  autoLoad: true,
+});
 Ext.onReady(function () {
-  //currentVersion = '1.1.1'
-  // prevent browser call loadScript('js/gridWL.js') at console log
   authenticate((isAuthenticated) => {
     if (!isAuthenticated) location.reload();
   });
-  Ext.tip.QuickTipManager.init();
-  Ext.define('WL', {
-    extend: 'Ext.data.Model',
-    fields: [
-      'name',
-      'compType',
-      'prefix',
-      'defaultNumber',
-      'headerNumber',
-      'referredWL',
-      'mainColor',
-      'servers',
-      'hasTogel',
-      'closedPlaytech',
-      'closedMail',
-      'referralFunction',
-      'oldNames',
-      'mobileRedirect',
-      'dynamicFooter',
-      'securityQuestion',
-      'hasPopup'
-    ],
-  });
-  var storeWLs = Ext.create('Ext.data.Store', {
-    model: 'WL',
-    proxy: {
-      type: 'ajax',
-      url: 'WLs.json',
-      reader: {
-        type: 'json',
-      },
-    },
-    listeners: {
-      beforeload: (store) => {
-        store.getProxy().setHeaders({
-          Authorization: 'Basic ' + localStorage.getItem('token'),
-        });
-      },
-      load: function (_, records, successful, operation, eOpts) {
-        let whiteLabels = records[0].data;
-        delete whiteLabels['id'];
-        for (var whitelabelName in whiteLabels) {
-          let record = whiteLabels[whitelabelName];
-          record['name'] = whitelabelName;
-
-          if (!record['servers']) record['servers'] = '10.168.109.6';
-          if (!record['status']) record['status'] = 'live';
-          record['isResponsive'] = record['isResponsive']
-            ? 'Responsive'
-            : 'Non-Responsive';
-          if (record['servers']) {
-            let servers = record['servers'];
-            record['specificServer'] =
-              servers !== '10.168.109.6'
-                ? servers
-                  ? '192.168.106.' + servers.split('-')[0]
-                  : undefined
-                : servers;
-          }
-          if (!record['referredIconMenu'])
-            record['referredIconMenu'] = '__TEXT-MENU__';
-          // icon spniner cols
-          record['specificServerSpinner'] = false;
-          record['remoteDesktopSpinner'] = false;
-          record['isSyncedDomain'] = false;
-          record['isSyncedFolder'] = false;
-          record['folderPath'] = '';
-          record['backupDate'] = '';
-          data.push(record);
-        }
-        Groups = storeWLs.getGroups();
-        log(Groups);
-        storeWLs.loadData(data);
-        listNameWLs = sortAndToList(data);
-        Ext.getCmp('txtNameWLs').getStore().loadData(listNameWLs);
-      },
-    },
-    autoLoad: true,
-  });
-
   var girdWLs = Ext.create('Ext.grid.Panel', {
     renderTo: 'app',
     id: 'gridWLs',
@@ -291,13 +286,9 @@ Ext.onReady(function () {
         }
       },
       viewready: (grid) => {
-        loadScript(
-          'js/authForm.js?v=' + currentVersion() || new Date().getTime()
-        );
-
-        loadScript('js/domainGrid.js?v=' + currentVersion()) ||
-          new Date().getTime();
-
+        loadScript('js/authForm.js?v=' + currentVersion());
+        loadScript('js/domainGrid.js?v=' + currentVersion());
+        loadScript('js/deploymentForm.js?v=' + currentVersion());
         // if it's 6.2 it will show button 7.0
         if (location.href.indexOf('7.html') === -1)
           Ext.getCmp('btnSwitchExtjsVesion').setIconCls('extjsVersion7');
@@ -320,10 +311,7 @@ Ext.onReady(function () {
       {
         xtype: 'button',
         id: 'btnRefresh',
-        icon: 'https://icons.iconarchive.com/icons/graphicloads/100-flat/16/reload-icon.png',
-        text: '',
-        // other component can not fireEvent to
-        // handler: () => { storeWLs.clearFilter(); storeWLs.loadData(data) },
+        iconCls: 'refreshCls',
         listeners: {
           click: () => {
             storeWLs.clearFilter();
@@ -856,62 +844,18 @@ Ext.onReady(function () {
             handler: function (grid, rowIndex, colIndex, item, e, record) {
               rowIndex = grid.getStore().indexOf(record);
               record = grid.getStore().getAt(rowIndex);
-              var ip = record.get('specificServer');
-              record.set('specificServerSpinner', true);
-              let domainType = getDomainType();
-              Ext.Ajax.request({
-                method: 'POST',
-                url:
-                  borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
-                withCredentials: true,
-                success: function (response) {
-                  record.set('specificServerSpinner', false);
-                  let result = JSON.parse(response.responseText);
-                  if (result.success) {
-                    let defaultDomain = record.get('defaultDomain'),
-                      whiteLabelName = record.get('name'),
-                      status = record.get('status'),
-                      protocol = Ext.getCmp('cbbProtocol').getValue(),
-                      backendId = result.backendId,
-                      siteType = Ext.getCmp('cbbSiteType').getValue();
-                    if (!defaultDomain) defaultDomain = whiteLabelName + '.com';
-                    defaultDomain =
-                      siteType === 'member'
-                        ? defaultDomain
-                        : siteType + defaultDomain;
-                    if (status === 'testing') {
-                      defaultDomain = whiteLabelName + 'main.playliga.com';
-                      protocol = 'http';
-                    }
-                    let columnName = Ext.getCmp('cbbColumn').getValue();
-                    let url = protocol + '://' + defaultDomain + '/';
-                    switch (columnName) {
-                      case 'default':
-                      case 'defaultDomain':
-                        break;
-                      default:
-                        url += columnName;
-                        break;
-                    }
-                    url += '?bpx-backend-id=' + backendId;
-                    window.open(url, '_blank');
-                  } else {
-                    if (
-                      result.message.indexOf(
-                        'Invalid URI "/api/domainEdit/token'
-                      ) > -1
+              fetchBackendId(record, (backendId) =>
+                backendId
+                  ? window.open(
+                      genUrl(record) +
+                        '/' +
+                        getSelectedPage() +
+                        '?bpx-backend-id' +
+                        backendId,
+                      '_blank'
                     )
-                      Ext.Msg.alert(
-                        result.message,
-                        `Please login <b>BORDER PX1</b> site<br/>`
-                      );
-                    else alert(result.message);
-                  }
-                },
-                failure: function (response) {
-                  alert(JSON.stringify(response));
-                },
-              });
+                  : null
+              );
             },
           },
         ],
@@ -1094,7 +1038,9 @@ function fetchFolderOneRecord(record, callback) {
       var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
       if (result.success) {
         record.set('folderPath', result.path.replace(/\//g, '\\'));
-        record.set('backupDate', result.modifiedDateOfBKFile);
+        let info = result.modifiedDateOfBKFile.split('-');
+        let sizeOfBKFile = new Intl.NumberFormat().format(~~(info[1] / 1024));
+        record.set('backupDate', info[0] + ' - ' + sizeOfBKFile + ' KB');
       } else {
         record.set('folderPath', result.msg);
         record.set('backupDate', result.msg);
@@ -1105,16 +1051,52 @@ function fetchFolderOneRecord(record, callback) {
       log('server-side failure with status code ' + response.status);
       record.set('folderPath', 'failure...');
       record.set('backupDate', 'failure...');
-      callback(result.success);
+      callback(false);
     },
   });
 }
+
 // Safe slowly one by one
 function fetchFolderAllWLs(index, store, callback) {
   let record = store.getAt(index);
   record.set('isSyncedFolder', 'spinner');
   fetchFolderOneRecord(record, (success) => {
     record.set('isSyncedFolder', success ? 'checkOkCls' : 'checkKoCls');
+
+    function fetchBackendId(record, callback) {
+      try {
+        var ip = record.get('specificServer');
+        record.set('specificServerSpinner', true);
+        let domainType = getDomainType();
+        Ext.Ajax.request({
+          method: 'POST',
+          url: borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
+          withCredentials: true,
+          success: function (response) {
+            record.set('specificServerSpinner', false);
+            let result = JSON.parse(response.responseText);
+            if (result.success) callback(result.backendId);
+            else {
+              if (
+                result.message.indexOf('Invalid URI "/api/domainEdit/token') >
+                -1
+              )
+                Ext.Msg.alert(
+                  result.message,
+                  `Please login <b>BORDER PX1</b> site<br/>`
+                );
+              else alert(result.message);
+              callback();
+            }
+          },
+          failure: function (response) {
+            alert(JSON.stringify(response));
+          },
+        });
+      } catch (error) {
+        callback();
+      }
+    }
     if (++index < store.getCount()) fetchFolderAllWLs(index, store, callback);
     else callback();
   });

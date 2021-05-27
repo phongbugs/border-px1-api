@@ -158,7 +158,7 @@
                 });
             }
         let date = new Date()
-        let currentVersion = () => date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate();
+        let currentVersion = () => date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate()+2;
         window.onload = () => {
             loadScript('js/utils.js?v=' + currentVersion())
             authenticate((isAuthenticated) => {
