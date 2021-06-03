@@ -85,7 +85,10 @@
                         Ext.Msg.alert('Login Failed', action.result.message);
                       else {
                         token = action.result.token;
-                        //localStorage.setItem('token', token);
+                        // use authenticate asp.net web
+                        localStorage.setItem('token', token);
+
+                        // use authenticate cross domain
                         saveBorderPx1ApiCookie(token, () => {
                           document.getElementById('app').innerHTML = '';
                           loginButton.setIconCls('');

@@ -4,13 +4,13 @@
 <head>
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, WLs-scalable=no" /> -->
     <title>LIGA's Whitelabel Management</title>
-    <link rel="stylesheet" href="extjs/6.2/classic/theme-neptune/resources/theme-neptune-all.css" />
-    <link rel="stylesheet" href="extjs/6.2/packages/ux/classic/neptune/resources/ux-all.css" />
-    <!--<link rel="stylesheet" href="extjs/6.2/packages/charts/classic/neptune/resources/charts-all.css" />-->
+    <link rel="stylesheet" href="extjs/7.0/classic/theme-neptune/resources/theme-neptune-all.css" />
+    <link rel="stylesheet" href="extjs/7.0/packages/ux/classic/neptune/resources/ux-all.css" />
+    <!--<link rel="stylesheet" href="extjs/7.0/packages/charts/classic/neptune/resources/charts-all.css" />-->
     <!--<link rel="stylesheet" href="../stylesheets/font-awesome.min.css" />-->
-    <script src="extjs/6.2/ext-all.js"></script>
-    <!--<script src="extjs/6.2/packages/ux/classic/ux.js"></script>
-    <script src="extjs/6.2/packages/charts/classic/charts.js"></script>-->
+    <script src="extjs/7.0/ext-all.js"></script>
+    <!--<script src="extjs/7.0/packages/ux/classic/ux.js"></script>
+    <script src="extjs/7.0/packages/charts/classic/charts.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"
@@ -41,10 +41,6 @@
             animation: sp-anime 0.8s infinite linear;
         }
 
-        .refreshCls {
-            background: url(https://icons.iconarchive.com/icons/graphicloads/polygon/16/refresh-4-icon.png) no-repeat center;
-        }
-
         @keyframes sp-anime {
             100% {
                 transform: rotate(360deg);
@@ -61,10 +57,6 @@
 
         .checkCls {
             background: url(https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-2/16/FAQ-icon.png) no-repeat center;
-        }
-
-        .checkFileCls {
-            background: url(https://icons.iconarchive.com/icons/graphicloads/polygon/16/check-2-icon.png) no-repeat center;
         }
 
         .checkOkCls {
@@ -84,7 +76,7 @@
         }
 
         .folderCls {
-            background: url(https://icons.iconarchive.com/icons/treetog/i/16/Folder-Downloads-icon.png) no-repeat center
+            background: url(https://icons.iconarchive.com/icons/dtafalonso/modern-xp/16/ModernXP-50-Folder-Search-icon.png) no-repeat center
         }
 
         .folderOkCls {
@@ -101,30 +93,6 @@
             top: 10%;
             -webkit-transform: translate(-50%, -50%);
             transform: translate(-50%, -50%);
-        }
-
-        .zipUploadedCls {
-            background: url(img/zipUploaded.png) no-repeat center;
-        }
-
-        .zipUploadCls {
-            background: url(img/zipUpload.png) no-repeat center;
-        }
-
-        .zipUploadErrCls {
-            background: url(img/zipUploadErr.png) no-repeat center;
-        }
-
-        .zipUploadEmptyCls {
-            background: url(img/zipUploadEmpty.png) no-repeat center;
-        }
-
-        .batUploadedCls {
-            background: url(img/run.png) no-repeat center;
-        }
-
-        .batUploadCls {
-            background: url(img/bat.png) no-repeat center;
         }
 
         .expandCls {
@@ -190,13 +158,10 @@
                 });
             }
         let date = new Date()
-        let currentVersion = () => date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate()+2;
+        let currentVersion = () => date.getFullYear().toString() + (date.getMonth() + 1).toString() + date.getDate();
         window.onload = () => {
             loadScript('js/utils.js?v=' + currentVersion())
             authenticate((isAuthenticated) => {
-                // Ext.Ajax.defaultHeaders = {
-                //     Authorization: 'Basic ' + localStorage.getItem('token'),
-                // };
                 if (isAuthenticated)
                     loadScript('js/whitelabelGrid.js?v=' + currentVersion())
                 else
