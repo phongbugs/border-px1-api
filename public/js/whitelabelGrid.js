@@ -75,6 +75,9 @@ let Groups,
                 case '92-96-104':
                   name = name + ' [FC-B]';
                   break;
+                case '183-184-185':
+                  name = name + ' [FC]';
+                  break;
               }
               return (
                 '<span style="color:green">[' + (i + 1) + ']</span> ' + name
@@ -275,9 +278,9 @@ Ext.onReady(function () {
         id: 'cbbProtocol',
         value: 'https',
         editable: false,
-        listeners: {
-          change: (_, val) => Ext.getCmp('btnRefresh').fireEvent('click'),
-        },
+        // listeners: {
+        //   change: (_, val) => Ext.getCmp('btnRefresh').fireEvent('click'),
+        // },
       },
       {
         xtype: 'combo',
@@ -452,7 +455,7 @@ Ext.onReady(function () {
             ['Google.html', 'Google.html'],
             ['Sitemap.xml', 'Sitemap.xml'],
             ['Header.aspx', 'Header.aspx'],
-            ['_View/Register.aspx', 'Register.aspx'],
+            ['_View/Register.aspx?ref=12AVF', 'Register.aspx'],
             ['_View/Odds4.aspx', 'Odd4.aspx'],
             ['_View/Odds10.aspx', 'Odd10.aspx'],
             ['public/temp.aspx', 'temp.aspx'],
