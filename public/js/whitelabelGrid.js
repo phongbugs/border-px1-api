@@ -197,6 +197,7 @@ Ext.onReady(function () {
         //log(selectedServerGroupStore.getData());
       },
       cellclick: (gridview, td, cellIndex, record, tr, rowIndex, e, eOpts) => {
+        let whitelabelName = record.get('name')
         if (cellIndex === 0) {
           if (cellClickCount === 1) {
             cellClickCount = 2;
@@ -205,7 +206,14 @@ Ext.onReady(function () {
             cellClickCount = 1;
             Ext.getCmp('txtEndIndex').setValue(td.innerText);
           }
-        } else if (cellIndex > 1 && cellIndex < 13) {
+        } else if (
+          cellIndex > 1 &&
+          cellIndex < 13 &&
+          whitelabelName !== 'BPXURLS' &&
+          whitelabelName !== 'BPXIP' &&
+          whitelabelName !== 'SHARECACHE' &&
+          record.get('servers') !== '10.168.109.6'
+        ) {
           Ext.getCmp('gridWLs').setDisabled(true);
           // send to grid domain two columns
           selectedWhiteLabelName = record.get('name');
@@ -809,7 +817,7 @@ Ext.onReady(function () {
       },
       {
         text: 'H/D Number',
-        width: 100,
+        width: 150,
         dataIndex: 'headerNumber',
         tooltip: 'Header/Default number',
         renderer: (val, _, record) => val + '/' + record.get('defaultNumber'),
