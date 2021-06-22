@@ -655,7 +655,7 @@ Ext.onReady(function () {
         iconAlign: 'right',
         handler: () => {
           if (location.href.indexOf('7.html') === -1) location.href = '7.html';
-          else location.href = '/';
+          else location.href = '/summary.html';
         },
       },
       {
