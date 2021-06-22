@@ -288,7 +288,6 @@ Ext.onReady(function () {
       viewready: (grid) => {
         loadScript('js/authForm.js?v=' + currentVersion());
         loadScript('js/domainGrid.js?v=' + currentVersion());
-        loadScript('js/deploymentForm.js?v=' + currentVersion());
         // if it's 6.2 it will show button 7.0
         if (location.href.indexOf('7.html') === -1)
           Ext.getCmp('btnSwitchExtjsVesion').setIconCls('extjsVersion7');
