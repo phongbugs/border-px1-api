@@ -377,7 +377,7 @@ Ext.onReady(function () {
 
       {
         xtype: 'combo',
-        width: 120,
+        width: 150,
         store: new Ext.data.ArrayStore({
           fields: ['id', 'name'],
           data: [
@@ -817,7 +817,7 @@ Ext.onReady(function () {
       },
       {
         text: 'H/D Number',
-        width: 150,
+        width: 140,
         dataIndex: 'headerNumber',
         tooltip: 'Header/Default number',
         renderer: (val, _, record) => val + '/' + record.get('defaultNumber'),
