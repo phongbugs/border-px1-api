@@ -36,7 +36,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                 localStorage.setItem('authTime', time);
               },
               onCounterEnd: function () {
-                authForm.setHidden(false);
+                //authForm.setHidden(false);
                 Ext.getCmp('btnAuthenticate').fireEvent('click');
               },
             });
@@ -190,7 +190,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                       localStorage.setItem('authTime', time);
                     },
                     onCounterEnd: function () {
-                      authForm.setHidden(false);
+                      //authForm.setHidden(false);
                       Ext.getCmp('btnAuthenticate').fireEvent('click');
                     },
                   });
