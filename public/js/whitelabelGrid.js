@@ -197,7 +197,7 @@ Ext.onReady(function () {
         //log(selectedServerGroupStore.getData());
       },
       cellclick: (gridview, td, cellIndex, record, tr, rowIndex, e, eOpts) => {
-        let whitelabelName = record.get('name')
+        let whitelabelName = record.get('name');
         if (cellIndex === 0) {
           if (cellClickCount === 1) {
             cellClickCount = 2;

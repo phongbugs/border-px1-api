@@ -13,8 +13,8 @@
     <script src="extjs/6.2/packages/charts/classic/charts.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/2.3.1/jsencrypt.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"
-        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <!-- <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script> -->
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-S36WVLYL57"></script>
     <script>
@@ -124,9 +124,9 @@
         </div>
     </div>
     <script>
-        //let borderPx1ApiHost = 'http://localhost:9999',
+        let borderPx1ApiHost = 'http://localhost:9999',
         //let borderPx1ApiHost = 'https://border-px1-api.herokuapp.com',
-        let borderPx1ApiHost = 'https://border-px1-api.xyz',
+        //let borderPx1ApiHost = 'https://border-px1-api.xyz',
             remoteDesktopServiceUrl = 'http://localhost:3000/remote/',
             tokenPublicKey =
                 '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQAB-----END PUBLIC KEY-----',
@@ -158,7 +158,7 @@
                 });
             }
         let date = new Date()
-        let currentVersion = () => 1
+        let currentVersion = () => 4
         window.onload = () => {
             loadScript('js/utils.js?v=' + currentVersion())
             authenticate((isAuthenticated) => {
