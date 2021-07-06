@@ -596,6 +596,7 @@ Ext.onReady(function () {
         dock: 'right',
         iconCls: 'syncDomainCls',
         disabled: true,
+        hidden: true,
         listeners: {
           click: (btn) => {
             btn.setIconCls('spinner');
