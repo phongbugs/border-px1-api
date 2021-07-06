@@ -1,5 +1,3 @@
-const { all } = require('../app');
-
 module.exports = (typeDomain) => {
   let allServers = {
     ip: [
@@ -71,6 +69,9 @@ module.exports = (typeDomain) => {
       { ID: '62', Name: '103.200.201.78' },
       { ID: '63', Name: '103.200.201.79' },
       { ID: '46', Name: 'igtx' },
+      { ID: '69', Name: '103.200.201.83' },
+      { ID: '70', Name: '103.200.201.84' },
+      { ID: '71', Name: '103.200.201.85' },
     ],
     name: [
       { ID: '50', Name: '192.168.106.100' },
@@ -135,6 +136,9 @@ module.exports = (typeDomain) => {
       { ID: '34', Name: '192.168.106.92' },
       { ID: '38', Name: '192.168.106.96' },
       { ID: '49', Name: '192.168.106.99' },
+      { ID: '75', Name: '192.168.106.183' },
+      { ID: '76', Name: '192.168.106.184' },
+      { ID: '77', Name: '192.168.106.185' },
     ],
   };
   return allServers[typeDomain];
