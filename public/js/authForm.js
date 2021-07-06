@@ -28,14 +28,10 @@ let authForm = Ext.create('Ext.form.Panel', {
       //     if (result.success) {}
       //   }
       // })
+      
       // auto login border px1 when refresh page or 1st login to summary
       setTimeout(() => {
-        let username = Ext.getCmp('txtUsername'),
-          password = Ext.getCmp('txtPassword');
-        username.setValue(decrypt(localStorage.getItem('authUsername')) || '');
-        password.setValue(decrypt(localStorage.getItem('authPassword')) || '');
-        if (username.getValue() && password.getValue())
-          Ext.getCmp('btnAuthenticate').fireEvent('click');
+        autoLogin();
       }, 3000);
     },
     show: () => {
@@ -179,7 +175,9 @@ let authForm = Ext.create('Ext.form.Panel', {
                     },
                     onCounterEnd: function () {
                       //authForm.setHidden(false);
-                      Ext.getCmp('btnAuthenticate').fireEvent('click');
+                      //Ext.getCmp('btnAuthenticate').fireEvent('click');
+                      // only auto login to border px when user tick to remember account
+                      autoLogin();
                     },
                   });
                   myCounter.start();
@@ -267,3 +265,12 @@ let decrypt = (str) =>
       : '',
   encrypt = (str) =>
     str ? CryptoJS.AES.encrypt(str, location.hostname).toString() : '';
+
+function autoLogin() {
+  let username = Ext.getCmp('txtUsername'),
+    password = Ext.getCmp('txtPassword');
+  username.setValue(decrypt(localStorage.getItem('authUsername')) || '');
+  password.setValue(decrypt(localStorage.getItem('authPassword')) || '');
+  if (username.getValue() && password.getValue())
+    Ext.getCmp('btnAuthenticate').fireEvent('click');
+}
