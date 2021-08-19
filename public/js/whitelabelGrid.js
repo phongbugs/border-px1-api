@@ -105,6 +105,7 @@ Ext.define('WL', {
     'dynamicFooter',
     'securityQuestion',
     'hasPopup',
+    'machineKey',
   ],
 });
 let storeWLs = Ext.create('Ext.data.Store', {
@@ -134,6 +135,9 @@ let storeWLs = Ext.create('Ext.data.Store', {
         record['isResponsive'] = record['isResponsive']
           ? 'Responsive'
           : 'Non-Responsive';
+        record['machineKey'] = record['machineKey']
+          ? 'Machine Key'
+          : 'None Machine Key';
         if (record['servers']) {
           let servers = record['servers'];
           record['specificServer'] =
@@ -152,6 +156,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
         record['isSyncedFolder'] = false;
         record['folderPath'] = '';
         record['backupDate'] = '';
+
         data.push(record);
       }
       Groups = storeWLs.getGroups();
@@ -394,6 +399,7 @@ Ext.onReady(function () {
             ['securityQuestion', 'Security Question'],
             ['referredIconMenu', 'Menu Icon'],
             ['hasPopup', 'Has Popup'],
+            ['machineKey', 'Machine Key'],
           ],
         }),
         queryMode: 'local',
@@ -697,6 +703,7 @@ Ext.onReady(function () {
             dynamicFooter = record.get('dynamicFooter') ? '🦶' : '',
             mobileRedirect = !record.get('mobileRedirect') ? '📵' : '',
             securityQuestion = record.get('securityQuestion') ? '🔒' : '',
+            machineKey = record.get('machineKey') === 'Machine Key' ? '🔑' : '',
             status = record.get('status'),
             protocol = Ext.getCmp('cbbProtocol').getValue(),
             siteType = Ext.getCmp('cbbSiteType').getValue();
@@ -720,13 +727,14 @@ Ext.onReady(function () {
           //log('defaultDomain: %s', defaultDomain);
           return (
             Ext.String.format(
-              '<a target="_blank" href="{0}://{1}">{2}</a> {3} {4} {5} {6}<br />',
+              '<a target="_blank" href="{0}://{1}">{2}</a> {3} {4} {5} {6} {7}<br />',
               protocol,
               defaultDomain.toLowerCase(),
               val,
               mobileRedirect,
               dynamicFooter,
-              securityQuestion
+              securityQuestion,
+              machineKey
             ) + oldNames
           );
         },
