@@ -423,8 +423,10 @@ Ext.onReady(function () {
                 for (let j = 0; j < group.getCount(); j++) {
                   let whiteLabelName = group.getAt(j).getData().name;
                   list.push(whiteLabelName);
+                  
                 }
-                log(list.toString());
+                //log(list.toString());
+                list.forEach((r, index) => log('%s.%s', index+1, r))
               }
               storeWLs.loadData(data);
               featureGrouping.collapseAll();
