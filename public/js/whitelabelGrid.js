@@ -811,6 +811,13 @@ Ext.onReady(function () {
         hidden: true,
       },
       {
+        text: 'Referral Function',
+        width: 130,
+        dataIndex: 'referralFunction',
+        hidden: true,
+        renderer: (value) => (value ? 'RF' : 'None'),
+      },
+      {
         xtype: 'actioncolumn',
         width: 30,
         tooltip: 'Open link by specific server',
