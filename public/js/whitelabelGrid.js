@@ -666,6 +666,12 @@ Ext.onReady(function () {
         text: 'Name',
         width: 180,
         dataIndex: 'name',
+        editor: {
+          field: {
+            xtype: 'textfield',
+            allowBlank: false,
+          },
+        },
         renderer: (val, _, record) => {
           let defaultDomain = record.get('defaultDomain'),
             dynamicFooter = record.get('dynamicFooter') ? '🦶' : '',
@@ -1012,7 +1018,7 @@ Ext.onReady(function () {
         sortable: false,
         menuDisabled: true,
         text: 'U',
-        hidden: true,
+        hidden: false,
         items: [
           {
             iconCls: 'zipUploadCls',
