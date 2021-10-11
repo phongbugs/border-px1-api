@@ -1,5 +1,3 @@
-const { all } = require('../app');
-
 module.exports = (typeDomain) => {
   let allServers = {
     ip: [

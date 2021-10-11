@@ -1,8 +1,7 @@
 let authForm = Ext.create('Ext.form.Panel', {
   id: 'authForm',
   title: 'LOGIN BORDER PX1 SITE',
-  icon:
-    'https://icons.iconarchive.com/icons/shlyapnikova/toolbar-2/32/brick-wall-icon.png',
+  icon: 'https://icons.iconarchive.com/icons/shlyapnikova/toolbar-2/32/brick-wall-icon.png',
   bodyPadding: 15,
   width: 350,
   height: 210,
@@ -19,36 +18,21 @@ let authForm = Ext.create('Ext.form.Panel', {
   hidden: true,
   listeners: {
     afterrender: () => {
-      let domainType = getDomainType();
-      Ext.Ajax.request({
-        method: 'GET',
-        url: borderPx1ApiHost + '/authentication/status/' + domainType,
-        withCredentials: true,
-        success: function (response) {
-          let result = JSON.parse(response.responseText);
-          if (result.success) {
-            var myCounter = new Countdown({
-              seconds: localStorage.getItem('authTime'),
-              onUpdateStatus: function (time) {
-                // Ext.getCmp('btnAuthenticate').setText(
-                //   convertTimeToMinutesAndSeconds(time)
-                // );
-                localStorage.setItem('authTime', time);
-              },
-              onCounterEnd: function () {
-                authForm.setHidden(false);
-                Ext.getCmp('btnAuthenticate').fireEvent('click');
-              },
-            });
-            Ext.getCmp('btnSyncAllDomain').setDisabled(false);
-            myCounter.start();
-          }
-        },
-        failure: function (response) {
-          log(response);
-          Ext.Msg.alert('Failure', 'authentication/status error');
-        },
-      });
+      // let domainType = getDomainType();
+      // Ext.Ajax.request({
+      //   method: 'GET',
+      //   url: borderPx1ApiHost + '/authentication/status/' + domainType,
+      //   withCredentials: true,
+      //   success: function (response) {
+      //     let result = JSON.parse(response.responseText);
+      //     if (result.success) {}
+      //   }
+      // })
+      
+      // auto login border px1 when refresh page or 1st login to summary
+      setTimeout(() => {
+        autoLogin();
+      }, 3000);
     },
     show: () => {
       Ext.getCmp('txtUsername').setValue(
@@ -190,8 +174,10 @@ let authForm = Ext.create('Ext.form.Panel', {
                       localStorage.setItem('authTime', time);
                     },
                     onCounterEnd: function () {
-                      authForm.setHidden(false);
-                      Ext.getCmp('btnAuthenticate').fireEvent('click');
+                      //authForm.setHidden(false);
+                      //Ext.getCmp('btnAuthenticate').fireEvent('click');
+                      // only auto login to border px when user tick to remember account
+                      autoLogin();
                     },
                   });
                   myCounter.start();
@@ -279,3 +265,12 @@ let decrypt = (str) =>
       : '',
   encrypt = (str) =>
     str ? CryptoJS.AES.encrypt(str, location.hostname).toString() : '';
+
+function autoLogin() {
+  let username = Ext.getCmp('txtUsername'),
+    password = Ext.getCmp('txtPassword');
+  username.setValue(decrypt(localStorage.getItem('authUsername')) || '');
+  password.setValue(decrypt(localStorage.getItem('authPassword')) || '');
+  if (username.getValue() && password.getValue())
+    Ext.getCmp('btnAuthenticate').fireEvent('click');
+}

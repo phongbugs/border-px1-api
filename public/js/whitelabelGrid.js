@@ -92,6 +92,7 @@ Ext.define('WL', {
     'dynamicFooter',
     'securityQuestion',
     'hasPopup',
+    'machineKey',
   ],
 });
 let storeWLs = Ext.create('Ext.data.Store', {
@@ -121,6 +122,9 @@ let storeWLs = Ext.create('Ext.data.Store', {
         record['isResponsive'] = record['isResponsive']
           ? 'Responsive'
           : 'Non-Responsive';
+        record['machineKey'] = record['machineKey']
+          ? 'Machine Key'
+          : 'None Machine Key';
         if (record['servers']) {
           let servers = record['servers'];
           record['specificServer'] =
@@ -187,6 +191,7 @@ Ext.onReady(function () {
         //log(selectedServerGroupStore.getData());
       },
       cellclick: (gridview, td, cellIndex, record, tr, rowIndex, e, eOpts) => {
+        let whitelabelName = record.get('name');
         if (cellIndex === 0) {
           if (cellClickCount === 1) {
             cellClickCount = 2;
@@ -195,8 +200,14 @@ Ext.onReady(function () {
             cellClickCount = 1;
             Ext.getCmp('txtEndIndex').setValue(td.innerText);
           }
-          Ext.getCmp('txtRowIndex').setValue(td.innerText);
-        } else if (cellIndex > 1 && cellIndex < 13) {
+        } else if (
+          cellIndex > 1 &&
+          cellIndex < 13 &&
+          whitelabelName !== 'BPXURLS' &&
+          whitelabelName !== 'BPXIP' &&
+          whitelabelName !== 'SHARECACHE' &&
+          record.get('servers') !== '10.168.109.6'
+        ) {
           Ext.getCmp('gridWLs').setDisabled(true);
           let isShowDomainGrid = true;
           handleDomainStoreAndGrid({ isShowDomainGrid, record });
@@ -205,7 +216,6 @@ Ext.onReady(function () {
       viewready: (grid) => {
         loadScript('js/authForm.js?v=' + currentVersion());
         loadScript('js/domainGrid.js?v=' + currentVersion());
-        loadScript('js/deploymentForm.js?v=' + currentVersion());
         // if it's 6.2 it will show button 7.0
         if (location.href.indexOf('7.html') === -1)
           Ext.getCmp('btnSwitchExtjsVesion').setIconCls('extjsVersion7');
@@ -296,7 +306,7 @@ Ext.onReady(function () {
       },
       {
         xtype: 'combo',
-        width: 120,
+        width: 150,
         store: new Ext.data.ArrayStore({
           fields: ['id', 'name'],
           data: [
@@ -313,6 +323,7 @@ Ext.onReady(function () {
             ['securityQuestion', 'Security Question'],
             ['referredIconMenu', 'Menu Icon'],
             ['hasPopup', 'Has Popup'],
+            ['machineKey', 'Machine Key'],
           ],
         }),
         queryMode: 'local',
@@ -343,7 +354,8 @@ Ext.onReady(function () {
                     group.getAt(0).set('zipUpload', 0);
                   else group.getAt(0).set('zipUpload', '');
                 }
-                log(list.toString());
+                //log(list.toString());
+                list.forEach((r, index) => log('%s.%s', index+1, r))
               }
 
               if (groupByValue === 'servers') columnUpload.setHidden(false);
@@ -542,6 +554,7 @@ Ext.onReady(function () {
         dock: 'right',
         iconCls: 'syncDomainCls',
         disabled: true,
+        hidden: true,
         listeners: {
           click: (btn) => {
             btn.setIconCls('spinner');
@@ -622,7 +635,7 @@ Ext.onReady(function () {
         iconAlign: 'right',
         handler: () => {
           if (location.href.indexOf('7.html') === -1) location.href = '7.html';
-          else location.href = '/';
+          else location.href = '/summary.html';
         },
       },
       {
@@ -661,6 +674,7 @@ Ext.onReady(function () {
             dynamicFooter = record.get('dynamicFooter') ? '🦶' : '',
             mobileRedirect = !record.get('mobileRedirect') ? '📵' : '',
             securityQuestion = record.get('securityQuestion') ? '🔒' : '',
+            machineKey = record.get('machineKey') === 'Machine Key' ? '🔑' : '',
             status = record.get('status'),
             protocol = getProtocol(),
             siteType = Ext.getCmp('cbbSiteType').getValue();
@@ -684,13 +698,14 @@ Ext.onReady(function () {
           //log('defaultDomain: %s', defaultDomain);
           return (
             Ext.String.format(
-              '<a target="_blank" href="{0}://{1}">{2}</a> {3} {4} {5} {6}<br />',
+              '<a target="_blank" href="{0}://{1}">{2}</a> {3} {4} {5} {6} {7}<br />',
               protocol,
               defaultDomain.toLowerCase(),
               val,
               mobileRedirect,
               dynamicFooter,
-              securityQuestion
+              securityQuestion,
+              machineKey
             ) + oldNames
           );
         },
@@ -782,7 +797,7 @@ Ext.onReady(function () {
       },
       {
         text: 'H/D Number',
-        width: 100,
+        width: 140,
         dataIndex: 'headerNumber',
         tooltip: 'Header/Default number',
         renderer: (val, _, record) => val + '/' + record.get('defaultNumber'),
