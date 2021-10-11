@@ -1,24 +1,8 @@
 ﻿// Global Data
 let serverStores = {
-    '101-102-103': [['10.168.106.101'], ['10.168.106.102'], ['10.168.106.103']],
-    '106-107-108': [['10.168.106.106'], ['10.168.106.107'], ['10.168.106.108']],
-    '110-114-115': [['10.168.106.110'], ['10.168.106.114'], ['10.168.106.115']],
-    '111-112-113': [['10.168.106.111'], ['10.168.106.112'], ['10.168.106.113']],
-    '116-117-118': [['10.168.106.116'], ['10.168.106.117'], ['10.168.106.118']],
-    '119-120-121': [['10.168.106.119'], ['10.168.106.120'], ['10.168.106.121']],
-    '122-123-124': [['10.168.106.122'], ['10.168.106.123'], ['10.168.106.124']],
-    '125-126-105': [['10.168.106.125'], ['10.168.106.126'], ['10.168.106.105']],
-    '167-168-169': [['10.168.106.167'], ['10.168.106.168'], ['10.168.106.169']],
-    '170-171-172': [['10.168.106.170'], ['10.168.106.171'], ['10.168.106.172']],
-    '173-174-175': [['10.168.106.173'], ['10.168.106.174'], ['10.168.106.175']],
-    '177-178-179': [['10.168.106.177'], ['10.168.106.178'], ['10.168.106.179']],
-    '67-68-69': [['10.168.106.67'], ['10.168.106.68'], ['10.168.106.69']],
-    '70-80-90': [['10.168.106.70'], ['10.168.106.80'], ['10.168.106.90']],
-    '72-73-74': [['10.168.106.72'], ['10.168.106.73'], ['10.168.106.74']],
-    '76-85-89': [['10.168.106.76'], ['10.168.106.85'], ['10.168.106.89']],
-    '77-78-79': [['10.168.106.77'], ['10.168.106.78'], ['10.168.106.79']],
-    '82-83-84': [['10.168.106.82'], ['10.168.106.83'], ['10.168.106.84']],
-    '92-96-104': [['10.168.106.92'], ['10.168.106.96'], ['10.168.106.104']],
+    'CLG Pool 01': [['202.95.4.130'], ['103.230.145.4'], ['103.254.109.2']],
+    'CLG Pool 02': [['202.95.4.131'], ['103.230.145.5'], ['103.254.109.3']],
+    'CLG Pool 03': [['202.95.4.132'], ['103.230.145.6'], ['103.254.109.4']],
   },
   selectedServerGroupStore = Ext.create('Ext.data.ArrayStore', {
     fields: ['name'],
@@ -106,6 +90,7 @@ Ext.define('WL', {
     'securityQuestion',
     'hasPopup',
     'machineKey',
+    'serverPool'
   ],
 });
 let storeWLs = Ext.create('Ext.data.Store', {
@@ -347,9 +332,9 @@ Ext.onReady(function () {
         id: 'cbbProtocol',
         value: 'https',
         editable: false,
-        listeners: {
-          change: (_, val) => Ext.getCmp('btnRefresh').fireEvent('click'),
-        },
+        // listeners: {
+        //   change: (_, val) => Ext.getCmp('btnRefresh').fireEvent('click'),
+        // },
       },
       {
         xtype: 'combo',
@@ -379,7 +364,6 @@ Ext.onReady(function () {
           },
         },
       },
-
       {
         xtype: 'combo',
         width: 150,
@@ -387,6 +371,7 @@ Ext.onReady(function () {
           fields: ['id', 'name'],
           data: [
             ['default', 'Select Group'],
+            ['serverPool', 'Server Pool'],
             ['servers', 'Server'],
             ['mainColor', 'Color'],
             ['referredWL', 'Referred WL'],
@@ -514,7 +499,7 @@ Ext.onReady(function () {
             ['Google.html', 'Google.html'],
             ['Sitemap.xml', 'Sitemap.xml'],
             ['Header.aspx', 'Header.aspx'],
-            ['_View/Register.aspx', 'Register.aspx'],
+            ['_View/Register.aspx?ref=12AVF', 'Register.aspx'],
             ['_View/Odds4.aspx', 'Odd4.aspx'],
             ['_View/Odds10.aspx', 'Odd10.aspx'],
             ['public/temp.aspx', 'temp.aspx'],
@@ -677,6 +662,33 @@ Ext.onReady(function () {
       },
       {
         xtype: 'button',
+        id: 'btnHelp',
+        text: 'Help',
+        iconCls: 'helpCls',
+        handler: () => {
+          let encryptedLink =
+            'U2FsdGVkX1+bpGWuQ3YhYFNhhllVIzDLoO/u3BLYh9Dtv8oQ5pgq9Q5HCubPDdILXNmj+FAfnkt6HelkG50ouFF0mpEyR5gkZb4ryZvdn33T75UJefl5t74+EySU6ORA/x6E+7IgoTfHIlO5QPDCMQtDgO2BtHUJp0VmdCtcEDQ=';
+          window.open(
+            CryptoJS.AES.decrypt(encryptedLink, location.hostname).toString(
+              CryptoJS.enc.Utf8
+            )
+          );
+        },
+      },
+      {
+        xtype: 'button',
+        id: 'btnSwitchExtjsVesion',
+        text: 'Switch Extjs ',
+        dock: 'right',
+        iconCls: 'extjsVersion7',
+        iconAlign: 'right',
+        handler: () => {
+          if (location.href.indexOf('7.html') === -1) location.href = '7.html';
+          else location.href = '/summary.html';
+        },
+      },
+      {
+        xtype: 'button',
         id: 'btnLogout',
         icon: 'https://icons.iconarchive.com/icons/saki/nuoveXT-2/16/Apps-session-logout-icon.png',
         text: 'Logout',
@@ -700,6 +712,12 @@ Ext.onReady(function () {
         text: 'Name',
         width: 180,
         dataIndex: 'name',
+        editor: {
+          field: {
+            xtype: 'textfield',
+            allowBlank: false,
+          },
+        },
         renderer: (val, _, record) => {
           let defaultDomain = record.get('defaultDomain'),
             dynamicFooter = record.get('dynamicFooter') ? '🦶' : '',
@@ -827,6 +845,12 @@ Ext.onReady(function () {
         hidden: false,
       },
       {
+        text: 'Server Pool',
+        width: 120,
+        dataIndex: 'serverPool',
+        hidden: false,
+      },
+      {
         text: 'H/D Number',
         width: 140,
         dataIndex: 'headerNumber',
@@ -845,6 +869,13 @@ Ext.onReady(function () {
           queryMode: 'local',
         },
         hidden: true,
+      },
+      {
+        text: 'Referral Function',
+        width: 130,
+        dataIndex: 'referralFunction',
+        hidden: true,
+        renderer: (value) => (value ? 'RF' : 'None'),
       },
       {
         xtype: 'actioncolumn',
