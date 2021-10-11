@@ -38,6 +38,9 @@ let storeDomain = Ext.create('Ext.data.Store', {
               e['servers'] = selectedServers;
               return e;
             });
+            // list only url
+            // let urls = data.domains.map((e) => e.Domain)
+            // log(urls.join('\r\n'))
           }
           return data;
         },
@@ -105,9 +108,9 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       listeners: {
         click: () => {
           let store = Ext.getCmp('domainGrid').getStore(),
-            stopAtFist = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
-          if (stopAtFist)
-            checkDomainAllGridSlow(0, store, stopAtFist, (domain) => {});
+            stopAtFirst = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
+          if (stopAtFirst)
+            checkDomainAllGridSlow(0, store, stopAtFirst, (domain) => {});
           else checkDomainAllGrid();
         },
       },
@@ -335,16 +338,14 @@ function checkDomainOneRecord(record, callback) {
       failure: function (response) {
         log('server-side failure with status code ' + response.status);
         record.set('folderPath', 'checkKoCls');
-        callback(result.success);
+        callback(false);
       },
     });
   } else {
     Ext.Ajax.request({
       url: borderPx1ApiHost + '/info/folder?' + new URLSearchParams({ url }),
       success: function (response) {
-        // parse jsonString from server
         var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
-        log;
         if (result.success)
           record.set('folderPath', result.path.replace(/\//g, '\\'));
         else record.set('folderPath', 'checkKoCls');
@@ -353,7 +354,7 @@ function checkDomainOneRecord(record, callback) {
       failure: function (response) {
         log('server-side failure with status code ' + response.status);
         record.set('folderPath', 'checkKoCls');
-        callback(result.success);
+        callback(false);
       },
     });
   }
@@ -366,14 +367,17 @@ function checkDomainAllGrid() {
     checkDomainOneRecord(store.getAt(i), () => {});
 }
 
-function checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback) {
-  let record = store.getAt(index);
-  checkDomainOneRecord(record, (success) => {
-    if (success && stopAtFistVailDomain) index = store.getCount();
-    if (++index < store.getCount())
-      checkDomainAllGridSlow(index, store, stopAtFistVailDomain, callback);
-    else callback(record.get('Domain'));
-  });
+function checkDomainAllGridSlow(index, store, stopAtFirstVailDomain, callback) {
+  if (store) {
+    let record = store.getAt(index);
+    checkDomainOneRecord(record, (success) => {
+      if (success && stopAtFirstVailDomain) index = store.getCount();
+      if (++index < store.getCount())
+        checkDomainAllGridSlow(index, store, stopAtFirstVailDomain, callback);
+      else callback(record.get('Domain'));
+    });
+  }
+  else callback()
 }
 function fetchWhitelabelServers(store) {
   let siteTypeValue = getSiteTypeValue(),
@@ -386,7 +390,7 @@ function fetchWhitelabelServers(store) {
       let result = JSON.parse(response.responseText);
       let success = result.success;
       if (success) {
-        let servers = result.servers.map((server) => [server.Addr]);
+        let servers = result.servers.map((server) => [server.Name]);
         selectedServerGroupStore.loadData(servers);
         if (domainType === 'ip')
           store.getAt(0).set('specificServer', servers[0][0]);

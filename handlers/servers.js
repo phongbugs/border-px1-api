@@ -72,6 +72,20 @@ module.exports = (typeDomain) => {
       { ID: '69', Name: '103.200.201.83' },
       { ID: '70', Name: '103.200.201.84' },
       { ID: '71', Name: '103.200.201.85' },
+
+      // Pool 1
+      { ID: '79', Addr: '202.95.4.130', Name: 'P01-CTG-130' },
+      { ID: '80', Addr: '103.230.145.4', Name: 'P01-GGB-4' },
+      { ID: '81', Addr: '103.254.109.2', Name: 'P01-SUN-2' },
+      // Pool 2
+      { ID: '82', Addr: '202.95.4.131', Name: 'P02-CTG-131' },
+      { ID: '83', Addr: '103.254.109.3', Name: 'P02-SUN-3' },
+      { ID: '84', Addr: '103.230.145.5', Name: 'P02-GGB-5' },
+
+       // Pool 3
+       { ID: '85', Addr: '202.95.4.132', Name: 'P02-CTG-131' },
+       { ID: '86', Addr: '103.254.109.4', Name: 'P02-SUN-3' },
+       { ID: '87', Addr: '103.230.145.6', Name: 'P02-GGB-5' },
     ],
     name: [
       { ID: '50', Name: '192.168.106.100' },
@@ -139,6 +153,20 @@ module.exports = (typeDomain) => {
       { ID: '75', Name: '192.168.106.183' },
       { ID: '76', Name: '192.168.106.184' },
       { ID: '77', Name: '192.168.106.185' },
+      
+      // Pool 1
+      { ID: '79', Addr: '202.95.4.130', Name: 'P01-CTG-130' },
+      { ID: '80', Addr: '103.230.145.4', Name: 'P01-GGB-4' },
+      { ID: '81', Addr: '103.254.109.2', Name: 'P01-SUN-2' },
+      // Pool 2
+      { ID: '82', Addr: '202.95.4.131', Name: 'P02-CTG-131' },
+      { ID: '83', Addr: '103.254.109.3', Name: 'P02-SUN-3' },
+      { ID: '84', Addr: '103.230.145.5', Name: 'P02-GGB-5' },
+
+       // Pool 3
+       { ID: '85', Addr: '202.95.4.132', Name: 'P02-CTG-131' },
+       { ID: '86', Addr: '103.254.109.4', Name: 'P02-SUN-3' },
+       { ID: '87', Addr: '103.230.145.6', Name: 'P02-GGB-5' },
     ],
   };
   return allServers[typeDomain];
