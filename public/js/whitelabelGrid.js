@@ -1,8 +1,10 @@
 ﻿// Global Data
 let serverStores = {
-    'CLG Pool 01': [['202.95.4.130'], ['103.230.145.4'], ['103.254.109.2']],
-    'CLG Pool 02': [['202.95.4.131'], ['103.230.145.5'], ['103.254.109.3']],
-    'CLG Pool 03': [['202.95.4.132'], ['103.230.145.6'], ['103.254.109.4']],
+    'CLG Pool 01': [['P01-CTG-130'], ['P01-GGB-4'], ['P01-SUN-2']],
+    'CLG Pool 02': [['P02-CTG-131'], ['P02-SUN-3'], ['P02-GGB-5']],
+    'CLG Pool 03': [['P03-SUN-4'], ['P03-GGB-6'], ['P03-CTG-132']],
+    'CLG Pool Service': [['0.0.0.0'],['0.0.0.0'],['0.0.0.0']],
+    'CLG Pool Testing': [['192.168.9.6'],['192.168.9.6'],['192.168.9.6']],
   },
   selectedServerGroupStore = Ext.create('Ext.data.ArrayStore', {
     fields: ['name'],
@@ -90,7 +92,7 @@ Ext.define('WL', {
     'securityQuestion',
     'hasPopup',
     'machineKey',
-    'serverPool'
+    'serverPool',
   ],
 });
 let storeWLs = Ext.create('Ext.data.Store', {
@@ -114,7 +116,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
       for (var whitelabelName in whiteLabels) {
         let record = whiteLabels[whitelabelName];
         record['name'] = whitelabelName;
-
+        log(record['serverPool']);
         if (!record['servers']) record['servers'] = '10.168.109.6';
         if (!record['status']) record['status'] = 'live';
         record['isResponsive'] = record['isResponsive']
@@ -128,7 +130,10 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['specificServer'] =
             servers !== '10.168.109.6'
               ? servers
-                ? '192.168.106.' + servers.split('-')[0]
+                ? //? '192.168.106.' + servers.split('-')[0]
+                  record['serverPool']
+                  ? serverStores[record['serverPool']][0][0]
+                  : '0.0.0.0'
                 : undefined
               : servers;
         }
@@ -202,6 +207,9 @@ Ext.onReady(function () {
           whitelabelName !== 'BPXURLS' &&
           whitelabelName !== 'BPXIP' &&
           whitelabelName !== 'SHARECACHE' &&
+          whitelabelName !== 'CLG Pool 01' &&
+          whitelabelName !== 'CLG Pool 02' &&
+          whitelabelName !== 'CLG Pool 03' &&
           record.get('servers') !== '10.168.109.6'
         ) {
           Ext.getCmp('gridWLs').setDisabled(true);
@@ -408,10 +416,9 @@ Ext.onReady(function () {
                 for (let j = 0; j < group.getCount(); j++) {
                   let whiteLabelName = group.getAt(j).getData().name;
                   list.push(whiteLabelName);
-                  
                 }
                 //log(list.toString());
-                list.forEach((r, index) => log('%s.%s', index+1, r))
+                list.forEach((r, index) => log('%s.%s', index + 1, r));
               }
               storeWLs.loadData(data);
               featureGrouping.collapseAll();
