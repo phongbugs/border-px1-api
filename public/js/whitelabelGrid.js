@@ -93,6 +93,7 @@ Ext.define('WL', {
     'securityQuestion',
     'hasPopup',
     'machineKey',
+    'serverPool'
   ],
 });
 let storeWLs = Ext.create('Ext.data.Store', {
@@ -312,6 +313,7 @@ Ext.onReady(function () {
           fields: ['id', 'name'],
           data: [
             ['default', 'Select Group'],
+            ['serverPool', 'Server Pool'],
             ['servers', 'Server'],
             ['mainColor', 'Color'],
             ['referredWL', 'Referred WL'],
@@ -794,6 +796,12 @@ Ext.onReady(function () {
         text: 'Servers',
         width: 120,
         dataIndex: 'servers',
+        hidden: false,
+      },
+      {
+        text: 'Server Pool',
+        width: 120,
+        dataIndex: 'serverPool',
         hidden: false,
       },
       {
