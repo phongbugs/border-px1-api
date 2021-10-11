@@ -390,7 +390,7 @@ function fetchWhitelabelServers(store) {
       let result = JSON.parse(response.responseText);
       let success = result.success;
       if (success) {
-        let servers = result.servers.map((server) => [server.Addr]);
+        let servers = result.servers.map((server) => [server.Name]);
         selectedServerGroupStore.loadData(servers);
         if (domainType === 'ip')
           store.getAt(0).set('specificServer', servers[0][0]);
