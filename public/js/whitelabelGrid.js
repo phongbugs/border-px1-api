@@ -657,18 +657,6 @@ Ext.onReady(function () {
       },
       {
         xtype: 'button',
-        id: 'btnSwitchExtjsVesion',
-        text: 'Switch Extjs ',
-        dock: 'right',
-        iconCls: 'extjsVersion7',
-        iconAlign: 'right',
-        handler: () => {
-          if (location.href.indexOf('7.html') === -1) location.href = '7.html';
-          else location.href = '/summary.html';
-        },
-      },
-      {
-        xtype: 'button',
         id: 'btnHelp',
         text: 'Help',
         iconCls: 'helpCls',
@@ -691,7 +679,7 @@ Ext.onReady(function () {
         iconAlign: 'right',
         handler: () => {
           if (location.href.indexOf('7.html') === -1) location.href = '7.html';
-          else location.href = '/summary.html';
+          else location.href = '/6.html';
         },
       },
       {
@@ -853,7 +841,7 @@ Ext.onReady(function () {
       },
       {
         text: 'Server Pool',
-        width: 120,
+        width: 150,
         dataIndex: 'serverPool',
         hidden: false,
       },
@@ -958,6 +946,7 @@ Ext.onReady(function () {
         tooltip: 'Open Remote Desktop Connection',
         text: 'R',
         dataIndex: 'servers',
+        hidden: true,
         items: [
           {
             getClass: function (value, meta, record, rowIndex, colIndex) {
