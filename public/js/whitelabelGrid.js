@@ -1,8 +1,10 @@
 ﻿// Global Data
 let serverStores = {
-    'CLG Pool 01': [['202.95.4.130'], ['103.230.145.4'], ['103.254.109.2']],
-    'CLG Pool 02': [['202.95.4.131'], ['103.230.145.5'], ['103.254.109.3']],
-    'CLG Pool 03': [['202.95.4.132'], ['103.230.145.6'], ['103.254.109.4']],
+    'CLG Pool 01': [['P01-CTG-130'], ['P01-GGB-4'], ['P01-SUN-2']],
+    'CLG Pool 02': [['P02-CTG-131'], ['P02-SUN-3'], ['P02-GGB-5']],
+    'CLG Pool 03': [['P03-SUN-4'], ['P03-GGB-6'], ['P03-CTG-132']],
+    'CLG Pool Service': [['0.0.0.0'],['0.0.0.0'],['0.0.0.0']],
+    'CLG Pool Testing': [['192.168.9.6'],['192.168.9.6'],['192.168.9.6']],
   },
   selectedServerGroupStore = Ext.create('Ext.data.ArrayStore', {
     fields: ['name'],
@@ -93,7 +95,7 @@ Ext.define('WL', {
     'securityQuestion',
     'hasPopup',
     'machineKey',
-    'serverPool'
+    'serverPool',
   ],
 });
 let storeWLs = Ext.create('Ext.data.Store', {
@@ -117,7 +119,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
       for (var whitelabelName in whiteLabels) {
         let record = whiteLabels[whitelabelName];
         record['name'] = whitelabelName;
-
+        log(record['serverPool']);
         if (!record['servers']) record['servers'] = '10.168.109.6';
         if (!record['status']) record['status'] = 'live';
         record['isResponsive'] = record['isResponsive']
@@ -131,7 +133,10 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['specificServer'] =
             servers !== '10.168.109.6'
               ? servers
-                ? '192.168.106.' + servers.split('-')[0]
+                ? //? '192.168.106.' + servers.split('-')[0]
+                  record['serverPool']
+                  ? serverStores[record['serverPool']][0][0]
+                  : '0.0.0.0'
                 : undefined
               : servers;
         }
@@ -207,6 +212,9 @@ Ext.onReady(function () {
           whitelabelName !== 'BPXURLS' &&
           whitelabelName !== 'BPXIP' &&
           whitelabelName !== 'SHARECACHE' &&
+          whitelabelName !== 'CLG Pool 01' &&
+          whitelabelName !== 'CLG Pool 02' &&
+          whitelabelName !== 'CLG Pool 03' &&
           record.get('servers') !== '10.168.109.6'
         ) {
           Ext.getCmp('gridWLs').setDisabled(true);
@@ -358,7 +366,7 @@ Ext.onReady(function () {
                   else group.getAt(0).set('zipUpload', '');
                 }
                 //log(list.toString());
-                list.forEach((r, index) => log('%s.%s', index+1, r))
+                list.forEach((r, index) => log('%s.%s', index + 1, r));
               }
 
               if (groupByValue === 'servers') columnUpload.setHidden(false);
@@ -631,6 +639,21 @@ Ext.onReady(function () {
       },
       {
         xtype: 'button',
+        id: 'btnHelp',
+        text: 'Help',
+        iconCls: 'helpCls',
+        handler: () => {
+          let encryptedLink =
+            'U2FsdGVkX1+bpGWuQ3YhYFNhhllVIzDLoO/u3BLYh9Dtv8oQ5pgq9Q5HCubPDdILXNmj+FAfnkt6HelkG50ouFF0mpEyR5gkZb4ryZvdn33T75UJefl5t74+EySU6ORA/x6E+7IgoTfHIlO5QPDCMQtDgO2BtHUJp0VmdCtcEDQ=';
+          window.open(
+            CryptoJS.AES.decrypt(encryptedLink, location.hostname).toString(
+              CryptoJS.enc.Utf8
+            )
+          );
+        },
+      },
+      {
+        xtype: 'button',
         id: 'btnSwitchExtjsVesion',
         text: 'Switch Extjs ',
         dock: 'right',
@@ -638,7 +661,7 @@ Ext.onReady(function () {
         iconAlign: 'right',
         handler: () => {
           if (location.href.indexOf('7.html') === -1) location.href = '7.html';
-          else location.href = '/';
+          else location.href = '/6.html';
         },
       },
       {
@@ -800,7 +823,7 @@ Ext.onReady(function () {
       },
       {
         text: 'Server Pool',
-        width: 120,
+        width: 150,
         dataIndex: 'serverPool',
         hidden: false,
       },
@@ -905,6 +928,7 @@ Ext.onReady(function () {
         tooltip: 'Open Remote Desktop Connection',
         text: 'R',
         dataIndex: 'servers',
+        hidden: true,
         items: [
           {
             getClass: function (value, meta, record, rowIndex, colIndex) {
