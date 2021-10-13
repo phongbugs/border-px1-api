@@ -61,6 +61,9 @@ let Groups,
                 case '92-96-104':
                   name = name + ' [FC-B]';
                   break;
+                case '183-184-185':
+                  name = name + ' [FC]';
+                  break;
               }
               return (
                 '<span style="color:green">[' + (i + 1) + ']</span> ' + name
@@ -92,7 +95,7 @@ Ext.define('WL', {
     'securityQuestion',
     'hasPopup',
     'machineKey',
-    'serverPool',
+    'serverPoolIPs',
   ],
 });
 let storeWLs = Ext.create('Ext.data.Store', {
@@ -116,7 +119,6 @@ let storeWLs = Ext.create('Ext.data.Store', {
       for (var whitelabelName in whiteLabels) {
         let record = whiteLabels[whitelabelName];
         record['name'] = whitelabelName;
-        log(record['serverPool']);
         if (!record['servers']) record['servers'] = '10.168.109.6';
         if (!record['status']) record['status'] = 'live';
         record['isResponsive'] = record['isResponsive']
@@ -379,7 +381,7 @@ Ext.onReady(function () {
           fields: ['id', 'name'],
           data: [
             ['default', 'Select Group'],
-            ['serverPool', 'Server Pool'],
+            ['serverPoolIPs', 'Server Pool'],
             ['servers', 'Server'],
             ['mainColor', 'Color'],
             ['referredWL', 'Referred WL'],
@@ -842,7 +844,7 @@ Ext.onReady(function () {
       {
         text: 'Server Pool',
         width: 150,
-        dataIndex: 'serverPool',
+        dataIndex: 'serverPoolIPs',
         hidden: false,
       },
       {
