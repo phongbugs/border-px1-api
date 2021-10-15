@@ -1729,11 +1729,12 @@ function deployOneWhitelabel(
       if (callback) callback();
       return;
     }
-    // default agent site
+    // default new agent & member site
+    // D:\Web\Member\KOKOBOLA\
     let bkFile = folderPath.substr(0, folderPath.length - 1) + '.zip';
     // handle member site
-    if (folderPath.indexOf('WebUI') > -1)
-      bkFile = folderPath.substr(0, folderPath.length - 7) + '.zip';
+    // if (folderPath.indexOf('WebUI') > -1)
+    //   bkFile = folderPath.substr(0, folderPath.length - 7) + '.zip';
     let nameBatFile =
       record.get('name') +
       '_' +
