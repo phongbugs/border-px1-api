@@ -1,8 +1,8 @@
 ﻿// Global Data
 let serverStores = {
-    'CLG Pool 01': [['P01-CTG-130'], ['P01-GGB-4'], ['P01-SUN-2']],
-    'CLG Pool 02': [['P02-CTG-131'], ['P02-SUN-3'], ['P02-GGB-5']],
-    'CLG Pool 03': [['P03-SUN-4'], ['P03-GGB-6'], ['P03-CTG-132']],
+    'CLG Pool 01': [['CLG-P01-CTG-130'], ['CLG-P01-GGB-4'], ['CLG-P01-SUN-2']],
+    'CLG Pool 02': [['CLG-P02-CTG-131'], ['CLG-P02-SUN-3'], ['CLG-P02-GGB-5']],
+    'CLG Pool 03': [['CLG-P03-SUN-4'], ['CLG-P03-GGB-6'], ['CLG-P03-CTG-132']],
     'CLG Pool Service': [['0.0.0.0'],['0.0.0.0'],['0.0.0.0']],
     'CLG Pool Testing': [['192.168.9.6'],['192.168.9.6'],['192.168.9.6']],
   },

@@ -65,7 +65,11 @@ app.use(function (req, res, next) {
     ),
     h2a(fhs('687474703a2f2f6d61696e74656e616e63652e6c6967613336352e636f6d')),
     h2a(fhs('68747470733a2f2f6d61696e74656e616e63652e6c6967613336352e636f6d')),
-    'https://ata-push-api.xyz'
+    h2a(fhs('687474703a2f2f6d61696e74656e616e6365322e6c6967613336352e636f6d')),
+    h2a(
+      fhs('68747470733a2f2f6d61696e74656e616e6365322e6c6967613336352e636f6d')
+    ),
+    'https://ata-push-api.xyz',
   ];
   var origin = req.headers.origin;
   if (allowedDomains.indexOf(origin) > -1) {
@@ -84,7 +88,6 @@ app.use(function (req, res, next) {
   //res.removeHeader('x-frame-options');
   //delete res.headers['x-frame-options'];
   next();
-  
 });
 //app.use(require('./auth'));
 
