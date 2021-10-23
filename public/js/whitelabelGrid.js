@@ -691,7 +691,7 @@ Ext.onReady(function () {
         editor: {
           field: {
             xtype: 'textfield',
-            allowBlank: false,
+            allowBlank: true,
           },
         },
         renderer: (val, _, record) => {
