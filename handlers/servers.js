@@ -1,5 +1,3 @@
-const { all } = require('../app');
-
 module.exports = (typeDomain) => {
   let allServers = {
     ip: [
@@ -71,6 +69,21 @@ module.exports = (typeDomain) => {
       { ID: '62', Name: '103.200.201.78' },
       { ID: '63', Name: '103.200.201.79' },
       { ID: '46', Name: 'igtx' },
+      { ID: '69', Name: '103.200.201.83' },
+      { ID: '70', Name: '103.200.201.84' },
+      { ID: '71', Name: '103.200.201.85' },
+      // P01
+      { ID: '72', Addr: '103.254.109.2', Name: 'CLG-P01-SUN-2' },
+      { ID: '73', Addr: '103.230.145.4', Name: 'CLG-P01-GGB-4' },
+      { ID: '74', Addr: '202.95.4.130', Name: 'CLG-P01-CTG-130' },
+      // P02
+      { ID: '75', Addr: '202.95.4.131', Name: 'CLG-P02-CTG-131' },
+      { ID: '76', Addr: '103.254.109.3', Name: 'CLG-P02-SUN-3' },
+      { ID: '77', Addr: '103.230.145.5', Name: 'CLG-P02-GGB-5' },
+      // P03
+      { ID: '78', Addr: '103.254.109.4', Name: 'CLG-P03-SUN-4' },
+      { ID: '79', Addr: '103.230.145.6', Name: 'CLG-P03-GGB-6' },
+      { ID: '80', Addr: '202.95.4.132', Name: 'CLG-P03-CTG-132' },
     ],
     name: [
       { ID: '50', Name: '192.168.106.100' },
@@ -135,6 +148,23 @@ module.exports = (typeDomain) => {
       { ID: '34', Name: '192.168.106.92' },
       { ID: '38', Name: '192.168.106.96' },
       { ID: '49', Name: '192.168.106.99' },
+      { ID: '75', Name: '192.168.106.183' },
+      { ID: '76', Name: '192.168.106.184' },
+      { ID: '77', Name: '192.168.106.185' },
+
+      // Pool 1
+      { ID: '79', Addr: '202.95.4.130', Name: 'CLG-P01-CTG-130' },
+      { ID: '80', Addr: '103.230.145.4', Name: 'CLG-P01-GGB-4' },
+      { ID: '81', Addr: '103.254.109.2', Name: 'CLG-P01-SUN-2' },
+      // Pool 2
+      { ID: '82', Addr: '202.95.4.131', Name: 'CLG-P02-CTG-131' },
+      { ID: '83', Addr: '103.254.109.3', Name: 'CLG-P02-SUN-3' },
+      { ID: '84', Addr: '103.230.145.5', Name: 'CLG-P02-GGB-5' },
+
+      // Pool 3
+      { ID: '85', Addr: '103.254.109.4', Name: 'CLG-P03-SUN-4' },
+      { ID: '86', Addr: '103.230.145.6', Name: 'CLG-P03-GGB-6' },
+      { ID: '87', Addr: '202.95.4.132', Name: 'CLG-P03-CTG-132' },
     ],
   };
   return allServers[typeDomain];
