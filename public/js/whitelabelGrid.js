@@ -305,7 +305,6 @@ Ext.onReady(function () {
       },
       viewready: (grid) => {
         loadScript('js/authForm.js?v=' + currentVersion());
-        loadScript('js/domainGrid.js?v=' + currentVersion());
         // if it's 6.2 it will show button 7.0
         if (location.href.indexOf('7.html') === -1)
           Ext.getCmp('btnSwitchExtjsVesion').setIconCls('extjsVersion7');
@@ -315,7 +314,8 @@ Ext.onReady(function () {
             Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
               ? 'ip'
               : 'name';
-        }, 2000);
+          loadScript('js/domainGrid.js?v=' + currentVersion());
+        }, 1000);
       },
     },
     // dockedItems: [
