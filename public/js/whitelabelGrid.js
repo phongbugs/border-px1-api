@@ -1031,6 +1031,10 @@ Ext.onReady(function () {
       },
     ],
   });
+  getDomainType = () =>
+    Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+      ? 'ip'
+      : 'name';
 });
 
 function syncDomainsOneWhiteLabel(whiteLabelName, record, callback) {

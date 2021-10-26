@@ -13,11 +13,17 @@ function saveBorderPx1ApiCookie(cookie, callback) {
   if (callback) callback();
 }
 
-let getDomainType = () =>
-  Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
-    ? 'ip'
-    : 'name';
+let getDomainType; //= () =>
+// Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+//   ? 'ip'
+//   : 'name';
 
+setTimeout(() => {
+  getDomainType = () =>
+    Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+      ? 'ip'
+      : 'name';
+}, 2000);
 let getSiteTypeValue = () => {
   let siteTypeValue = Ext.getCmp('cbbSiteType').getRawValue();
   switch (siteTypeValue) {
