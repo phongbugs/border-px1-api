@@ -9,8 +9,9 @@ const log = console.log,
     try {
       let serverIp = req.params.serverIp,
         domainType = req.params.domainType,
-        cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
-        cookie = req.cookies[cookieName];
+        // cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
+        // cookie = req.cookies[cookieName];
+        cookie = req.headers.authorization.split(' ')[1];
       //log('serverId: %s', serverId);
       //log('domainType: %s', domainType);
       if (cookie) {
@@ -68,11 +69,12 @@ const log = console.log,
       if (sites) {
         let siteName = req.params.siteName,
           siteId = sites.find((site) => site.name === siteName).id,
-          cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
-          cookie = req.cookies[cookieName];
+          // cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
+          // cookie = req.cookies[cookieName];
+          cookie = req.headers.authorization.split(' ')[1];
         // log(siteName);
         // log(siteId);
-        // log(cookie);
+        log(cookie);
         if (cookie) {
           //log('%s:%s', cookieName, cookie);
           let result = await crawler.fetchDomainsBySiteId(
@@ -150,8 +152,9 @@ const log = console.log,
           domainType = req.params.domainType,
           sites = domainType === 'ip' ? global.sitesIp : global.sites,
           siteId = sites.find((site) => site.name === siteName).id,
-          cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
-          cookie = req.cookies[cookieName];
+          //cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
+          //cookie = req.cookies[cookieName];
+          cookie = req.headers.authorization.split(' ')[1];
         if (cookie) {
           let result = await crawler.fetchServerBySiteId(
             siteId,

@@ -282,13 +282,20 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
             rowIndex = grid.getStore().indexOf(record);
             record = grid.getStore().getAt(rowIndex);
             let domainType = getDomainType();
+            let cookieKey =
+              domainType === 'ip'
+                ? 'border-px1-cookie-ip'
+                : 'border-px1-cookie';
             var ip = record.get('specificServer');
             record.set('specificServerSpinner', true);
             Ext.Ajax.request({
               method: 'POST',
               url:
                 borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
-              withCredentials: true,
+              headers: {
+                Authorization: 'Basic ' + localStorage.getItem(cookieKey),
+              },
+              //withCredentials: true,
               success: function (response) {
                 //log(response);
                 record.set('specificServerSpinner', false);
@@ -376,16 +383,20 @@ function checkDomainAllGridSlow(index, store, stopAtFirstVailDomain, callback) {
         checkDomainAllGridSlow(index, store, stopAtFirstVailDomain, callback);
       else callback(record.get('Domain'));
     });
-  }
-  else callback()
+  } else callback();
 }
 function fetchWhitelabelServers(store) {
   let siteTypeValue = getSiteTypeValue(),
-    siteName = siteTypeValue + selectedWhiteLabelName.toLowerCase() + '.bpx';
-  domainType = getDomainType();
+    siteName = siteTypeValue + selectedWhiteLabelName.toLowerCase() + '.bpx',
+    domainType = getDomainType(),
+    cookieKey =
+      getDomainType() === 'ip' ? 'border-px1-cookie-ip' : 'border-px1-cookie';
   Ext.Ajax.request({
     url: borderPx1ApiHost + '/info/server/' + domainType + '/' + siteName,
-    withCredentials: true,
+    headers: {
+      Authorization: 'Basic ' + localStorage.getItem(cookieKey),
+    },
+    //withCredentials: true,
     success: function (response) {
       let result = JSON.parse(response.responseText);
       let success = result.success;

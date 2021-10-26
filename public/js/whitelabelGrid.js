@@ -3,8 +3,8 @@ let serverStores = {
     'CLG Pool 01': [['CLG-P01-CTG-130'], ['CLG-P01-GGB-4'], ['CLG-P01-SUN-2']],
     'CLG Pool 02': [['CLG-P02-CTG-131'], ['CLG-P02-SUN-3'], ['CLG-P02-GGB-5']],
     'CLG Pool 03': [['CLG-P03-SUN-4'], ['CLG-P03-GGB-6'], ['CLG-P03-CTG-132']],
-    'CLG Pool Service': [['0.0.0.0'],['0.0.0.0'],['0.0.0.0']],
-    'CLG Pool Testing': [['192.168.9.6'],['192.168.9.6'],['192.168.9.6']],
+    'CLG Pool Service': [['0.0.0.0'], ['0.0.0.0'], ['0.0.0.0']],
+    'CLG Pool Testing': [['192.168.9.6'], ['192.168.9.6'], ['192.168.9.6']],
   },
   selectedServerGroupStore = Ext.create('Ext.data.ArrayStore', {
     fields: ['name'],
@@ -110,7 +110,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
   listeners: {
     beforeload: (store) => {
       store.getProxy().setHeaders({
-        Authorization: 'Basic ' + localStorage.getItem('token'),
+        Authorization: 'Basic ' + localStorage.getItem('border-px1-api-cookie'),
       });
     },
     load: function (_, records, successful, operation, eOpts) {
@@ -169,7 +169,10 @@ Ext.onReady(function () {
     id: 'gridWLs',
     store: storeWLs,
     //hidden: true,
-    width: Ext.getBody().getViewSize().width,
+    width:
+      Ext.getBody().getViewSize().width < 1388
+        ? 1388
+        : Ext.getBody().getViewSize().width,
     height: Ext.getBody().getViewSize().height,
     title: 'Summary LIGA White Labels',
     plugins: ['gridfilters', 'cellediting'],
@@ -264,7 +267,14 @@ Ext.onReady(function () {
             proxy.setConfig('url', [
               borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
             ]);
-            proxy.setConfig('withCredentials', [true]);
+            //proxy.setConfig('withCredentials', [true]);
+            let cookieKey =
+              getDomainType() === 'ip'
+                ? 'border-px1-cookie-ip'
+                : 'border-px1-cookie';
+            proxy.setHeaders({
+              Authorization: 'Basic ' + localStorage.getItem(cookieKey),
+            });
             // show loadMask purpose
             domainStore.load({
               callback: function (records, operation, success) {
@@ -695,9 +705,9 @@ Ext.onReady(function () {
           click: () => {
             let logoutButton = Ext.getCmp('btnLogout');
             logoutButton.setIconCls('spinner');
-            //localStorage.removeItem('token');
-            document.cookie = 'border-px1-api=';
-            saveBorderPx1ApiCookie('logout');
+            localStorage.removeItem('border-px1-api-cookie');
+            //document.cookie = 'border-px1-api=';
+            //saveBorderPx1ApiCookie('logout');
             setTimeout(() => location.reload(), 1000);
           },
         },

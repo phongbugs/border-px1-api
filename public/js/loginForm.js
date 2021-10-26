@@ -86,15 +86,18 @@
                       else {
                         token = action.result.token;
                         // use authenticate asp.net web
-                        localStorage.setItem('token', token);
-
+                        localStorage.setItem('border-px1-api-cookie', token);
+                        document.getElementById('app').innerHTML = '';
+                        loginButton.setIconCls('');
+                        loginButton.enable();
+                        loadScript('js/whitelabelGrid.js?v=' + currentVersion());
                         // use authenticate cross domain
-                        saveBorderPx1ApiCookie(token, () => {
-                          document.getElementById('app').innerHTML = '';
-                          loginButton.setIconCls('');
-                          loginButton.enable();
-                          loadScript('js/whitelabelGrid.js?v=' + currentVersion());
-                        });
+                        // saveBorderPx1ApiCookie(token, () => {
+                        //   document.getElementById('app').innerHTML = '';
+                        //   loginButton.setIconCls('');
+                        //   loginButton.enable();
+                        //   loadScript('js/whitelabelGrid.js?v=' + currentVersion());
+                        // });
                       }
                     },
                     failure: function (form, action) {

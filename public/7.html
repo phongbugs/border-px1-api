@@ -26,99 +26,99 @@
     </script>
     <link rel="shortcut icon"
         href="https://lh3.googleusercontent.com/a-/AOh14GjgiQ5JKAQrLioFlouEN-wAXCv_hU6jKIFU099p9w=s88-c-k-c0x00ffffff-no-rj-mo">
-        <style>
-            body,
-            html {
-                overflow: hidden;
+    <style>
+        body,
+        html {
+            overflow: hidden;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 4px #ddd solid;
+            border-top: 4px #2e93e6 solid;
+            border-radius: 50%;
+            animation: sp-anime 0.8s infinite linear;
+        }
+
+        .refreshCls {
+            background: url(https://icons.iconarchive.com/icons/graphicloads/polygon/16/refresh-4-icon.png) no-repeat center;
+        }
+
+        @keyframes sp-anime {
+            100% {
+                transform: rotate(360deg);
             }
-    
-            .spinner {
-                width: 16px;
-                height: 16px;
-                border: 4px #ddd solid;
-                border-top: 4px #2e93e6 solid;
-                border-radius: 50%;
-                animation: sp-anime 0.8s infinite linear;
-            }
-    
-            .refreshCls {
-                background: url(https://icons.iconarchive.com/icons/graphicloads/polygon/16/refresh-4-icon.png) no-repeat center;
-            }
-    
-            @keyframes sp-anime {
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-    
-            .openLink {
-                background: url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png) no-repeat center;
-            }
-    
-            .remoteDesktop {
-                background: url(https://icons.iconarchive.com/icons/tpdkdesign.net/refresh-cl/16/Network-Remote-Desktop-icon.png) no-repeat center;
-            }
-    
-            .checkCls {
-                background: url(https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-2/16/FAQ-icon.png) no-repeat center;
-            }
-    
-            .checkOkCls {
-                background: url(https://icons.iconarchive.com/icons/hopstarter/sleek-xp-basic/16/Ok-icon.png) no-repeat center;
-            }
-    
-            .checkKoCls {
-                background: url(https://icons.iconarchive.com/icons/elegantthemes/beautiful-flat/16/caution-icon.png) no-repeat center;
-            }
-    
-            .defaultDomainCls {
-                background: url(https://icons.iconarchive.com/icons/google/noto-emoji-people-bodyparts/16/12003-OK-hand-light-skin-tone-icon.png) no-repeat center
-            }
-    
-            .syncDomainCls {
-                background: url(https://icons.iconarchive.com/icons/paomedia/small-n-flat/16/cloud-down-icon.png) no-repeat center
-            }
-    
-            .folderCls {
-                background: url(https://icons.iconarchive.com/icons/treetog/i/16/Folder-Downloads-icon.png) no-repeat center
-            }
-    
-            .folderOkCls {
-                background: url(https://icons.iconarchive.com/icons/dryicons/aesthetica-2/16/folder-accept-icon.png) no-repeat center
-            }
-    
-            .authenticationCls {
-                background: url(https://icons.iconarchive.com/icons/iconsmind/outline/16/Key-Lock-icon.png) no-repeat center
-            }
-    
-            .center {
-                position: absolute;
-                left: 50%;
-                top: 10%;
-                -webkit-transform: translate(-50%, -50%);
-                transform: translate(-50%, -50%);
-            }
-    
-            .expandCls {
-                background: url(https://icons.iconarchive.com/icons/icons8/ios7/16/Editing-Expand-icon.png) no-repeat center
-            }
-    
-            .collapseCls {
-                background: url(https://icons.iconarchive.com/icons/icons8/ios7/16/Editing-Collapse-icon.png) no-repeat center
-            }
-    
-            .extjsVersion7 {
-                background: url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Numbers-7-icon.png);
-            }
-    
-            .extjsVersion6 {
-                background: url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Numbers-6-icon.png);
-            }
-    
-            .helpCls {
-                background: url(https://icons.iconarchive.com/icons/designbolts/ios8-cirtangle-concept/16/Help-icon.png);
-            }
-        </style>
+        }
+
+        .openLink {
+            background: url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png) no-repeat center;
+        }
+
+        .remoteDesktop {
+            background: url(https://icons.iconarchive.com/icons/tpdkdesign.net/refresh-cl/16/Network-Remote-Desktop-icon.png) no-repeat center;
+        }
+
+        .checkCls {
+            background: url(https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-2/16/FAQ-icon.png) no-repeat center;
+        }
+
+        .checkOkCls {
+            background: url(https://icons.iconarchive.com/icons/hopstarter/sleek-xp-basic/16/Ok-icon.png) no-repeat center;
+        }
+
+        .checkKoCls {
+            background: url(https://icons.iconarchive.com/icons/elegantthemes/beautiful-flat/16/caution-icon.png) no-repeat center;
+        }
+
+        .defaultDomainCls {
+            background: url(https://icons.iconarchive.com/icons/google/noto-emoji-people-bodyparts/16/12003-OK-hand-light-skin-tone-icon.png) no-repeat center
+        }
+
+        .syncDomainCls {
+            background: url(https://icons.iconarchive.com/icons/paomedia/small-n-flat/16/cloud-down-icon.png) no-repeat center
+        }
+
+        .folderCls {
+            background: url(https://icons.iconarchive.com/icons/treetog/i/16/Folder-Downloads-icon.png) no-repeat center
+        }
+
+        .folderOkCls {
+            background: url(https://icons.iconarchive.com/icons/dryicons/aesthetica-2/16/folder-accept-icon.png) no-repeat center
+        }
+
+        .authenticationCls {
+            background: url(https://icons.iconarchive.com/icons/iconsmind/outline/16/Key-Lock-icon.png) no-repeat center
+        }
+
+        .center {
+            position: absolute;
+            left: 50%;
+            top: 10%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+
+        .expandCls {
+            background: url(https://icons.iconarchive.com/icons/icons8/ios7/16/Editing-Expand-icon.png) no-repeat center
+        }
+
+        .collapseCls {
+            background: url(https://icons.iconarchive.com/icons/icons8/ios7/16/Editing-Collapse-icon.png) no-repeat center
+        }
+
+        .extjsVersion7 {
+            background: url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Numbers-7-icon.png);
+        }
+
+        .extjsVersion6 {
+            background: url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Numbers-6-icon.png);
+        }
+
+        .helpCls {
+            background: url(https://icons.iconarchive.com/icons/designbolts/ios8-cirtangle-concept/16/Help-icon.png);
+        }
+    </style>
 </head>
 
 <body>
@@ -128,9 +128,9 @@
         </div>
     </div>
     <script>
-        let borderPx1ApiHost = 'http://localhost:8888',
-        //let borderPx1ApiHost = 'https://border-px1-api.herokuapp.com',
-        //let borderPx1ApiHost = 'https://border-px1-api.xyz',
+        let borderPx1ApiHost = 'http://192.168.2.185:8888',
+            //let borderPx1ApiHost = 'https://border-px1-api.herokuapp.com',
+            //let borderPx1ApiHost = 'https://border-px1-api.xyz',
             remoteDesktopServiceUrl = 'http://localhost:3000/remote/',
             tokenPublicKey =
                 '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQAB-----END PUBLIC KEY-----',
@@ -141,9 +141,16 @@
                 document.getElementsByTagName('head')[0].appendChild(script)
             },
             authenticate = (callback) => {
+                // Ext.Ajax.on('beforerequest', function (conn, options) {
+                //     options.headers = options.headers || {};
+                //     options.headers['Authorization'] = 'Basic ' + localStorage.getItem('token')
+                // });
                 Ext.Ajax.request({
+                    headers: {
+                        Authorization: 'Basic ' + localStorage.getItem('border-px1-api-cookie'),
+                    },
+                    //withCredentials: true,
                     method: 'GET',
-                    withCredentials: true,
                     url: borderPx1ApiHost + '/user/login/status',
                     success: function (response) {
                         let success = JSON.parse(response.responseText).success

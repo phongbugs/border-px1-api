@@ -43,8 +43,11 @@ function login(req, res) {
 }
 function getLoginStatus(req, res) {
   try {
-    let token = req.cookies['border-px1-api'],
+    console.log(req.headers);
+    //let token = req.cookies['border-px1-api'],
+    let token = req.headers.authorization.split(' ')[1],
       status = false;
+      console.log(token); 
     if (!token) {
       res.send({ success: false, message: 'cookie does not exist' });
       return;
