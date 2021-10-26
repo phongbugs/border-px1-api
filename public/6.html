@@ -128,8 +128,8 @@
         </div>
     </div>
     <script>
-        let borderPx1ApiHost = 'http://localhost:8888',
-        //let borderPx1ApiHost = 'https://border-px1-api.herokuapp.com',
+        //let borderPx1ApiHost = 'http://localhost:8888',
+        let borderPx1ApiHost = 'https://border-px1-api.herokuapp.com',
         //let borderPx1ApiHost = 'https://border-px1-api.xyz',
             remoteDesktopServiceUrl = 'http://localhost:3000/remote/',
             tokenPublicKey =
@@ -143,7 +143,10 @@
             authenticate = (callback) => {
                 Ext.Ajax.request({
                     method: 'GET',
-                    withCredentials: true,
+                    headers: {
+                        Authorization: 'Basic ' + localStorage.getItem('border-px1-api-cookie'),
+                    },
+                    //withCredentials: true,
                     url: borderPx1ApiHost + '/user/login/status',
                     success: function (response) {
                         let success = JSON.parse(response.responseText).success
