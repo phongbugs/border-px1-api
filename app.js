@@ -83,7 +83,7 @@ app.use(function (req, res, next) {
   );
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'X-Requested-With,content-type, Accept'
+    'X-Requested-With, content-type, accept, authorization'
   );
   res.setHeader('Access-Control-Allow-Credentials', true);
   //res.removeHeader('x-frame-options');
