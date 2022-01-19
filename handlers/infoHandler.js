@@ -133,14 +133,13 @@ const log = console.log,
     try {
       let url =
         decodeURIComponent(req.query['url']) +
-        '/Public/GetDateModifiedOfFiles.aspx?';
-      const response = await fetch(
-        url +
-          new URLSearchParams({
-            cmd: 'GetModifiedDate',
-            files: '',
-          })
-      );
+        '/Public/GetDateModifiedOfFiles.aspx?' +
+        new URLSearchParams({
+          cmd: 'GetModifiedDate',
+          files: '',
+        });
+        log(url)
+      const response = await fetch(url);
       let text = (await response.text())
         .replace(/\\/g, '\\\\')
         .replace(/'/g, '');

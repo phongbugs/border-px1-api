@@ -1693,7 +1693,8 @@ function isValidDomain(domain, callback) {
 }
 
 function dzFileNameListGen(fileList, folderPath) {
-  folderPath = folderPath.substr(7).replace(/\\/g, '/');
+  //D:\Web\Member\365AGEN\
+  folderPath = folderPath.substring(14,folderPath.length).replace(/\\/g, '/');
   var strFileList = '';
   for (var i = 0; i < fileList.length; i++) {
     strFileList += folderPath + fileList[i].fileName + '\r\n';
