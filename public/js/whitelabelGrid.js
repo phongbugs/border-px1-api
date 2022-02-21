@@ -1,8 +1,8 @@
 ﻿// Global Data
 let serverStores = {
-    'CLG Pool 01': [['CLG-P01-CTG-130'], ['CLG-P01-GGB-4'], ['CLG-P01-SUN-2']],
-    'CLG Pool 02': [['CLG-P02-CTG-131'], ['CLG-P02-SUN-3'], ['CLG-P02-GGB-5']],
-    'CLG Pool 03': [['CLG-P03-SUN-4'], ['CLG-P03-GGB-6'], ['CLG-P03-CTG-132']],
+    'CLG Pool 01': [['CLG-P01-CTG-130'], ['CLG-P01-GGB-4'], ['CLG-P01-SUN-2'],['CLG-P01-CT2-34']],
+    'CLG Pool 02': [['CLG-P02-CTG-131'], ['CLG-P02-SUN-3'], ['CLG-P02-GGB-5'],['CLG-P02-CT2-5']],
+    'CLG Pool 03': [['CLG-P03-SUN-4'], ['CLG-P03-GGB-6'], ['CLG-P03-CTG-132'],['CLG-P03-CT2-36']],
     'CLG Pool Service': [['0.0.0.0'], ['0.0.0.0'], ['0.0.0.0']],
     'CLG Pool Testing': [['192.168.9.6'], ['192.168.9.6'], ['192.168.9.6']],
   },
@@ -119,26 +119,34 @@ let storeWLs = Ext.create('Ext.data.Store', {
       for (var whitelabelName in whiteLabels) {
         let record = whiteLabels[whitelabelName];
         record['name'] = whitelabelName;
-        if (!record['servers']) record['servers'] = '10.168.109.6';
+        //if(!record['servers'])  record['servers'] =  ;
         if (!record['status']) record['status'] = 'live';
+        else {
+          record['servers'] = '10.168.109.6';
+        }
         record['isResponsive'] = record['isResponsive']
           ? 'Responsive'
           : 'Non-Responsive';
         record['machineKey'] = record['machineKey']
           ? 'Machine Key'
           : 'None Machine Key';
-        if (record['servers']) {
-          let servers = record['servers'];
-          record['specificServer'] =
-            servers !== '10.168.109.6'
-              ? servers
-                ? //? '192.168.106.' + servers.split('-')[0]
-                  record['serverPool']
-                  ? serverStores[record['serverPool']][0][0]
-                  : '0.0.0.0'
-                : undefined
-              : servers;
-        }
+        record['referralFunction'] = record['referralFunction']
+          ? 'Referral Function'
+          : 'None Referral Function';
+        // if (record['servers']) {
+        //   let servers = record['servers'];
+        //   record['specificServer'] =
+        //     servers !== '10.168.109.6'
+        //       ? servers
+        //         ? //? '192.168.106.' + servers.split('-')[0]
+        //           record['serverPool']
+        //           ? serverStores[record['serverPool']][0][0]
+        //           : '0.0.0.0'
+        //         : undefined
+        //       : servers;
+        // }
+        record['specificServer'] = serverStores[record['serverPool']][0][0];
+        //log(serverStores[record['serverPool'][0][0]])
         if (!record['referredIconMenu'])
           record['referredIconMenu'] = '__TEXT-MENU__';
         // icon spniner cols
@@ -398,19 +406,19 @@ Ext.onReady(function () {
           data: [
             ['default', 'Select Group'],
             ['serverPoolIPs', 'Server Pool'],
-            ['servers', 'Server'],
-            ['mainColor', 'Color'],
-            ['referredWL', 'Referred WL'],
+            ['machineKey', 'Machine Key'],
             ['status', 'Status'],
             ['isResponsive', 'Responsive'],
-            ['closedMail', 'Closed Mail'],
+            ['mainColor', 'Color'],
             ['referralFunction', 'Referral Function'],
             ['mobileRedirect', 'Mobile Redirect'],
             ['dynamicFooter', 'Dynamic Footer'],
-            ['securityQuestion', 'Security Question'],
             ['referredIconMenu', 'Menu Icon'],
             ['hasPopup', 'Has Popup'],
-            ['machineKey', 'Machine Key'],
+            ['referredWL', 'Referred WL'],
+            ['closedMail', 'Closed Mail'],
+            ['securityQuestion', 'Security Question'],
+            //['servers', 'Server'],
           ],
         }),
         queryMode: 'local',
@@ -733,9 +741,29 @@ Ext.onReady(function () {
         },
         renderer: (val, _, record) => {
           let defaultDomain = record.get('defaultDomain'),
-            dynamicFooter = record.get('dynamicFooter') ? '🦶' : '',
-            mobileRedirect = !record.get('mobileRedirect') ? '📵' : '',
-            securityQuestion = record.get('securityQuestion') ? '🔒' : '',
+            dynamicFooter = record.get('dynamicFooter') ? '🦶' : '';
+          let mobileRedirect = '';
+          if (
+            record.get('mobileRedirect') === false &&
+            record.get('mobileRedirectIP') === undefined &&
+            record.get('mobileRedirectName') === undefined
+          )
+            mobileRedirect = '📵';
+          if (record.get('mobileRedirect') === true) mobileRedirect = '';
+          if (
+            record.get('mobileRedirect') === false &&
+            record.get('mobileRedirectIP') === true &&
+            record.get('mobileRedirectName') === false
+          )
+            mobileRedirect = '📵(NA)';
+          if (
+            record.get('mobileRedirect') === false &&
+            record.get('mobileRedirectIP') === false &&
+            record.get('mobileRedirectName') === true
+          )
+            mobileRedirect = '📵(IP)';
+
+          let securityQuestion = record.get('securityQuestion') ? '🔒' : '',
             machineKey = record.get('machineKey') === 'Machine Key' ? '🔑' : '',
             status = record.get('status'),
             protocol = Ext.getCmp('cbbProtocol').getValue(),
@@ -855,7 +883,7 @@ Ext.onReady(function () {
         text: 'Servers',
         width: 120,
         dataIndex: 'servers',
-        hidden: false,
+        hidden: true,
       },
       {
         text: 'Server Pool',

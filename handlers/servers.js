@@ -76,14 +76,19 @@ module.exports = (typeDomain) => {
       { ID: '72', Addr: '103.254.109.2', Name: 'CLG-P01-SUN-2' },
       { ID: '73', Addr: '103.230.145.4', Name: 'CLG-P01-GGB-4' },
       { ID: '74', Addr: '202.95.4.130', Name: 'CLG-P01-CTG-130' },
+      { ID: '85', Addr: '14.128.62.34', Name: 'CLG-P01-CT2-34' },
+
       // P02
       { ID: '75', Addr: '202.95.4.131', Name: 'CLG-P02-CTG-131' },
       { ID: '76', Addr: '103.254.109.3', Name: 'CLG-P02-SUN-3' },
       { ID: '77', Addr: '103.230.145.5', Name: 'CLG-P02-GGB-5' },
+      { ID: '86', Addr: '14.128.62.35', Name: 'CLG-P02-CT2-35' },
+      
       // P03
       { ID: '78', Addr: '103.254.109.4', Name: 'CLG-P03-SUN-4' },
       { ID: '79', Addr: '103.230.145.6', Name: 'CLG-P03-GGB-6' },
       { ID: '80', Addr: '202.95.4.132', Name: 'CLG-P03-CTG-132' },
+      { ID: '87', Addr: '14.128.62.36', Name: 'CLG-P03-CT2-36' },
     ],
     name: [
       { ID: '50', Name: '192.168.106.100' },
@@ -156,15 +161,19 @@ module.exports = (typeDomain) => {
       { ID: '79', Addr: '202.95.4.130', Name: 'CLG-P01-CTG-130' },
       { ID: '80', Addr: '103.230.145.4', Name: 'CLG-P01-GGB-4' },
       { ID: '81', Addr: '103.254.109.2', Name: 'CLG-P01-SUN-2' },
+      { ID: '95', Addr: '14.128.62.34', Name: 'CLG-P01-CT2-34' },
+
       // Pool 2
       { ID: '82', Addr: '202.95.4.131', Name: 'CLG-P02-CTG-131' },
       { ID: '83', Addr: '103.254.109.3', Name: 'CLG-P02-SUN-3' },
       { ID: '84', Addr: '103.230.145.5', Name: 'CLG-P02-GGB-5' },
+      { ID: '96', Addr: '14.128.62.35', Name: 'CLG-P02-CT2-35' },
 
       // Pool 3
       { ID: '85', Addr: '103.254.109.4', Name: 'CLG-P03-SUN-4' },
       { ID: '86', Addr: '103.230.145.6', Name: 'CLG-P03-GGB-6' },
       { ID: '87', Addr: '202.95.4.132', Name: 'CLG-P03-CTG-132' },
+      { ID: '97', Addr: '14.128.62.36', Name: 'CLG-P03-CT2-36' },
     ],
   };
   return allServers[typeDomain];

@@ -126,8 +126,32 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       xtype: 'checkbox',
       id: 'ckbStopCheckAt1stValidDomain',
       iconCls: 'checkCls',
-      boxLabel: 'Stop checking when 1st domain is valid',
+      boxLabel: 'Stop checking at 1th valid domain',
       value: true,
+    },
+    {
+      xtype: 'combo',
+      width: 85,
+      store: new Ext.data.ArrayStore({
+        fields: ['id', 'name'],
+        data: [
+          ['ip.', 'IP'],
+          ['name', 'NAME'],
+        ],
+      }),
+      displayField: 'name',
+      valueField: 'id',
+      name: 'cbbDomainType',
+      id: 'cbbDomainType',
+      value: 'name',
+      editable: false,
+      submitValue: false,
+      listeners: {
+        change: (_, newValue) => {
+          
+          Ext.getCmp('btnRefresh').fireEvent('click');
+        },
+      },
     },
   ],
   columns: [
