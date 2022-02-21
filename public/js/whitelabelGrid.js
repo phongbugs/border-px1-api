@@ -986,83 +986,83 @@ Ext.onReady(function () {
         renderer: (value) => (!value ? '▶' : '❌'),
         hidden: true,
       },
-      {
-        xtype: 'actioncolumn',
-        width: 30,
-        tooltip: 'Open Remote Desktop Connection',
-        text: 'R',
-        dataIndex: 'servers',
-        hidden: true,
-        items: [
-          {
-            getClass: function (value, meta, record, rowIndex, colIndex) {
-              var isSpinning = record.get('remoteDesktopSpinner');
-              return isSpinning ? 'spinner' : 'remoteDesktop';
-            },
-            handler: function (grid, rowIndex, colIndex, item, e, record) {
-              rowIndex = grid.getStore().indexOf(record);
-              record = grid.getStore().getAt(rowIndex);
-              var ip = record.get('specificServer');
-              record.set('remoteDesktopSpinner', true);
-              Ext.Ajax.request({
-                method: 'GET',
-                url: remoteDesktopServiceUrl + ip.replace('192.', '10.'),
-                success: function (response) {
-                  record.set('remoteDesktopSpinner', false);
-                },
-                failure: function (response) {
-                  Ext.Msg.alert(
-                    "Remote Desktop Cli Service doesn't start",
-                    `Run Remote Desktop Service by cmd:<br/><code>cd liga<br/>node rdservice</code>`
-                  );
-                  record.set('remoteDesktopSpinner', false);
-                },
-              });
-            },
-          },
-        ],
-      },
-      {
-        xtype: 'actioncolumn',
-        width: 40,
-        tooltip: 'Sync Domains',
-        text: 'SD',
-        dataIndex: 'isSyncedDomain',
-        hidden: true,
-        items: [
-          {
-            getClass: function (value, meta, record, rowIndex, colIndex) {
-              var iconCls = '';
-              switch (value) {
-                case false:
-                  iconCls = 'checkCls';
-                  break;
-                case 'spinner':
-                  iconCls = 'spinner';
-                  break;
-                case 'checkKoCls':
-                  iconCls = 'checkKoCls';
-                  break;
-                default:
-                  iconCls = 'checkOkCls';
-                  break;
-              }
-              return iconCls;
-            },
-            handler: function (grid, rowIndex, colIndex, item, e, record) {
-              rowIndex = grid.getStore().indexOf(record);
-              record = grid.getStore().getAt(rowIndex);
-              var name = record.get('name');
-              syncDomainsOneWhiteLabel(name, record, (success) =>
-                record.set(
-                  'isSyncedDomain',
-                  success ? 'checkOkCls' : 'checkKoCls'
-                )
-              );
-            },
-          },
-        ],
-      },
+      // {
+      //   xtype: 'actioncolumn',
+      //   width: 30,
+      //   tooltip: 'Open Remote Desktop Connection',
+      //   text: 'R',
+      //   dataIndex: 'servers',
+      //   hidden: true,
+      //   items: [
+      //     {
+      //       getClass: function (value, meta, record, rowIndex, colIndex) {
+      //         var isSpinning = record.get('remoteDesktopSpinner');
+      //         return isSpinning ? 'spinner' : 'remoteDesktop';
+      //       },
+      //       handler: function (grid, rowIndex, colIndex, item, e, record) {
+      //         rowIndex = grid.getStore().indexOf(record);
+      //         record = grid.getStore().getAt(rowIndex);
+      //         var ip = record.get('specificServer');
+      //         record.set('remoteDesktopSpinner', true);
+      //         Ext.Ajax.request({
+      //           method: 'GET',
+      //           url: remoteDesktopServiceUrl + ip.replace('192.', '10.'),
+      //           success: function (response) {
+      //             record.set('remoteDesktopSpinner', false);
+      //           },
+      //           failure: function (response) {
+      //             Ext.Msg.alert(
+      //               "Remote Desktop Cli Service doesn't start",
+      //               `Run Remote Desktop Service by cmd:<br/><code>cd liga<br/>node rdservice</code>`
+      //             );
+      //             record.set('remoteDesktopSpinner', false);
+      //           },
+      //         });
+      //       },
+      //     },
+      //   ],
+      // },
+      // {
+      //   xtype: 'actioncolumn',
+      //   width: 40,
+      //   tooltip: 'Sync Domains',
+      //   text: 'SD',
+      //   dataIndex: 'isSyncedDomain',
+      //   hidden: true,
+      //   items: [
+      //     {
+      //       getClass: function (value, meta, record, rowIndex, colIndex) {
+      //         var iconCls = '';
+      //         switch (value) {
+      //           case false:
+      //             iconCls = 'checkCls';
+      //             break;
+      //           case 'spinner':
+      //             iconCls = 'spinner';
+      //             break;
+      //           case 'checkKoCls':
+      //             iconCls = 'checkKoCls';
+      //             break;
+      //           default:
+      //             iconCls = 'checkOkCls';
+      //             break;
+      //         }
+      //         return iconCls;
+      //       },
+      //       handler: function (grid, rowIndex, colIndex, item, e, record) {
+      //         rowIndex = grid.getStore().indexOf(record);
+      //         record = grid.getStore().getAt(rowIndex);
+      //         var name = record.get('name');
+      //         syncDomainsOneWhiteLabel(name, record, (success) =>
+      //           record.set(
+      //             'isSyncedDomain',
+      //             success ? 'checkOkCls' : 'checkKoCls'
+      //           )
+      //         );
+      //       },
+      //     },
+      //   ],
+      // },
     ],
   });
 });
