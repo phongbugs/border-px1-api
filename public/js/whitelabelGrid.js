@@ -1,8 +1,23 @@
 ﻿// Global Data
 let serverStores = {
-    'CLG Pool 01': [['CLG-P01-CTG-130'], ['CLG-P01-GGB-4'], ['CLG-P01-SUN-2'],['CLG-P01-CT2-34']],
-    'CLG Pool 02': [['CLG-P02-CTG-131'], ['CLG-P02-SUN-3'], ['CLG-P02-GGB-5'],['CLG-P02-CT2-5']],
-    'CLG Pool 03': [['CLG-P03-SUN-4'], ['CLG-P03-GGB-6'], ['CLG-P03-CTG-132'],['CLG-P03-CT2-36']],
+    'CLG Pool 01': [
+      ['CLG-P01-CTG-130'],
+      ['CLG-P01-GGB-4'],
+      ['CLG-P01-SUN-2'],
+      ['CLG-P01-CT2-34'],
+    ],
+    'CLG Pool 02': [
+      ['CLG-P02-CTG-131'],
+      ['CLG-P02-SUN-3'],
+      ['CLG-P02-GGB-5'],
+      ['CLG-P02-CT2-5'],
+    ],
+    'CLG Pool 03': [
+      ['CLG-P03-SUN-4'],
+      ['CLG-P03-GGB-6'],
+      ['CLG-P03-CTG-132'],
+      ['CLG-P03-CT2-36'],
+    ],
     'CLG Pool Service': [['0.0.0.0'], ['0.0.0.0'], ['0.0.0.0']],
     'CLG Pool Testing': [['192.168.9.6'], ['192.168.9.6'], ['192.168.9.6']],
   },
@@ -117,47 +132,51 @@ let storeWLs = Ext.create('Ext.data.Store', {
       let whiteLabels = records[0].data;
       delete whiteLabels['id'];
       for (var whitelabelName in whiteLabels) {
-        let record = whiteLabels[whitelabelName];
-        record['name'] = whitelabelName;
-        //if(!record['servers'])  record['servers'] =  ;
-        if (!record['status']) record['status'] = 'live';
-        else {
-          record['servers'] = '10.168.109.6';
-        }
-        record['isResponsive'] = record['isResponsive']
-          ? 'Responsive'
-          : 'Non-Responsive';
-        record['machineKey'] = record['machineKey']
-          ? 'Machine Key'
-          : 'None Machine Key';
-        record['referralFunction'] = record['referralFunction']
-          ? 'Referral Function'
-          : 'None Referral Function';
-        // if (record['servers']) {
-        //   let servers = record['servers'];
-        //   record['specificServer'] =
-        //     servers !== '10.168.109.6'
-        //       ? servers
-        //         ? //? '192.168.106.' + servers.split('-')[0]
-        //           record['serverPool']
-        //           ? serverStores[record['serverPool']][0][0]
-        //           : '0.0.0.0'
-        //         : undefined
-        //       : servers;
-        // }
-        record['specificServer'] = serverStores[record['serverPool']][0][0];
-        //log(serverStores[record['serverPool'][0][0]])
-        if (!record['referredIconMenu'])
-          record['referredIconMenu'] = '__TEXT-MENU__';
-        // icon spniner cols
-        record['specificServerSpinner'] = false;
-        record['remoteDesktopSpinner'] = false;
-        record['isSyncedDomain'] = false;
-        record['isSyncedFolder'] = false;
-        record['folderPath'] = '';
-        record['backupDate'] = '';
+        try {
+          let record = whiteLabels[whitelabelName];
+          record['name'] = whitelabelName;
+          //if(!record['servers'])  record['servers'] =  ;
+          if (!record['status']) record['status'] = 'live';
+          else {
+            record['servers'] = '10.168.109.6';
+          }
+          record['isResponsive'] = record['isResponsive']
+            ? 'Responsive'
+            : 'Non-Responsive';
+          record['machineKey'] = record['machineKey']
+            ? 'Machine Key'
+            : 'None Machine Key';
+          record['referralFunction'] = record['referralFunction']
+            ? 'Referral Function'
+            : 'None Referral Function';
+          // if (record['servers']) {
+          //   let servers = record['servers'];
+          //   record['specificServer'] =
+          //     servers !== '10.168.109.6'
+          //       ? servers
+          //         ? //? '192.168.106.' + servers.split('-')[0]
+          //           record['serverPool']
+          //           ? serverStores[record['serverPool']][0][0]
+          //           : '0.0.0.0'
+          //         : undefined
+          //       : servers;
+          // }
+          record['specificServer'] = serverStores[record['serverPool']][0][0];
+          //log(serverStores[record['serverPool'][0][0]])
+          if (!record['referredIconMenu'])
+            record['referredIconMenu'] = '__TEXT-MENU__';
+          // icon spniner cols
+          record['specificServerSpinner'] = false;
+          record['remoteDesktopSpinner'] = false;
+          record['isSyncedDomain'] = false;
+          record['isSyncedFolder'] = false;
+          record['folderPath'] = '';
+          record['backupDate'] = '';
 
-        data.push(record);
+          data.push(record);
+        } catch (error) {
+          log(err);
+        }
       }
       Groups = storeWLs.getGroups();
       if (Groups) log(Groups);
