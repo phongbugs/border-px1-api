@@ -3,8 +3,8 @@ let serverStores = {
     'CLG Pool 01': [['CLG-P01-CTG-130'], ['CLG-P01-GGB-4'], ['CLG-P01-SUN-2']],
     'CLG Pool 02': [['CLG-P02-CTG-131'], ['CLG-P02-SUN-3'], ['CLG-P02-GGB-5']],
     'CLG Pool 03': [['CLG-P03-SUN-4'], ['CLG-P03-GGB-6'], ['CLG-P03-CTG-132']],
-    'CLG Pool Service': [['0.0.0.0'],['0.0.0.0'],['0.0.0.0']],
-    'CLG Pool Testing': [['192.168.9.6'],['192.168.9.6'],['192.168.9.6']],
+    'CLG Pool Service': [['0.0.0.0'], ['0.0.0.0'], ['0.0.0.0']],
+    'CLG Pool Testing': [['192.168.9.6'], ['192.168.9.6'], ['192.168.9.6']],
   },
   selectedServerGroupStore = Ext.create('Ext.data.ArrayStore', {
     fields: ['name'],
@@ -117,41 +117,47 @@ let storeWLs = Ext.create('Ext.data.Store', {
       let whiteLabels = records[0].data;
       delete whiteLabels['id'];
       for (var whitelabelName in whiteLabels) {
-        let record = whiteLabels[whitelabelName];
-        record['name'] = whitelabelName;
-        if (!record['servers']) record['servers'] = '10.168.109.6';
-        if (!record['status']) record['status'] = 'live';
-        record['isResponsive'] = record['isResponsive']
-          ? 'Responsive'
-          : 'Non-Responsive';
-        record['machineKey'] = record['machineKey']
-          ? 'Machine Key'
-          : 'None Machine Key';
-        if (record['servers']) {
-          let servers = record['servers'];
-          record['specificServer'] =
-            servers !== '10.168.109.6'
-              ? servers
-                ? //? '192.168.106.' + servers.split('-')[0]
-                  record['serverPool']
-                  ? serverStores[record['serverPool']][0][0]
-                  : '0.0.0.0'
-                : undefined
-              : servers;
+        try {
+          let record = whiteLabels[whitelabelName];
+          record['name'] = whitelabelName;
+          //if (!record['servers']) record['servers'] = '10.168.109.6';
+          if (!record['status']) record['status'] = 'live';
+          record['isResponsive'] = record['isResponsive']
+            ? 'Responsive'
+            : 'Non-Responsive';
+          record['machineKey'] = record['machineKey']
+            ? 'Machine Key'
+            : 'None Machine Key';
+          // if (record['servers']) {
+          //   let servers = record['servers'];
+          //   record['specificServer'] =
+          //     servers !== '10.168.109.6'
+          //       ? servers
+          //         ? //? '192.168.106.' + servers.split('-')[0]
+          //           record['serverPool']
+          //           ? serverStores[record['serverPool']][0][0]
+          //           : '0.0.0.0'
+          //         : undefined
+          //       : servers;
+          // }
+          record['specificServer'] = serverStores[record['serverPool']][0][0];
+          if (!record['referredIconMenu'])
+            record['referredIconMenu'] = '__TEXT-MENU__';
+          // icon spniner cols
+          record['specificServerSpinner'] = false;
+          record['remoteDesktopSpinner'] = false;
+          record['isSyncedDomain'] = false;
+          record['isSyncedFolder'] = false;
+          record['folderPath'] = '';
+          record['backupDate'] = '';
+          record['zipUpload'] = '';
+          record['checked'] = 0;
+          record['batUpload'] = 0;
+          data.push(record);
+        } catch (error) {
+          log(whitelabelName);
+          log(error);
         }
-        if (!record['referredIconMenu'])
-          record['referredIconMenu'] = '__TEXT-MENU__';
-        // icon spniner cols
-        record['specificServerSpinner'] = false;
-        record['remoteDesktopSpinner'] = false;
-        record['isSyncedDomain'] = false;
-        record['isSyncedFolder'] = false;
-        record['folderPath'] = '';
-        record['backupDate'] = '';
-        record['zipUpload'] = '';
-        record['checked'] = 0;
-        record['batUpload'] = 0;
-        data.push(record);
       }
       Groups = storeWLs.getGroups();
       if (Groups) log(Groups);
@@ -224,7 +230,7 @@ Ext.onReady(function () {
       viewready: (grid) => {
         loadScript('js/authForm.js?v=' + currentVersion());
         loadScript('js/domainGrid.js?v=' + currentVersion());
-        loadScript('js/deploymentForm.js?v=' + currentVersion()); 
+        loadScript('js/deploymentForm.js?v=' + currentVersion());
         // if it's 6.2 it will show button 7.0
         if (location.href.indexOf('7.html') === -1)
           Ext.getCmp('btnSwitchExtjsVesion').setIconCls('extjsVersion7');
@@ -1694,7 +1700,7 @@ function isValidDomain(domain, callback) {
 
 function dzFileNameListGen(fileList, folderPath) {
   //D:\Web\Member\365AGEN\
-  folderPath = folderPath.substring(14,folderPath.length).replace(/\\/g, '/');
+  folderPath = folderPath.substring(14, folderPath.length).replace(/\\/g, '/');
   var strFileList = '';
   for (var i = 0; i < fileList.length; i++) {
     strFileList += folderPath + fileList[i].fileName + '\r\n';
