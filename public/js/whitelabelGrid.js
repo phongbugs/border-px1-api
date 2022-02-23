@@ -175,7 +175,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
 
           data.push(record);
         } catch (error) {
-          log(err);
+          log(error);
         }
       }
       Groups = storeWLs.getGroups();
