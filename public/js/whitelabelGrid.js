@@ -176,6 +176,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
           data.push(record);
         } catch (error) {
           log(error);
+          log(whitelabelName)
         }
       }
       Groups = storeWLs.getGroups();
