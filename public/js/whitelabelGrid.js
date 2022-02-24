@@ -909,7 +909,7 @@ Ext.onReady(function () {
       },
       {
         text: 'Server Pool',
-        width: 150,
+        width: 190,
         dataIndex: 'serverPoolIPs',
         hidden: false,
       },
