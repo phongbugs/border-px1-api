@@ -116,7 +116,7 @@ let authForm = Ext.create('Ext.form.Panel', {
       handler: () => this.up('form').getForm().reset(),
     },
     {
-      text: 'Authenticate',
+      text: 'Login',
       id: 'btnAuthenticate',
       iconCls: 'authenticationCls',
 
