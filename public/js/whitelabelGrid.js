@@ -225,7 +225,8 @@ Ext.onReady(function () {
         //log(selectedServerGroupStore.getData());
       },
       cellclick: (gridview, td, cellIndex, record, tr, rowIndex, e, eOpts) => {
-        let whitelabelName = record.get('name');
+        let whitelabelName = record.get('name'),
+        serverPoolIPs = record.get('serverPoolIPs');
         if (cellIndex === 0) {
           if (cellClickCount === 1) {
             cellClickCount = 2;
@@ -243,6 +244,7 @@ Ext.onReady(function () {
           whitelabelName !== 'CLG Pool 01' &&
           whitelabelName !== 'CLG Pool 02' &&
           whitelabelName !== 'CLG Pool 03' &&
+          serverPoolIPs !== 'CLG Pool Testing' &&
           record.get('servers') !== '10.168.109.6'
         ) {
           Ext.getCmp('gridWLs').setDisabled(true);

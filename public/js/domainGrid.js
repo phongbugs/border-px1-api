@@ -62,7 +62,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
   renderTo: 'app',
   id: 'domainGrid',
   store: storeDomain,
-  width: 500,
+  width: 520,
   height: 368,
   title: 'Domains',
   style: {
@@ -280,7 +280,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
     },
     {
       text: 'Specific Server',
-      width: 140,
+      width: 155,
       dataIndex: 'specificServer',
       editor: {
         xtype: 'combo',
@@ -292,7 +292,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
     },
     {
       xtype: 'actioncolumn',
-      width: 30,
+      width: 35,
       tooltip: 'Open link by specific server',
       text: 'O',
       items: [
