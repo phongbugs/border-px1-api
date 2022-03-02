@@ -50,6 +50,7 @@ let Groups,
       {
         formatName: (name) => {
           for (let i = 0; i < Groups.items.length; i++) {
+            //log('%s - %s', name, Groups.items[i]._groupKey.toString())
             if (name.toString() === Groups.items[i]._groupKey.toString()) {
               switch (name) {
                 case '177-178-179':
@@ -147,8 +148,8 @@ let storeWLs = Ext.create('Ext.data.Store', {
             ? 'Machine Key'
             : 'None Machine Key';
           record['referralFunction'] = record['referralFunction']
-            ? 'Referral Function'
-            : 'None Referral Function';
+            ? 'RF'
+            : 'None';
           // if (record['servers']) {
           //   let servers = record['servers'];
           //   record['specificServer'] =
@@ -938,7 +939,6 @@ Ext.onReady(function () {
         width: 130,
         dataIndex: 'referralFunction',
         hidden: true,
-        renderer: (value) => (value === 'None Referral Function' ? 'None' : 'RF'),
       },
       {
         xtype: 'actioncolumn',
