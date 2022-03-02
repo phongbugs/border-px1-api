@@ -938,7 +938,7 @@ Ext.onReady(function () {
         width: 130,
         dataIndex: 'referralFunction',
         hidden: true,
-        renderer: (value) => (value === true ? 'RF' : 'None'),
+        renderer: (value) => (value === 'None Referral Function' ? 'None' : 'RF'),
       },
       {
         xtype: 'actioncolumn',
