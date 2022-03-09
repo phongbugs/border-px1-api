@@ -135,8 +135,11 @@ let storeWLs = Ext.create('Ext.data.Store', {
         try {
           let record = whiteLabels[whitelabelName];
           record['name'] = whitelabelName;
-          //if (!record['servers']) record['servers'] = '10.168.109.6';
+          //if(!record['servers'])  record['servers'] =  ;
           if (!record['status']) record['status'] = 'live';
+          else {
+            record['servers'] = '10.168.109.6';
+          }
           record['isResponsive'] = record['isResponsive']
             ? 'Responsive'
             : 'Non-Responsive';
@@ -144,8 +147,8 @@ let storeWLs = Ext.create('Ext.data.Store', {
             ? 'Machine Key'
             : 'None Machine Key';
           record['referralFunction'] = record['referralFunction']
-            ? 'Referral Function'
-            : 'None Referral Function';
+            ? 'RF'
+            : 'None';
           // if (record['servers']) {
           //   let servers = record['servers'];
           //   record['specificServer'] =
@@ -901,7 +904,6 @@ Ext.onReady(function () {
         width: 130,
         dataIndex: 'referralFunction',
         hidden: true,
-        renderer: (value) => (value ? 'RF' : 'None'),
       },
       {
         xtype: 'actioncolumn',
