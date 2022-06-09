@@ -505,7 +505,7 @@ Ext.onReady(function () {
         name: 'cbbColumn',
         id: 'cbbColumn',
         value: 'default',
-        editable: false,
+        editable: true,
       },
       {
         xtype: 'numberfield',
