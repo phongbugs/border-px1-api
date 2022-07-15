@@ -548,11 +548,11 @@ Ext.onReady(function () {
               findFirstValidDomain(
                 { index: 0, record: record },
                 ({ domain }) => {
-                  log('valid domain: %s', domain);
+                  log('valid domain of %s: %s', record.get('name'), domain);
                   if (domain) {
                     url = domain + '/' + getSelectedPage();
                     window.open(url, '_blank');
-                  } else log('Cannot find any a valid domain');
+                  } else log('-> Cannot find any a valid domain');
                 }
               );
             } else {
@@ -1306,7 +1306,7 @@ Ext.onReady(function () {
                 findFirstValidDomain(
                   { index: 0, record: record },
                   ({ domain }) => {
-                    log('valid domain: %s', domain);
+                    log('valid domain of %s: %s', record.get('name'), domain);
                     let url = domain;
                     if (domain) checkFilesOneRecord({ record, rowIndex, url });
                     else {
