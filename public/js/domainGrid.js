@@ -107,9 +107,9 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           xtype: 'button',
           id: 'btnCheckDomain',
           iconCls: 'checkCls',
-          text: 'Check All Domains',
+          text: 'Check All',
           dock: 'right',
-          hidden: true,
+          hidden: false,
           listeners: {
             click: () => {
               let store = Ext.getCmp('domainGrid').getStore(),
@@ -124,18 +124,20 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
         },
         {
           xtype: 'checkbox',
-          id: 'ckbLoadFromCache',
-          iconCls: 'checkCls',
-          boxLabel: 'Load From Cache',
-          value: false,
-        },
-        {
-          xtype: 'checkbox',
           id: 'ckbStopCheckAt1stValidDomain',
           iconCls: 'checkCls',
           boxLabel: 'Stop checking at 1th valid domain',
           value: true,
         },
+        // Note : swap two fields will error at getDomainType() whitlabel grid ???
+        {
+          xtype: 'checkbox',
+          id: 'ckbLoadFromCache',
+          iconCls: 'checkCls',
+          boxLabel: 'Load From Cache',
+          value: true,
+        },
+        
       ],
     },
     {
@@ -161,8 +163,8 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           submitValue: false,
           disabled: false,
           listeners: {
-            change: (_, newValue) => {
-              //Ext.getCmp('btnRefresh').fireEvent('click');
+            change: function (cb, e) {
+              Ext.getCmp('btnFindDomain').fireEvent('click');
             },
           },
         },
@@ -192,7 +194,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
             }
           },
           listeners: {
-            keypress: function (cb, e) {
+            change: function (cb, e) {
               Ext.getCmp('btnFindDomain').fireEvent('click');
             },
           },
@@ -202,11 +204,6 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           text: '',
           id: 'btnFindDomain',
           icon: 'https://icons.iconarchive.com/icons/zerode/plump/16/Search-icon.png',
-          // handler: () => {
-          //   let whiteLabelName = Ext.getCmp('txtNameWLsDomain').getRawValue(),
-          //   domainType = Ext.getCmp('cbbDomainType').getRawValue()
-          //   showDomainGridDataByWhitelabel({whiteLabelName, domainType})
-          // },
           listeners: {
             click: () => {
               let whiteLabelName = Ext.getCmp('txtNameWLsDomain').getRawValue(),
@@ -396,7 +393,11 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
                   let url = protocol + '://' + defaultDomain + '/';
                   url += '?bpx-backend-id=' + backendId;
                   window.open(url, '_blank');
-                } else alert(result.message);
+                } else {
+                  if(result.message.indexOf('Invalid URI "undefined/api/domainEdit/token"') > -1)
+                    authForm.setHidden(false)
+                  else alert(result.message);
+                }
               },
               failure: function (response) {
                 alert(JSON.stringify(response));

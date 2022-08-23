@@ -256,7 +256,7 @@ Ext.onReady(function () {
           // handlings of domain grid
           let whiteLabelName = record.get('name'),
           domainType = getDomainType().toLowerCase(),
-          useDomainTypeFromPX1 = true
+          useDomainTypeFromPX1 = true;
           Ext.getCmp('txtNameWLsDomain').getStore().loadData(listNameWLs);
           showDomainGridDataByWhitelabel({whiteLabelName, domainType, useDomainTypeFromPX1})
         }
@@ -1177,15 +1177,26 @@ function showDomainGridDataByWhitelabel({whiteLabelName, domainType, useDomainTy
       );
       Ext.getCmp('btnCheckDomain').fireEvent('click');
       fetchWhitelabelServers(domainStore);
-    } else
-      Ext.Msg.alert(
-        'Caution',
-        'Cache data of <b>' +
-          whiteLabelName +
-          "</b>'s domain doesn't exist<br/> Please uncheck <b>Load From Cache</b> checkbox"
-      );
-  } else {
-    let proxy = domainStore.getProxy();
+    }
+    else {
+      // Ext.Msg.alert(
+      //   'Caution',
+      //   'Cache data of <b>' +
+      //     whiteLabelName +
+      //     "</b>'s domain doesn't exist<br/> Please uncheck <b>Load From Cache</b> checkbox"
+      // );
+      //Ext.getCmp('ckbLoadFromCache').setValue(false)
+      //Ext.getCmp('btnFindDomain').fireEvent('click');
+      loadDomainStoreFromUrl({domainStore, domainType, cacheName, siteName, useDomainTypeFromPX1})
+     }
+  } 
+  else
+    loadDomainStoreFromUrl({domainStore, domainType, cacheName, siteName, useDomainTypeFromPX1})
+}
+
+function loadDomainStoreFromUrl({domainStore, domainType, cacheName, siteName, useDomainTypeFromPX1})
+{
+  let proxy = domainStore.getProxy();
     domainType = useDomainTypeFromPX1 ?
       (Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
         ? 'ip'
@@ -1201,12 +1212,13 @@ function showDomainGridDataByWhitelabel({whiteLabelName, domainType, useDomainTy
     proxy.setHeaders({
       Authorization: 'Basic ' + localStorage.getItem(cookieKey),
     });
+    
     // show loadMask purpose
     domainStore.load({
       callback: function (records, operation, success) {
         try {
-          // only available for Extjs 6.0
           let response = operation.getResponse()
+          // only available for Extjs 6.0
           if(response.responseText){
             let result = JSON.parse(response.responseText);
             if (!result.success) {
@@ -1217,15 +1229,30 @@ function showDomainGridDataByWhitelabel({whiteLabelName, domainType, useDomainTy
               )
                 Ext.Msg.alert(result.message, 'NO DATA');
               else {
-                Ext.getCmp('btnAuthenticate').fireEvent('click');
-                Ext.Msg.alert(
-                  result.message,
-                  `Please login <b>BORDER PX1</b> site<br/>
-                  OR <br/>
-                  Check to <b>Load From Cache</b> then close popup and open again`
-                );
+                authForm.setHidden(false)
+                // Ext.Msg.alert(
+                //   result.message,
+                //   `Please login <b>BORDER PX1</b> site<br/>
+                //   OR <br/>
+                //   Check to <b>Load From Cache</b> then close popup and open again`
+                // );
               }
-            } else localStorage.setItem(cacheName, result.domains);
+              // extjs 6 domain is raw json text
+            } else localStorage.setItem(cacheName, JSON.stringify(result.domains));
+          }
+          else{
+            if(!response.responseJson.success){
+              if(response.responseJson.message === 'White label not found')
+                Ext.Msg.alert(response.responseJson.message,);
+              else authForm.setHidden(false)
+            }
+            else
+            // extjs 9 domain is descrypted json
+            
+            localStorage.setItem(cacheName, CryptoJS.AES.encrypt(
+              JSON.stringify(response.responseJson.domains),
+              'The domain data'
+            ).toString());
           }
         } catch (error) {
           log(error);
@@ -1233,5 +1260,4 @@ function showDomainGridDataByWhitelabel({whiteLabelName, domainType, useDomainTy
         }
       },
     });
-  }
 }

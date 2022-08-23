@@ -107,7 +107,14 @@ const log = console.log,
           message: 'Global sites data has not had data yet !',
         });
     } catch (error) {
-      res.send({ success: false, message: error.message });
+      log(error);
+      let message = '';
+      if (error.message.indexOf("Cannot read property 'id' of undefined") > -1)
+        message = 'White label not found';
+      res.send({
+        success: false,
+        message: message !== '' ? message : error.message,
+      });
     }
   },
   fetchFolderPath = async (req, res) => {
