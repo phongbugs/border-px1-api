@@ -150,6 +150,9 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['referralFunction'] = record['referralFunction']
             ? 'RF'
             : 'None';
+          record['dynamicFooter'] = record['dynamicFooter']
+          ? 'Activated'
+          : 'None';
           // if (record['servers']) {
           //   let servers = record['servers'];
           //   record['specificServer'] =
@@ -691,7 +694,7 @@ Ext.onReady(function () {
         },
         renderer: (val, _, record) => {
           let defaultDomain = record.get('defaultDomain'),
-            dynamicFooter = record.get('dynamicFooter') ? '🦶' : '';
+            dynamicFooter = record.get('dynamicFooter') !== 'None' ? '🦶' : '';
           let mobileRedirect = '';
           if (
             record.get('mobileRedirect') === false &&
@@ -911,7 +914,7 @@ Ext.onReady(function () {
         text: 'Meta Feature (🦶)',
         width: 50,
         dataIndex: 'dynamicFooter',
-        renderer: (value) => (value ? '✅' : '❌'),
+        //renderer: (value) => (value !== 'None' ? '✅' : '❌'),
         hidden: true,
       },
 
