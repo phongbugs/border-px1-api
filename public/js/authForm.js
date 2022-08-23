@@ -209,7 +209,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                 }
               },
             });
-          } else Ext.Msg.alert('Info', 'Please fill username/password');
+          } else console.log('Please fill PX1 account info') //Ext.Msg.alert('Info', 'Please fill PX1 account info');
         },
       },
     },

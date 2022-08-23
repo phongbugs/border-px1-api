@@ -97,63 +97,128 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
     show: (grid) => {},
     hide: () => Ext.getCmp('gridWLs').setDisabled(false),
   },
-  tbar: [
+  //tbar: [],
+  dockedItems: [
     {
-      xtype: 'button',
-      id: 'btnCheckDomain',
-      iconCls: 'checkCls',
-      text: 'Check All Domains',
-      dock: 'right',
-      hidden: true,
-      listeners: {
-        click: () => {
-          let store = Ext.getCmp('domainGrid').getStore(),
-            stopAtFirst = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
-          if (stopAtFirst)
-            checkDomainAllGridSlow(0, store, stopAtFirst, (domain) => {});
-          else checkDomainAllGrid();
+      xtype: 'toolbar',
+      dock: 'top',
+      items: [
+        {
+          xtype: 'button',
+          id: 'btnCheckDomain',
+          iconCls: 'checkCls',
+          text: 'Check All Domains',
+          dock: 'right',
+          hidden: true,
+          listeners: {
+            click: () => {
+              let store = Ext.getCmp('domainGrid').getStore(),
+                stopAtFirst = Ext.getCmp(
+                  'ckbStopCheckAt1stValidDomain'
+                ).getValue();
+              if (stopAtFirst)
+                checkDomainAllGridSlow(0, store, stopAtFirst, (domain) => {});
+              else checkDomainAllGrid();
+            },
+          },
         },
-      },
-    },
-    {
-      xtype: 'checkbox',
-      id: 'ckbLoadFromCache',
-      iconCls: 'checkCls',
-      boxLabel: 'Load From Cache',
-      value: false,
-    },
-    {
-      xtype: 'checkbox',
-      id: 'ckbStopCheckAt1stValidDomain',
-      iconCls: 'checkCls',
-      boxLabel: 'Stop checking at 1th valid domain',
-      value: true,
-    },
-    {
-      xtype: 'combo',
-      width: 85,
-      store: new Ext.data.ArrayStore({
-        fields: ['id', 'name'],
-        data: [
-          ['ip.', 'IP'],
-          ['name', 'NAME'],
-        ],
-      }),
-      displayField: 'name',
-      valueField: 'id',
-      name: 'cbbDomainType',
-      id: 'cbbDomainType',
-      value: 'name',
-      editable: false,
-      submitValue: false,
-      listeners: {
-        change: (_, newValue) => {
-          
-          Ext.getCmp('btnRefresh').fireEvent('click');
+        {
+          xtype: 'checkbox',
+          id: 'ckbLoadFromCache',
+          iconCls: 'checkCls',
+          boxLabel: 'Load From Cache',
+          value: false,
         },
-      },
+        {
+          xtype: 'checkbox',
+          id: 'ckbStopCheckAt1stValidDomain',
+          iconCls: 'checkCls',
+          boxLabel: 'Stop checking at 1th valid domain',
+          value: true,
+        },
+      ],
+    },
+    {
+      xtype: 'toolbar',
+      dock: 'top',
+      items: [
+        {
+          xtype: 'combo',
+          width: 85,
+          store: new Ext.data.ArrayStore({
+            fields: ['id', 'name'],
+            data: [
+              ['ip.', 'IP'],
+              ['name', 'NAME'],
+            ],
+          }),
+          displayField: 'name',
+          valueField: 'id',
+          name: 'cbbDomainType',
+          id: 'cbbDomainType',
+          value: 'name',
+          editable: false,
+          submitValue: false,
+          disabled: false,
+          listeners: {
+            change: (_, newValue) => {
+              //Ext.getCmp('btnRefresh').fireEvent('click');
+            },
+          },
+        },
+        {
+          xtype: 'combo',
+          width: 150,
+          store: new Ext.data.ArrayStore({
+            fields: ['id', 'name'],
+            data: listNameWLs,
+          }),
+          displayField: 'name',
+          valueField: 'id',
+          queryMode: 'local',
+          value: '',
+          id: 'txtNameWLsDomain',
+          itemId: 'txtNameWLsDomain',
+          //multiSelect: true,
+          enableKeyEvents: true,
+          doQuery: function (queryString, forceAll) {
+            this.expand();
+            this.store.clearFilter(!forceAll);
+            if (!forceAll) {
+              this.store.filter(
+                this.displayField,
+                new RegExp(Ext.String.escapeRegex(queryString), 'i')
+              );
+            }
+          },
+          listeners: {
+            keypress: function (cb, e) {
+              Ext.getCmp('btnFindDomain').fireEvent('click');
+            },
+          },
+        },
+        {
+          xtype: 'button',
+          text: '',
+          id: 'btnFindDomain',
+          icon: 'https://icons.iconarchive.com/icons/zerode/plump/16/Search-icon.png',
+          // handler: () => {
+          //   let whiteLabelName = Ext.getCmp('txtNameWLsDomain').getRawValue(),
+          //   domainType = Ext.getCmp('cbbDomainType').getRawValue()
+          //   showDomainGridDataByWhitelabel({whiteLabelName, domainType})
+          // },
+          listeners: {
+            click: () => {
+              let whiteLabelName = Ext.getCmp('txtNameWLsDomain').getRawValue(),
+                domainType = Ext.getCmp('cbbDomainType').getRawValue().toLowerCase();
+              showDomainGridDataByWhitelabel({ whiteLabelName, domainType });
+            },
+          },
+        },
+      ],
     },
   ],
+
   columns: [
     new Ext.grid.RowNumberer({ dataIndex: 'no', text: 'No.', width: 60 }),
     {

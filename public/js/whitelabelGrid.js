@@ -253,85 +253,12 @@ Ext.onReady(function () {
           selectedWhiteLabelName = record.get('name');
           selectedSpecificServer = record.get('specificServer');
           selectedServers = record.get('servers');
-
-          let domainGrid = Ext.getCmp('domainGrid'),
-            domainStore = domainGrid.getStore(),
-            siteTypeValue = getSiteTypeValue(),
-            whiteLabelName = record.get('name'),
-            siteTypeName = getSiteTypeName(),
-            domainType = getDomainType(),
-            cacheName = whiteLabelName + '_' + domainType + '_' + siteTypeName,
-            siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
-
-          domainGrid.show();
-          domainGrid.setTitle('🌍 ' + whiteLabelName + "'s Domains");
-          domainStore.loadData([]);
-          if (Ext.getCmp('ckbLoadFromCache').getValue()) {
-            if (localStorage.getItem(cacheName)) {
-              domainStore.loadData(
-                JSON.parse(
-                  CryptoJS.AES.decrypt(
-                    localStorage.getItem(cacheName),
-                    'The domain data'
-                  ).toString(CryptoJS.enc.Utf8)
-                ).map((e) => {
-                  e['specificServer'] = selectedSpecificServer;
-                  e['servers'] = selectedServers;
-                  return e;
-                })
-              );
-              Ext.getCmp('btnCheckDomain').fireEvent('click');
-              fetchWhitelabelServers(domainStore);
-            } else
-              Ext.Msg.alert(
-                'Caution',
-                'Cache data of <b>' +
-                  whiteLabelName +
-                  "</b>'s domain doesn't exist<br/> Please uncheck <b>Load From Cache</b> checkbox"
-              );
-          } else {
-            let proxy = domainStore.getProxy();
-            let domainType =
-              Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
-                ? 'ip'
-                : 'name';
-            proxy.setConfig('url', [
-              borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
-            ]);
-            //proxy.setConfig('withCredentials', [true]);
-            let cookieKey =
-              getDomainType() === 'ip'
-                ? 'border-px1-cookie-ip'
-                : 'border-px1-cookie';
-            proxy.setHeaders({
-              Authorization: 'Basic ' + localStorage.getItem(cookieKey),
-            });
-            // show loadMask purpose
-            domainStore.load({
-              callback: function (records, operation, success) {
-                try {
-                  let result = JSON.parse(operation.getResponse().responseText);
-                  if (!result.success) {
-                    if (
-                      result.message.indexOf(
-                        "Cannot read property 'id' of undefined"
-                      ) > -1
-                    )
-                      Ext.Msg.alert(result.message, 'NO DATA');
-                    else
-                      Ext.Msg.alert(
-                        result.message,
-                        `Please login <b>BORDER PX1</b> site<br/>
-                        OR <br/>
-                        Check to <b>Load From Cache</b> then close popup and open again`
-                      );
-                  } else localStorage.setItem(cacheName, result.domains);
-                } catch (error) {
-                  log(error);
-                }
-              },
-            });
-          }
+          // handlings of domain grid
+          let whiteLabelName = record.get('name'),
+          domainType = getDomainType().toLowerCase(),
+          useDomainTypeFromPX1 = true
+          Ext.getCmp('txtNameWLsDomain').getStore().loadData(listNameWLs);
+          showDomainGridDataByWhitelabel({whiteLabelName, domainType, useDomainTypeFromPX1})
         }
       },
       viewready: (grid) => {
@@ -435,7 +362,7 @@ Ext.onReady(function () {
             ['mainColor', 'Color'],
             ['referralFunction', 'Referral Function'],
             ['mobileRedirect', 'Mobile Redirect'],
-            ['dynamicFooter', 'Dynamic Footer'],
+            ['dynamicFooter', 'Meta Feature'],
             ['referredIconMenu', 'Menu Icon'],
             ['hasPopup', 'Has Popup'],
             ['referredWL', 'Referred WL'],
@@ -842,72 +769,73 @@ Ext.onReady(function () {
         dataIndex: 'status',
         hidden: true,
       },
+      // {
+      //   text: 'panel',
+      //   width: 150,
+      //   dataIndex: 'defaultDomain',
+      //   hidden: true,
+      //   renderer: (v, _, r) =>
+      //     Ext.String.format(
+      //       '<a target="_blank" href="https://{0}">{0}</a>',
+      //       v ? v : r.get('name').toLowerCase() + '.com' + '/_Bet/Panel.aspx'
+      //     ),
+      // },
+      // {
+      //   text: 'Robots',
+      //   width: 150,
+      //   dataIndex: 'defaultDomain',
+      //   hidden: true,
+      //   renderer: (v, _, r) =>
+      //     Ext.String.format(
+      //       '<a target="_blank" href="https://{0}">{0}</a>',
+      //       (v ? v : r.get('name').toLowerCase() + '.com') + '/robots.txt'
+      //     ),
+      // },
+      // {
+      //   text: 'Sitemap',
+      //   width: 150,
+      //   dataIndex: 'defaultDomain',
+      //   hidden: true,
+      //   renderer: (v, _, r) =>
+      //     Ext.String.format(
+      //       '<a target="_blank" href="https://{0}">{0}</a>',
+      //       v ? v : r.get('name').toLowerCase() + '.com' + '/sitemap.xml'
+      //     ),
+      // },
+      // {
+      //   text: 'Google',
+      //   width: 150,
+      //   dataIndex: 'defaultDomain',
+      //   hidden: true,
+      //   renderer: (v, _, r) =>
+      //     Ext.String.format(
+      //       '<a target="_blank" href="https://{0}">{0}</a>',
+      //       v
+      //         ? v
+      //         : r.get('name').toLowerCase() +
+      //             '.com' +
+      //             '/googleae669996542f22e8.html'
+      //     ),
+      // },
       {
-        text: 'panel',
-        width: 150,
-        dataIndex: 'defaultDomain',
-        hidden: true,
-        renderer: (v, _, r) =>
-          Ext.String.format(
-            '<a target="_blank" href="https://{0}">{0}</a>',
-            v ? v : r.get('name').toLowerCase() + '.com' + '/_Bet/Panel.aspx'
-          ),
-      },
-      {
-        text: 'Robots',
-        width: 150,
-        dataIndex: 'defaultDomain',
-        hidden: true,
-        renderer: (v, _, r) =>
-          Ext.String.format(
-            '<a target="_blank" href="https://{0}">{0}</a>',
-            (v ? v : r.get('name').toLowerCase() + '.com') + '/robots.txt'
-          ),
-      },
-      {
-        text: 'Sitemap',
-        width: 150,
-        dataIndex: 'defaultDomain',
-        hidden: true,
-        renderer: (v, _, r) =>
-          Ext.String.format(
-            '<a target="_blank" href="https://{0}">{0}</a>',
-            v ? v : r.get('name').toLowerCase() + '.com' + '/sitemap.xml'
-          ),
-      },
-      {
-        text: 'Google',
-        width: 150,
-        dataIndex: 'defaultDomain',
-        hidden: true,
-        renderer: (v, _, r) =>
-          Ext.String.format(
-            '<a target="_blank" href="https://{0}">{0}</a>',
-            v
-              ? v
-              : r.get('name').toLowerCase() +
-                  '.com' +
-                  '/googleae669996542f22e8.html'
-          ),
-      },
-      {
-        text: 'referredWL',
+        text: 'Refered WL',
         width: 150,
         dataIndex: 'referredWL',
+        tooltip: 'Refered WL(css, header layout...)',
         hidden: true,
       },
       {
-        text: 'mainColor',
+        text: 'Main Color',
         width: 150,
         dataIndex: 'mainColor',
         hidden: true,
       },
-      {
-        text: 'Servers',
-        width: 120,
-        dataIndex: 'servers',
-        hidden: true,
-      },
+      // {
+      //   text: 'Servers',
+      //   width: 120,
+      //   dataIndex: 'servers',
+      //   hidden: true,
+      // },
       {
         text: 'Server Pool',
         width: 190,
@@ -935,7 +863,7 @@ Ext.onReady(function () {
         hidden: true,
       },
       {
-        text: 'Referral Function',
+        text: 'Referral Feature',
         width: 130,
         dataIndex: 'referralFunction',
         hidden: true,
@@ -980,34 +908,36 @@ Ext.onReady(function () {
         hidden: true,
       },
       {
-        text: '🦶',
+        text: 'Meta Feature (🦶)',
         width: 50,
         dataIndex: 'dynamicFooter',
         renderer: (value) => (value ? '✅' : '❌'),
         hidden: true,
       },
-      {
-        text: '🔒',
-        width: 50,
-        dataIndex: 'securityQuestion',
-        renderer: (value) => (value ? '✅' : '❌'),
-        hidden: true,
-      },
-      {
-        text: '✉',
-        width: 50,
-        dataIndex: 'closedMail',
-        renderer: (value) => (!value ? '✉' : '❌'),
-        hidden: true,
-      },
-      {
-        text: '▶',
-        tooltip: 'Has Playtech',
-        width: 50,
-        dataIndex: 'closedPlaytech',
-        renderer: (value) => (!value ? '▶' : '❌'),
-        hidden: true,
-      },
+
+      // {
+      //   text: '🔒',
+      //   width: 50,
+      //   dataIndex: 'securityQuestion',
+      //   renderer: (value) => (value ? '✅' : '❌'),
+      //   hidden: true,
+      // },
+      // {
+      //   text: '✉',
+      //   width: 50,
+      //   dataIndex: 'closedMail',
+      //   renderer: (value) => (!value ? '✉' : '❌'),
+      //   hidden: true,
+      // },
+      // {
+      //   text: '▶',
+      //   tooltip: 'Has Playtech',
+      //   width: 50,
+      //   dataIndex: 'closedPlaytech',
+      //   renderer: (value) => (!value ? '▶' : '❌'),
+      //   hidden: true,
+      // },
+
       // {
       //   xtype: 'actioncolumn',
       //   width: 30,
@@ -1175,42 +1105,133 @@ function fetchFolderAllWLs(index, store, callback) {
   record.set('isSyncedFolder', 'spinner');
   fetchFolderOneRecord(record, (success) => {
     record.set('isSyncedFolder', success ? 'checkOkCls' : 'checkKoCls');
-
-    function fetchBackendId(record, callback) {
-      try {
-        var ip = record.get('specificServer');
-        record.set('specificServerSpinner', true);
-        let domainType = getDomainType();
-        Ext.Ajax.request({
-          method: 'POST',
-          url: borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
-          withCredentials: true,
-          success: function (response) {
-            record.set('specificServerSpinner', false);
-            let result = JSON.parse(response.responseText);
-            if (result.success) callback(result.backendId);
-            else {
-              if (
-                result.message.indexOf('Invalid URI "/api/domainEdit/token') >
-                -1
-              )
-                Ext.Msg.alert(
-                  result.message,
-                  `Please login <b>BORDER PX1</b> site<br/>`
-                );
-              else alert(result.message);
-              callback();
-            }
-          },
-          failure: function (response) {
-            alert(JSON.stringify(response));
-          },
-        });
-      } catch (error) {
-        callback();
-      }
-    }
     if (++index < store.getCount()) fetchFolderAllWLs(index, store, callback);
     else callback();
   });
+}
+
+function fetchBackendId(record, callback) {
+  try {
+    var ip = record.get('specificServer');
+    record.set('specificServerSpinner', true);
+    let domainType = getDomainType();
+    Ext.Ajax.request({
+      method: 'POST',
+      url: borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
+      headers: {
+        Authorization: 'Basic ' + localStorage.getItem(cookieKey),
+      },
+      success: function (response) {
+        record.set('specificServerSpinner', false);
+        let result = JSON.parse(response.responseText);
+        if (result.success) callback(result.backendId);
+        else {
+          if (
+            result.message.indexOf('Invalid URI "/api/domainEdit/token') >
+            -1
+          )
+            Ext.Msg.alert(
+              result.message,
+              `Please login <b>BORDER PX1</b> site<br/>`
+            );
+          else alert(result.message);
+          callback();
+        }
+      },
+      failure: function (response) {
+        alert(JSON.stringify(response));
+      },
+    });
+  } catch (error) {
+    callback();
+  }
+}
+
+function showDomainGridDataByWhitelabel({whiteLabelName, domainType, useDomainTypeFromPX1})
+{
+  let domainGrid = Ext.getCmp('domainGrid'),
+    domainStore = domainGrid.getStore(),
+    siteTypeValue = getSiteTypeValue(),
+    siteTypeName = getSiteTypeName(),
+    cacheName = whiteLabelName + '_' + domainType + '_' + siteTypeName,
+    siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
+
+  domainGrid.show();
+  domainGrid.setTitle('🌍 ' + whiteLabelName + "'s Domains");
+  Ext.getCmp('txtNameWLsDomain').setRawValue(whiteLabelName)
+  Ext.getCmp('cbbDomainType').setRawValue(domainType.toUpperCase())
+  domainStore.loadData([]);
+  if (Ext.getCmp('ckbLoadFromCache').getValue()) {
+    if (localStorage.getItem(cacheName)) {
+      domainStore.loadData(
+        JSON.parse(
+          CryptoJS.AES.decrypt(
+            localStorage.getItem(cacheName),
+            'The domain data'
+          ).toString(CryptoJS.enc.Utf8)
+        ).map((e) => {
+          e['specificServer'] = selectedSpecificServer;
+          e['servers'] = selectedServers;
+          return e;
+        })
+      );
+      Ext.getCmp('btnCheckDomain').fireEvent('click');
+      fetchWhitelabelServers(domainStore);
+    } else
+      Ext.Msg.alert(
+        'Caution',
+        'Cache data of <b>' +
+          whiteLabelName +
+          "</b>'s domain doesn't exist<br/> Please uncheck <b>Load From Cache</b> checkbox"
+      );
+  } else {
+    let proxy = domainStore.getProxy();
+    domainType = useDomainTypeFromPX1 ?
+      (Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+        ? 'ip'
+        : 'name'): domainType;
+    proxy.setConfig('url', [
+      borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
+    ]);
+    //proxy.setConfig('withCredentials', [true]);
+    let cookieKey =
+      domainType === 'ip'
+        ? 'border-px1-cookie-ip'
+        : 'border-px1-cookie';
+    proxy.setHeaders({
+      Authorization: 'Basic ' + localStorage.getItem(cookieKey),
+    });
+    // show loadMask purpose
+    domainStore.load({
+      callback: function (records, operation, success) {
+        try {
+          // only available for Extjs 6.0
+          let response = operation.getResponse()
+          if(response.responseText){
+            let result = JSON.parse(response.responseText);
+            if (!result.success) {
+              if (
+                result.message.indexOf(
+                  "Cannot read property 'id' of undefined"
+                ) > -1
+              )
+                Ext.Msg.alert(result.message, 'NO DATA');
+              else {
+                Ext.getCmp('btnAuthenticate').fireEvent('click');
+                Ext.Msg.alert(
+                  result.message,
+                  `Please login <b>BORDER PX1</b> site<br/>
+                  OR <br/>
+                  Check to <b>Load From Cache</b> then close popup and open again`
+                );
+              }
+            } else localStorage.setItem(cacheName, result.domains);
+          }
+        } catch (error) {
+          log(error);
+          //Ext.getCmp('btnAuthenticate').fireEvent('click');
+        }
+      },
+    });
+  }
 }
