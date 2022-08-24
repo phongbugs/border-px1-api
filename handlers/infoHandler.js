@@ -109,7 +109,10 @@ const log = console.log,
     } catch (error) {
       log(error);
       let message = '';
-      if (error.message.indexOf("Cannot read property 'id' of undefined") > -1)
+      if (
+        error.message.indexOf("Cannot read property 'id' of undefined") > -1 ||
+        error.message.indexOf('Cannot read properties of undefined') > -1
+      )
         message = 'White label not found';
       res.send({
         success: false,

@@ -151,8 +151,8 @@ let storeWLs = Ext.create('Ext.data.Store', {
             ? 'RF'
             : 'None';
           record['dynamicFooter'] = record['dynamicFooter']
-          ? 'Activated'
-          : 'None';
+            ? 'Activated'
+            : 'None';
           // if (record['servers']) {
           //   let servers = record['servers'];
           //   record['specificServer'] =
@@ -180,7 +180,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
           data.push(record);
         } catch (error) {
           log(error);
-          log(whitelabelName)
+          log(whitelabelName);
         }
       }
       Groups = storeWLs.getGroups();
@@ -230,7 +230,7 @@ Ext.onReady(function () {
       },
       cellclick: (gridview, td, cellIndex, record, tr, rowIndex, e, eOpts) => {
         let whitelabelName = record.get('name'),
-        serverPoolIPs = record.get('serverPoolIPs');
+          serverPoolIPs = record.get('serverPoolIPs');
         if (cellIndex === 0) {
           if (cellClickCount === 1) {
             cellClickCount = 2;
@@ -258,10 +258,14 @@ Ext.onReady(function () {
           selectedServers = record.get('servers');
           // handlings of domain grid
           let whiteLabelName = record.get('name'),
-          domainType = getDomainType().toLowerCase(),
-          useDomainTypeFromPX1 = true;
+            domainType = getDomainType().toLowerCase(),
+            useDomainTypeFromPX1 = true;
           Ext.getCmp('txtNameWLsDomain').getStore().loadData(listNameWLs);
-          showDomainGridDataByWhitelabel({whiteLabelName, domainType, useDomainTypeFromPX1})
+          showDomainGridDataByWhitelabel({
+            whiteLabelName,
+            domainType,
+            useDomainTypeFromPX1,
+          });
         }
       },
       viewready: (grid) => {
@@ -1129,10 +1133,7 @@ function fetchBackendId(record, callback) {
         let result = JSON.parse(response.responseText);
         if (result.success) callback(result.backendId);
         else {
-          if (
-            result.message.indexOf('Invalid URI "/api/domainEdit/token') >
-            -1
-          )
+          if (result.message.indexOf('Invalid URI "/api/domainEdit/token') > -1)
             Ext.Msg.alert(
               result.message,
               `Please login <b>BORDER PX1</b> site<br/>`
@@ -1150,8 +1151,11 @@ function fetchBackendId(record, callback) {
   }
 }
 
-function showDomainGridDataByWhitelabel({whiteLabelName, domainType, useDomainTypeFromPX1})
-{
+function showDomainGridDataByWhitelabel({
+  whiteLabelName,
+  domainType,
+  useDomainTypeFromPX1,
+}) {
   let domainGrid = Ext.getCmp('domainGrid'),
     domainStore = domainGrid.getStore(),
     siteTypeValue = getSiteTypeValue(),
@@ -1161,8 +1165,8 @@ function showDomainGridDataByWhitelabel({whiteLabelName, domainType, useDomainTy
 
   domainGrid.show();
   domainGrid.setTitle('🌍 ' + whiteLabelName + "'s Domains");
-  Ext.getCmp('txtNameWLsDomain').setRawValue(whiteLabelName)
-  Ext.getCmp('cbbDomainType').setRawValue(domainType.toUpperCase())
+  Ext.getCmp('txtNameWLsDomain').setRawValue(whiteLabelName);
+  Ext.getCmp('cbbDomainType').setRawValue(domainType.toUpperCase());
   domainStore.loadData([]);
   if (Ext.getCmp('ckbLoadFromCache').getValue()) {
     if (localStorage.getItem(cacheName)) {
@@ -1180,8 +1184,7 @@ function showDomainGridDataByWhitelabel({whiteLabelName, domainType, useDomainTy
       );
       Ext.getCmp('btnCheckDomain').fireEvent('click');
       fetchWhitelabelServers(domainStore);
-    }
-    else {
+    } else {
       // Ext.Msg.alert(
       //   'Caution',
       //   'Cache data of <b>' +
@@ -1190,77 +1193,94 @@ function showDomainGridDataByWhitelabel({whiteLabelName, domainType, useDomainTy
       // );
       //Ext.getCmp('ckbLoadFromCache').setValue(false)
       //Ext.getCmp('btnFindDomain').fireEvent('click');
-      loadDomainStoreFromUrl({domainStore, domainType, cacheName, siteName, useDomainTypeFromPX1})
-     }
-  } 
-  else
-    loadDomainStoreFromUrl({domainStore, domainType, cacheName, siteName, useDomainTypeFromPX1})
+      loadDomainStoreFromUrl({
+        domainStore,
+        domainType,
+        cacheName,
+        siteName,
+        useDomainTypeFromPX1,
+      });
+    }
+  } else
+    loadDomainStoreFromUrl({
+      domainStore,
+      domainType,
+      cacheName,
+      siteName,
+      useDomainTypeFromPX1,
+    });
 }
 
-function loadDomainStoreFromUrl({domainStore, domainType, cacheName, siteName, useDomainTypeFromPX1})
-{
+function loadDomainStoreFromUrl({
+  domainStore,
+  domainType,
+  cacheName,
+  siteName,
+  useDomainTypeFromPX1,
+}) {
   let proxy = domainStore.getProxy();
-    domainType = useDomainTypeFromPX1 ?
-      (Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
-        ? 'ip'
-        : 'name'): domainType;
-    proxy.setConfig('url', [
-      borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
-    ]);
-    //proxy.setConfig('withCredentials', [true]);
-    let cookieKey =
-      domainType === 'ip'
-        ? 'border-px1-cookie-ip'
-        : 'border-px1-cookie';
-    proxy.setHeaders({
-      Authorization: 'Basic ' + localStorage.getItem(cookieKey),
-    });
-    
-    // show loadMask purpose
-    domainStore.load({
-      callback: function (records, operation, success) {
-        try {
-          let response = operation.getResponse()
-          // only available for Extjs 6.0
-          if(response.responseText){
-            let result = JSON.parse(response.responseText);
-            if (!result.success) {
-              if (
-                result.message.indexOf(
-                  "Cannot read property 'id' of undefined"
-                ) > -1
-              )
-                Ext.Msg.alert(result.message, 'NO DATA');
-              else {
-                authForm.setHidden(false)
-                // Ext.Msg.alert(
-                //   result.message,
-                //   `Please login <b>BORDER PX1</b> site<br/>
-                //   OR <br/>
-                //   Check to <b>Load From Cache</b> then close popup and open again`
-                // );
-              }
-              // extjs 6 domain is raw json text
-            } else localStorage.setItem(cacheName, JSON.stringify(result.domains));
-          }
-          else{
-            if(!response.responseJson.success){
-              if(response.responseJson.message === 'White label not found')
-                Ext.Msg.alert(response.responseJson.message,);
-              else authForm.setHidden(false)
+  domainType = useDomainTypeFromPX1
+    ? Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+      ? 'ip'
+      : 'name'
+    : domainType;
+  proxy.setConfig('url', [
+    borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
+  ]);
+  //proxy.setConfig('withCredentials', [true]);
+  let cookieKey =
+    domainType === 'ip' ? 'border-px1-cookie-ip' : 'border-px1-cookie';
+  proxy.setHeaders({
+    Authorization: 'Basic ' + localStorage.getItem(cookieKey),
+  });
+
+  // show loadMask purpose
+  domainStore.load({
+    callback: function (records, operation, success) {
+      try {
+        let response = operation.getResponse();
+        // only available for Extjs 6.0
+        if (response.responseText) {
+          let result = JSON.parse(response.responseText);
+          if (!result.success) {
+            if (
+              result.message.indexOf("Cannot read property 'id' of undefined") >
+                -1 ||
+              result.message.indexOf('Cannot read properties of undefined') > -1
+            )
+              Ext.Msg.alert(result.message, 'NO DATA');
+            else {
+              authForm.setHidden(false);
+              // Ext.Msg.alert(
+              //   result.message,
+              //   `Please login <b>BORDER PX1</b> site<br/>
+              //   OR <br/>
+              //   Check to <b>Load From Cache</b> then close popup and open again`
+              // );
             }
-            else
-            // extjs 9 domain is descrypted json
-            
-            localStorage.setItem(cacheName, CryptoJS.AES.encrypt(
-              JSON.stringify(response.responseJson.domains),
-              'The domain data'
-            ).toString());
+            // extjs 6 domain is raw json text
+          } else
+            localStorage.setItem(cacheName, JSON.stringify(result.domains));
+        } else {
+          if (!response.responseJson.success) {
+            if (response.responseJson.message === 'White label not found')
+              Ext.Msg.alert('⚠️' + response.responseJson.message);
+            else authForm.setHidden(false);
           }
-        } catch (error) {
-          log(error);
-          //Ext.getCmp('btnAuthenticate').fireEvent('click');
+          // extjs 9 domain is descrypted json
+          else
+            localStorage.setItem(
+              cacheName,
+              CryptoJS.AES.encrypt(
+                JSON.stringify(response.responseJson.domains),
+                'The domain data'
+              ).toString()
+            );
         }
-      },
-    });
+      } catch (error) {
+        log(error);
+        //Ext.getCmp('btnAuthenticate').fireEvent('click');
+      }
+    },
+  });
 }
