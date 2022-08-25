@@ -347,10 +347,15 @@ Ext.onReady(function () {
         listeners: {
           change: (_, newValue) => {
             // mobile and agent dont have ip domain
-            if (newValue === 'mobile.' || newValue === 'ag.')
+            if (newValue === 'mobile.' || newValue === 'ag.') {
               Ext.getCmp('cbbBorderPx1Url').setValue(
                 'https://net-ga.admin.12365.bpx-cdn.cloud'
               );
+              Ext.getCmp('cbbDomainType').setValue('name');
+              Ext.getCmp('cbbDomainType').setDisabled(true);
+            } else {
+              Ext.getCmp('cbbDomainType').setDisabled(false);
+            }
             Ext.getCmp('btnRefresh').fireEvent('click');
           },
         },
@@ -1166,7 +1171,10 @@ function showDomainGridDataByWhitelabel({
   domainGrid.show();
   domainGrid.setTitle('🌍 ' + whiteLabelName + "'s Domains");
   Ext.getCmp('txtNameWLsDomain').setRawValue(whiteLabelName);
-  Ext.getCmp('cbbDomainType').setRawValue(domainType.toUpperCase());
+  Ext.getCmp('cbbDomainType').setValue(domainType.toLowerCase());
+  Ext.getCmp('cbbSiteTypeDomain').setValue(
+    siteTypeValue === '' ? 'member' : siteTypeValue
+  );
   domainStore.loadData([]);
   if (Ext.getCmp('ckbLoadFromCache').getValue()) {
     if (localStorage.getItem(cacheName)) {

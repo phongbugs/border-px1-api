@@ -150,6 +150,30 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           store: new Ext.data.ArrayStore({
             fields: ['id', 'name'],
             data: [
+              ['mobile.', 'Mobile'],
+              ['member', 'Member'],
+              ['ag.', 'Agent'],
+            ],
+          }),
+          displayField: 'name',
+          valueField: 'id',
+          name: 'cbbSiteTypeDomain',
+          id: 'cbbSiteTypeDomain',
+          value: 'member',
+          editable: false,
+          listeners: {
+            change: (_, newValue) => {
+              Ext.getCmp('cbbSiteType').setValue(newValue)
+              Ext.getCmp('btnFindDomain').fireEvent('click');
+            },
+          },
+        },
+        {
+          xtype: 'combo',
+          width: 85,
+          store: new Ext.data.ArrayStore({
+            fields: ['id', 'name'],
+            data: [
               ['ip.', 'IP'],
               ['name', 'NAME'],
             ],
@@ -215,7 +239,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       ],
     },
   ],
-
+  
   columns: [
     new Ext.grid.RowNumberer({ dataIndex: 'no', text: 'No.', width: 60 }),
     {
