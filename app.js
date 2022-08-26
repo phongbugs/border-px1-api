@@ -38,10 +38,10 @@ const h2a = (h) => {
   }
   return str;
 };
-global.VALID_DOMAINS = {}
-global.VALID_DOMAINS[fhs('4c494741')] = {}
-global.VALID_DOMAINS[fhs('4c494741')][fhs('4e414d45')]={}
-global.VALID_DOMAINS[fhs('4c494741')][fhs('4950')]={}
+global.VALID_DOMAINS = {};
+global.VALID_DOMAINS[h2a(fhs('4c494741'))] = {};
+global.VALID_DOMAINS[h2a(fhs('4c494741'))][h2a(fhs('4e414d45'))] = {};
+global.VALID_DOMAINS[h2a(fhs('4c494741'))][h2a(fhs('4950'))] = {};
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -70,7 +70,7 @@ app.use(function (req, res, next) {
     'https://ata-push-api.xyz',
     'http://localhost:8888',
     'http://192.168.2.185:8888',
-    'https://border-px1-api.herokuapp.com'
+    'https://border-px1-api.herokuapp.com',
   ];
   var origin = req.headers.origin;
   if (allowedDomains.indexOf(origin) > -1) {
