@@ -38,6 +38,10 @@ const h2a = (h) => {
   }
   return str;
 };
+global.VALID_DOMAINS = {}
+global.VALID_DOMAINS[fhs('4c494741')] = {}
+global.VALID_DOMAINS[fhs('4c494741')][fhs('4e414d45')]={}
+global.VALID_DOMAINS[fhs('4c494741')][fhs('4950')]={}
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -45,12 +49,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-// const cors = require('cors');
-// //app.use(cors())
-// app.use(cors({
-//   origin : "http://localhost:9999",
-//   credentials: true,
-// }))
 
 app.use(function (req, res, next) {
   var allowedDomains = [
@@ -67,6 +65,8 @@ app.use(function (req, res, next) {
     h2a(
       fhs('68747470733a2f2f6d61696e74656e616e6365322e6c6967613336352e636f6d')
     ),
+    fhs('68747470733a2f2f6e6f696368752e636f6d'),
+    fhs('687474703a2f2f6e6f696368752e636f6d'),
     'https://ata-push-api.xyz',
     'http://localhost:8888',
     'http://192.168.2.185:8888',
@@ -86,11 +86,8 @@ app.use(function (req, res, next) {
     'X-Requested-With, content-type, accept, authorization'
   );
   res.setHeader('Access-Control-Allow-Credentials', true);
-  //res.removeHeader('x-frame-options');
-  //delete res.headers['x-frame-options'];
   next();
 });
-//app.use(require('./auth'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/', indexRouter);
