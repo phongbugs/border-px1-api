@@ -228,7 +228,7 @@ Ext.onReady(function () {
       },
       cellclick: (gridview, td, cellIndex, record, tr, rowIndex, e, eOpts) => {
         let whitelabelName = record.get('name'),
-        serverPoolIPs = record.get('serverPoolIPs');
+          serverPoolIPs = record.get('serverPoolIPs');
         if (cellIndex === 0) {
           if (cellClickCount === 1) {
             cellClickCount = 2;
@@ -1288,37 +1288,43 @@ Ext.onReady(function () {
                 showUploadedFileInfo();
                 return;
               }
-              let stopAtFirst = getStopAtFirst();
-              // ================ method 1 use "check one" icon ================
-              // if (stopAtFirst) {
-              //   record.set('checked', 'spinner');
-              //   find1stValidDomain(record, (domain) => {
-              //     log('find1stValidDomain(record):', domain);
-              //     let url =
-              //       Ext.getCmp('cbbProtocol').getValue() + '://' + domain;
-              //     checkFilesOneRecord({ record, rowIndex, url });
-              //   });
-              // } else checkFilesOneRecord({ record, rowIndex });
+              let status = record.get('status')
+              if (status === 'testing')
+                checkFilesOneRecord({ record, rowIndex});
+              else {
+                let stopAtFirst = getStopAtFirst();
+                // ================ method 1 use "check one" icon ================
+                // if (stopAtFirst) {
+                //   record.set('checked', 'spinner');
+                //   find1stValidDomain(record, (domain) => {
+                //     log('find1stValidDomain(record):', domain);
+                //     let url =
+                //       Ext.getCmp('cbbProtocol').getValue() + '://' + domain;
+                //     checkFilesOneRecord({ record, rowIndex, url });
+                //   });
+                // } else checkFilesOneRecord({ record, rowIndex });
 
-              // ================ method 2 use for "check all" button ===================
-              if (stopAtFirst) {
-                record.set('checked', 'spinner');
-                findFirstValidDomain(
-                  { index: 0, record: record },
-                  ({ domain }) => {
-                    log('valid domain of %s: %s', record.get('name'), domain);
-                    let url = domain;
-                    if (domain) checkFilesOneRecord({ record, rowIndex, url });
-                    else {
-                      record.set('checked', 'error');
-                      record.set(
-                        'folderPath',
-                        'Cannot find any a valid domain'
-                      );
+                // ================ method 2 use for "check all" button ===================
+                if (stopAtFirst) {
+                  record.set('checked', 'spinner');
+                  findFirstValidDomain(
+                    { index: 0, record: record },
+                    ({ domain }) => {
+                      log('valid domain of %s: %s', record.get('name'), domain);
+                      let url = domain;
+                      if (domain)
+                        checkFilesOneRecord({ record, rowIndex, url });
+                      else {
+                        record.set('checked', 'error');
+                        record.set(
+                          'folderPath',
+                          'Cannot find any a valid domain'
+                        );
+                      }
                     }
-                  }
-                );
-              } else checkFilesOneRecord({ record, rowIndex });
+                  );
+                } else checkFilesOneRecord({ record, rowIndex });
+              }
             },
           },
         ],
@@ -1413,7 +1419,7 @@ function genUrl(record) {
       whiteLabelName +
       (siteType === 'member' ? 'main.' : siteType) +
       'playliga.com';
-    protocol = 'http';
+    //protocol = 'http';
   }
   let url = protocol + '://' + defaultDomain.toLowerCase();
   return url;
