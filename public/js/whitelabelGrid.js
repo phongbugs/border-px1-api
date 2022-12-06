@@ -1288,9 +1288,9 @@ Ext.onReady(function () {
                 showUploadedFileInfo();
                 return;
               }
-              let status = record.get('status')
+              let status = record.get('status');
               if (status === 'testing')
-                checkFilesOneRecord({ record, rowIndex});
+                checkFilesOneRecord({ record, rowIndex });
               else {
                 let stopAtFirst = getStopAtFirst();
                 // ================ method 1 use "check one" icon ================
@@ -1369,6 +1369,11 @@ Ext.onReady(function () {
         ],
       },
     ],
+    viewConfig: {
+      getRowClass: function (record, index, rowParams) {
+        return record.get('status') !== 'live' ? 'hasStatus' : '';
+      },
+    },
   });
 });
 
