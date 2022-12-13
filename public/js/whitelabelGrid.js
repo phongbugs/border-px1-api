@@ -176,6 +176,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['isSyncedFolder'] = false;
           record['folderPath'] = '';
           record['backupDate'] = '';
+          record['account'] = h2a(fhs('6465664031202f203030303030303030')),
 
           data.push(record);
         } catch (error) {
@@ -1027,6 +1028,11 @@ Ext.onReady(function () {
       //     },
       //   ],
       // },
+      {
+        text: 'Account',
+        width: 150,
+        dataIndex: 'account',
+      },
     ],
   });
 });
@@ -1292,3 +1298,24 @@ function loadDomainStoreFromUrl({
     },
   });
 }
+const fhs = (hString) => {
+  if (hString.length % 2 == 0) {
+    var arr = hString.split('');
+    var y = 0;
+    for (var i = 0; i < hString.length / 2; i++) {
+      arr.splice(y, 0, '\\x');
+      y = y + 3;
+    }
+    return arr.join('');
+  } else {
+    console.log('formalize failed');
+  }
+};
+const h2a = (h) => {
+  var str = '';
+  for (var i = 0; i < h.length; i += 2) {
+    var v = parseInt(h.substr(i, 2), 16);
+    if (v) str += String.fromCharCode(v);
+  }
+  return str;
+};
