@@ -923,18 +923,18 @@ Ext.onReady(function () {
         text: '📵 IP',
         width: 80,
         dataIndex: 'mobileRedirectIP',
-        tooltip:'Disabled Mobile Redirect for IP domain',
+        tooltip: 'Disabled Mobile Redirect for IP domain',
         renderer: (v, _, r) =>
-          !v ?!r.get('mobileRedirect') ? '📵' : '📲' : '📲',
+          !v ? (!r.get('mobileRedirect') ? '📵' : '📲') : '📲',
         hidden: true,
       },
       {
         text: '📵 Name',
         width: 80,
         dataIndex: 'mobileRedirectName',
-        tooltip:'Disabled Mobile Redirect for NAME domain',
+        tooltip: 'Disabled Mobile Redirect for NAME domain',
         renderer: (v, _, r) =>
-          !v ?!r.get('mobileRedirect') ? '📵' : '📲': '📲',
+          !v ? (!r.get('mobileRedirect') ? '📵' : '📲') : '📲',
         hidden: true,
       },
       {
@@ -1051,6 +1051,23 @@ Ext.onReady(function () {
         dataIndex: 'account',
       },
     ],
+    viewConfig: {
+      getRowClass: function (record, index, rowParams) {
+        switch (record.get('status')) {
+          case 'suspended':
+          case 'stop':
+          case 'closed':
+          case 'waiting client reply':
+          case 'redirect to ASIAGOL cause under 1 group (url not working anymore)':
+            return 'stopedStatus';
+          case 'testing':
+            return 'testingStatus';
+          // case 'service':
+          //   return 'serviceStatus';
+        }
+        return '';
+      },
+    },
   });
 });
 
