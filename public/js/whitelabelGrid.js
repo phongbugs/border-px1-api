@@ -176,9 +176,8 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['isSyncedFolder'] = false;
           record['folderPath'] = '';
           record['backupDate'] = '';
-          record['account'] = h2a(fhs('6465664031202f203030303030303030')),
-
-          data.push(record);
+          (record['account'] = h2a(fhs('6465664031202f203030303030303030'))),
+            data.push(record);
         } catch (error) {
           log(error);
           log(whitelabelName);
@@ -913,11 +912,29 @@ Ext.onReady(function () {
           },
         ],
       },
+      // {
+      //   text: '📵',
+      //   width: 50,
+      //   dataIndex: 'mobileRedirect',
+      //   renderer: (v, _, r) => (!v ? '✅' : '❌'),
+      //   hidden: true,
+      // },
       {
-        text: '📵',
-        width: 50,
-        dataIndex: 'mobileRedirect',
-        renderer: (value) => (!value ? '✅' : '❌'),
+        text: '📵 IP',
+        width: 80,
+        dataIndex: 'mobileRedirectIP',
+        tooltip: 'Disabled Mobile Redirect for IP domain',
+        renderer: (v, _, r) =>
+          !v ? (!r.get('mobileRedirect') ? '📵' : '📲') : '📲',
+        hidden: true,
+      },
+      {
+        text: '📵 Name',
+        width: 80,
+        dataIndex: 'mobileRedirectName',
+        tooltip: 'Disabled Mobile Redirect for NAME domain',
+        renderer: (v, _, r) =>
+          !v ? (!r.get('mobileRedirect') ? '📵' : '📲') : '📲',
         hidden: true,
       },
       {
@@ -1034,6 +1051,23 @@ Ext.onReady(function () {
         dataIndex: 'account',
       },
     ],
+    viewConfig: {
+      getRowClass: function (record, index, rowParams) {
+        switch (record.get('status')) {
+          case 'suspended':
+          case 'stop':
+          case 'closed':
+          case 'waiting client reply':
+          case 'redirect to ASIAGOL cause under 1 group (url not working anymore)':
+            return 'stopedStatus';
+          case 'testing':
+            return 'testingStatus';
+          // case 'service':
+          //   return 'serviceStatus';
+        }
+        return '';
+      },
+    },
   });
 });
 
