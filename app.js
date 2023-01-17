@@ -70,7 +70,8 @@ app.use(function (req, res, next) {
     'https://ata-push-api.xyz',
     'http://localhost:8888',
     'http://192.168.2.185:8888',
-    'https://border-px1-api.herokuapp.com'
+    'https://border-px1-api.herokuapp.com',
+    'https://noichu.com',
   ];
   var origin = req.headers.origin;
   if (allowedDomains.indexOf(origin) > -1) {
