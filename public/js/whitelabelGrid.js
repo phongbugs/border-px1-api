@@ -281,6 +281,13 @@ Ext.onReady(function () {
               : 'name';
           loadScript('js/domainGrid.js?v=' + currentVersion());
         }, 1000);
+        if (getQueryParam('tm') == 1) {
+          // enable test mode
+          Ext.getCmp('cbbColumn').setHidden(false);
+          Ext.getCmp('txtStartIndex').setHidden(false);
+          Ext.getCmp('txtEndIndex').setHidden(false);
+          Ext.getCmp('btnOpenSite').setHidden(false);
+        }
       },
     },
     // dockedItems: [
@@ -356,6 +363,14 @@ Ext.onReady(function () {
             } else {
               Ext.getCmp('cbbDomainType').setDisabled(false);
             }
+            switch (newValue) {
+              case 'ag.':
+                Ext.getCmp('btnSPDocs').setText('SP Agent docs');
+                break;
+              case 'member':
+                Ext.getCmp('btnSPDocs').setText('SP Member docs');
+                break;
+            }
             Ext.getCmp('btnRefresh').fireEvent('click');
           },
         },
@@ -393,6 +408,7 @@ Ext.onReady(function () {
         listeners: {
           change: (_, val) => {
             if (val !== 'default') {
+              Ext.getCmp('btnGroupingWLs').setDisabled(false);
               storeWLs.setGroupField(val);
               Groups = storeWLs.getGroups();
               log('Group By: %s', val);
@@ -410,12 +426,17 @@ Ext.onReady(function () {
               }
               storeWLs.loadData(data);
               featureGrouping.collapseAll();
-            } else storeWLs.setGroupField(undefined);
+            } else {
+              storeWLs.setGroupField(undefined);
+              Ext.getCmp('btnGroupingWLs').setDisabled(true);
+            }
           },
         },
       },
       {
         xtype: 'button',
+        disabled: true,
+        id: 'btnGroupingWLs',
         tooltip: 'Expand all group',
         iconCls: 'expandCls',
         cls: 'expandCls',
@@ -504,12 +525,14 @@ Ext.onReady(function () {
         valueField: 'id',
         name: 'cbbColumn',
         id: 'cbbColumn',
+        hidden: true,
         value: 'default',
         editable: false,
       },
       {
         xtype: 'numberfield',
         id: 'txtStartIndex',
+        hidden: true,
         value: 0,
         width: 40,
         hideTrigger: true,
@@ -523,6 +546,7 @@ Ext.onReady(function () {
         xtype: 'numberfield',
         width: 40,
         id: 'txtEndIndex',
+        hidden: true,
         value: 0,
         hideTrigger: true,
         maxValue: 165,
@@ -535,6 +559,8 @@ Ext.onReady(function () {
       },
       {
         xtype: 'button',
+        id: 'btnOpenSite',
+        hidden: true,
         text: 'Open',
         icon: 'https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png',
         handler: () => {
@@ -626,6 +652,36 @@ Ext.onReady(function () {
           },
         },
         hidden: true,
+      },
+      {
+        xtype: 'button',
+        id: 'btnSPDocs',
+        text: 'SP Member docs ',
+        iconCls: 'helpCls',
+
+        scope: {
+          getData: function () {
+            return {
+              name: 'John',
+              age: 30,
+            };
+          },
+        },
+        handler: (button, event) => {
+          let data = {
+              Member:
+                'U2FsdGVkX1+a3TY2Zu0/de1UczozmFhcFOIEWplCLQZK5aUhXkjz9byTbbcNyRLwfua4m6pM0z0dSa8SZ9GU3OfuhktX/f71qqjSJSD/q4jXMGwD/8PRL0jh4UYH9rKH0b0kpUvTY37G4ZMGan+7ZVLITd2JdqVMePax5JynQLY4KSyqq2qljqZeW2LzeyrN',
+              Agent:
+                'U2FsdGVkX19qOAsLt5+SfyPMtkBhO3XTs7QSOhb5078R/glbOgg9TZYFmiR9IHIYmHKvzI+XZv+M5ebEuwSE5dgKMDODztOd5WOGn7/QaifVg8Bg530blvBJowlGfpzWkhXCT0TzgUMygQtLoPPw+vKLXYv3tqEuocf0G11XpxmciG89gUvWQxCzU4unvpg8',
+            },
+            siteType = Ext.getCmp('cbbSiteType').getRawValue();
+          let encryptedLink = data[siteType];
+          window.open(
+            CryptoJS.AES.decrypt(encryptedLink, location.hostname).toString(
+              CryptoJS.enc.Utf8
+            )
+          );
+        },
       },
       '->',
       {
