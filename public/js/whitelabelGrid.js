@@ -149,6 +149,9 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['referralFunction'] = record['referralFunction']
             ? 'RF'
             : 'None';
+          record['dynamicFooter'] = record['dynamicFooter']
+            ? 'Activated'
+            : 'None';
           // if (record['servers']) {
           //   let servers = record['servers'];
           //   record['specificServer'] =
@@ -256,12 +259,25 @@ Ext.onReady(function () {
       },
       viewready: (grid) => {
         loadScript('js/authForm.js?v=' + currentVersion());
-        loadScript('js/domainGrid.js?v=' + currentVersion());
         loadScript('js/deploymentForm.js?v=' + currentVersion());
         // if it's 6.2 it will show button 7.0
         if (location.href.indexOf('7.html') === -1)
           Ext.getCmp('btnSwitchExtjsVesion').setIconCls('extjsVersion7');
         else Ext.getCmp('btnSwitchExtjsVesion').setIconCls('extjsVersion6');
+        setTimeout(() => {
+          getDomainType = () =>
+            Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
+              ? 'ip'
+              : 'name';
+          loadScript('js/domainGrid.js?v=' + currentVersion());
+        }, 1000);
+        if (getQueryParam('tm') == 1) {
+          // enable test mode
+          Ext.getCmp('cbbColumn').setHidden(false);
+          Ext.getCmp('txtStartIndex').setHidden(false);
+          Ext.getCmp('txtEndIndex').setHidden(false);
+          Ext.getCmp('btnOpenSite').setHidden(false);
+        }
       },
     },
     // dockedItems: [
@@ -338,10 +354,23 @@ Ext.onReady(function () {
         listeners: {
           change: (_, newValue) => {
             // mobile and agent dont have ip domain
-            if (newValue === 'mobile.' || newValue === 'ag.')
+            if (newValue === 'mobile.' || newValue === 'ag.') {
               Ext.getCmp('cbbBorderPx1Url').setValue(
                 'https://net-ga.admin.12365.bpx-cdn.cloud'
               );
+              Ext.getCmp('cbbDomainType').setValue('name');
+              Ext.getCmp('cbbDomainType').setDisabled(true);
+            } else {
+              Ext.getCmp('cbbDomainType').setDisabled(false);
+            }
+            switch (newValue) {
+              case 'ag.':
+                Ext.getCmp('btnSPDocs').setText('SP Agent docs');
+                break;
+              case 'member':
+                Ext.getCmp('btnSPDocs').setText('SP Member docs');
+                break;
+            }
             Ext.getCmp('btnRefresh').fireEvent('click');
           },
         },
@@ -360,7 +389,7 @@ Ext.onReady(function () {
             ['mainColor', 'Color'],
             ['referralFunction', 'Referral Function'],
             ['mobileRedirect', 'Mobile Redirect'],
-            ['dynamicFooter', 'Dynamic Footer'],
+            ['dynamicFooter', 'Meta Feature'],
             ['referredIconMenu', 'Menu Icon'],
             ['hasPopup', 'Has Popup'],
             ['referredWL', 'Referred WL'],
@@ -380,6 +409,7 @@ Ext.onReady(function () {
           change: (_, groupByValue) => {
             let columnUpload = Ext.getCmp('gridWLs').getColumns()[23];
             if (groupByValue !== 'default') {
+              Ext.getCmp('btnGroupingWLs').setDisabled(false);
               storeWLs.setGroupField(groupByValue);
               Groups = storeWLs.getGroups();
               log('Group By: %s', groupByValue);
@@ -410,12 +440,15 @@ Ext.onReady(function () {
             } else {
               storeWLs.setGroupField(undefined);
               columnUpload.setHidden(true);
+              Ext.getCmp('btnGroupingWLs').setDisabled(true);
             }
           },
         },
       },
       {
         xtype: 'button',
+        disabled: true,
+        id: 'btnGroupingWLs',
         tooltip: 'Expand all group',
         iconCls: 'expandCls',
         cls: 'expandCls',
@@ -504,12 +537,14 @@ Ext.onReady(function () {
         valueField: 'id',
         name: 'cbbColumn',
         id: 'cbbColumn',
+        hidden: true,
         value: 'default',
         editable: true,
       },
       {
         xtype: 'numberfield',
         id: 'txtStartIndex',
+        hidden: true,
         value: 0,
         width: 40,
         hideTrigger: true,
@@ -523,6 +558,7 @@ Ext.onReady(function () {
         xtype: 'numberfield',
         width: 40,
         id: 'txtEndIndex',
+        hidden: true,
         value: 0,
         hideTrigger: true,
         maxValue: 165,
@@ -535,6 +571,8 @@ Ext.onReady(function () {
       },
       {
         xtype: 'button',
+        id: 'btnOpenSite',
+        hidden: true,
         text: 'Open',
         icon: 'https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png',
         handler: () => {
@@ -626,49 +664,37 @@ Ext.onReady(function () {
           },
         },
       },
+      {
+        xtype: 'button',
+        id: 'btnSPDocs',
+        text: 'SP Member docs ',
+        iconCls: 'helpCls',
+
+        scope: {
+          getData: function () {
+            return {
+              name: 'John',
+              age: 30,
+            };
+          },
+        },
+        handler: (button, event) => {
+          let data = {
+              Member:
+                'U2FsdGVkX1+a3TY2Zu0/de1UczozmFhcFOIEWplCLQZK5aUhXkjz9byTbbcNyRLwfua4m6pM0z0dSa8SZ9GU3OfuhktX/f71qqjSJSD/q4jXMGwD/8PRL0jh4UYH9rKH0b0kpUvTY37G4ZMGan+7ZVLITd2JdqVMePax5JynQLY4KSyqq2qljqZeW2LzeyrN',
+              Agent:
+                'U2FsdGVkX19qOAsLt5+SfyPMtkBhO3XTs7QSOhb5078R/glbOgg9TZYFmiR9IHIYmHKvzI+XZv+M5ebEuwSE5dgKMDODztOd5WOGn7/QaifVg8Bg530blvBJowlGfpzWkhXCT0TzgUMygQtLoPPw+vKLXYv3tqEuocf0G11XpxmciG89gUvWQxCzU4unvpg8',
+            },
+            siteType = Ext.getCmp('cbbSiteType').getRawValue();
+          let encryptedLink = data[siteType];
+          window.open(
+            CryptoJS.AES.decrypt(encryptedLink, location.hostname).toString(
+              CryptoJS.enc.Utf8
+            )
+          );
+        },
+      },
       '->',
-      {
-        xtype: 'button',
-        id: 'btnHelp',
-        text: 'Help',
-        iconCls: 'helpCls',
-        handler: () => {
-          let encryptedLink =
-            'U2FsdGVkX1+bpGWuQ3YhYFNhhllVIzDLoO/u3BLYh9Dtv8oQ5pgq9Q5HCubPDdILXNmj+FAfnkt6HelkG50ouFF0mpEyR5gkZb4ryZvdn33T75UJefl5t74+EySU6ORA/x6E+7IgoTfHIlO5QPDCMQtDgO2BtHUJp0VmdCtcEDQ=';
-          window.open(
-            CryptoJS.AES.decrypt(encryptedLink, location.hostname).toString(
-              CryptoJS.enc.Utf8
-            )
-          );
-        },
-      },
-      {
-        xtype: 'button',
-        id: 'btnSwitchExtjsVesion',
-        text: 'Switch Extjs ',
-        dock: 'right',
-        iconCls: 'extjsVersion7',
-        iconAlign: 'right',
-        handler: () => {
-          if (location.href.indexOf('7.html') === -1) location.href = '7.html';
-          else location.href = '/';
-        },
-      },
-      {
-        xtype: 'button',
-        id: 'btnHelp',
-        text: 'Help',
-        iconCls: 'helpCls',
-        handler: () => {
-          let encryptedLink =
-            'U2FsdGVkX1+bpGWuQ3YhYFNhhllVIzDLoO/u3BLYh9Dtv8oQ5pgq9Q5HCubPDdILXNmj+FAfnkt6HelkG50ouFF0mpEyR5gkZb4ryZvdn33T75UJefl5t74+EySU6ORA/x6E+7IgoTfHIlO5QPDCMQtDgO2BtHUJp0VmdCtcEDQ=';
-          window.open(
-            CryptoJS.AES.decrypt(encryptedLink, location.hostname).toString(
-              CryptoJS.enc.Utf8
-            )
-          );
-        },
-      },
       {
         xtype: 'button',
         id: 'btnHelp',
@@ -856,23 +882,24 @@ Ext.onReady(function () {
           ),
       },
       {
-        text: 'referredWL',
+        text: 'Refered WL',
         width: 150,
         dataIndex: 'referredWL',
+        tooltip: 'Refered WL(css, header layout...)',
         hidden: true,
       },
       {
-        text: 'mainColor',
+        text: 'Main Color',
         width: 150,
         dataIndex: 'mainColor',
         hidden: true,
       },
-      {
-        text: 'Servers',
-        width: 120,
-        dataIndex: 'servers',
-        hidden: true,
-      },
+      // {
+      //   text: 'Servers',
+      //   width: 120,
+      //   dataIndex: 'servers',
+      //   hidden: true,
+      // },
       {
         text: 'Server Pool',
         width: 190,
@@ -900,7 +927,7 @@ Ext.onReady(function () {
         hidden: true,
       },
       {
-        text: 'Referral Function',
+        text: 'Referral Feature',
         width: 130,
         dataIndex: 'referralFunction',
         hidden: true,
@@ -938,118 +965,131 @@ Ext.onReady(function () {
         ],
       },
       {
-        text: '📵',
-        width: 50,
-        dataIndex: 'mobileRedirect',
-        renderer: (value) => (!value ? '✅' : '❌'),
+        text: '📵 IP',
+        width: 80,
+        dataIndex: 'mobileRedirectIP',
+        tooltip: 'Disabled Mobile Redirect for IP domain',
+        renderer: (v, _, r) =>
+          !v ? (!r.get('mobileRedirect') ? '📵' : '📲') : '📲',
         hidden: true,
       },
       {
-        text: '🦶',
+        text: '📵 Name',
+        width: 80,
+        dataIndex: 'mobileRedirectName',
+        tooltip: 'Disabled Mobile Redirect for NAME domain',
+        renderer: (v, _, r) =>
+          !v ? (!r.get('mobileRedirect') ? '📵' : '📲') : '📲',
+        hidden: true,
+      },
+      {
+        text: 'Meta Feature (🦶)',
         width: 50,
         dataIndex: 'dynamicFooter',
-        renderer: (value) => (value ? '✅' : '❌'),
+        //renderer: (value) => (value !== 'None' ? '✅' : '❌'),
         hidden: true,
       },
-      {
-        text: '🔒',
-        width: 50,
-        dataIndex: 'securityQuestion',
-        renderer: (value) => (value ? '✅' : '❌'),
-        hidden: true,
-      },
-      {
-        text: '✉',
-        width: 50,
-        dataIndex: 'closedMail',
-        renderer: (value) => (!value ? '✉' : '❌'),
-        hidden: true,
-      },
-      {
-        text: '▶',
-        tooltip: 'Has Playtech',
-        width: 50,
-        dataIndex: 'closedPlaytech',
-        renderer: (value) => (!value ? '▶' : '❌'),
-        hidden: true,
-      },
-      {
-        xtype: 'actioncolumn',
-        width: 30,
-        tooltip: 'Open Remote Desktop Connection',
-        text: 'R',
-        dataIndex: 'servers',
-        hidden: true,
-        items: [
-          {
-            getClass: function (value, meta, record, rowIndex, colIndex) {
-              var isSpinning = record.get('remoteDesktopSpinner');
-              return isSpinning ? 'spinner' : 'remoteDesktop';
-            },
-            handler: function (grid, rowIndex, colIndex, item, e, record) {
-              rowIndex = grid.getStore().indexOf(record);
-              record = grid.getStore().getAt(rowIndex);
-              var ip = record.get('specificServer');
-              record.set('remoteDesktopSpinner', true);
-              Ext.Ajax.request({
-                method: 'GET',
-                url: remoteDesktopServiceUrl + ip.replace('192.', '10.'),
-                success: function (response) {
-                  record.set('remoteDesktopSpinner', false);
-                },
-                failure: function (response) {
-                  Ext.Msg.alert(
-                    "Remote Desktop Cli Service doesn't start",
-                    `Run Remote Desktop Service by cmd:<br/><code>cd liga<br/>node rdservice</code>`
-                  );
-                  record.set('remoteDesktopSpinner', false);
-                },
-              });
-            },
-          },
-        ],
-      },
-      {
-        xtype: 'actioncolumn',
-        width: 40,
-        tooltip: 'Sync Domains',
-        text: 'SD',
-        dataIndex: 'isSyncedDomain',
-        hidden: true,
-        items: [
-          {
-            getClass: function (value, meta, record, rowIndex, colIndex) {
-              var iconCls = '';
-              switch (value) {
-                case false:
-                  iconCls = 'checkCls';
-                  break;
-                case 'spinner':
-                  iconCls = 'spinner';
-                  break;
-                case 'checkKoCls':
-                  iconCls = 'checkKoCls';
-                  break;
-                default:
-                  iconCls = 'checkOkCls';
-                  break;
-              }
-              return iconCls;
-            },
-            handler: function (grid, rowIndex, colIndex, item, e, record) {
-              rowIndex = grid.getStore().indexOf(record);
-              record = grid.getStore().getAt(rowIndex);
-              var name = record.get('name');
-              syncDomainsOneWhiteLabel(name, record, (success) =>
-                record.set(
-                  'isSyncedDomain',
-                  success ? 'checkOkCls' : 'checkKoCls'
-                )
-              );
-            },
-          },
-        ],
-      },
+
+      // {
+      //   text: '🔒',
+      //   width: 50,
+      //   dataIndex: 'securityQuestion',
+      //   renderer: (value) => (value ? '✅' : '❌'),
+      //   hidden: true,
+      // },
+      // {
+      //   text: '✉',
+      //   width: 50,
+      //   dataIndex: 'closedMail',
+      //   renderer: (value) => (!value ? '✉' : '❌'),
+      //   hidden: true,
+      // },
+      // {
+      //   text: '▶',
+      //   tooltip: 'Has Playtech',
+      //   width: 50,
+      //   dataIndex: 'closedPlaytech',
+      //   renderer: (value) => (!value ? '▶' : '❌'),
+      //   hidden: true,
+      // },
+
+      // {
+      //   xtype: 'actioncolumn',
+      //   width: 30,
+      //   tooltip: 'Open Remote Desktop Connection',
+      //   text: 'R',
+      //   dataIndex: 'servers',
+      //   hidden: true,
+      //   items: [
+      //     {
+      //       getClass: function (value, meta, record, rowIndex, colIndex) {
+      //         var isSpinning = record.get('remoteDesktopSpinner');
+      //         return isSpinning ? 'spinner' : 'remoteDesktop';
+      //       },
+      //       handler: function (grid, rowIndex, colIndex, item, e, record) {
+      //         rowIndex = grid.getStore().indexOf(record);
+      //         record = grid.getStore().getAt(rowIndex);
+      //         var ip = record.get('specificServer');
+      //         record.set('remoteDesktopSpinner', true);
+      //         Ext.Ajax.request({
+      //           method: 'GET',
+      //           url: remoteDesktopServiceUrl + ip.replace('192.', '10.'),
+      //           success: function (response) {
+      //             record.set('remoteDesktopSpinner', false);
+      //           },
+      //           failure: function (response) {
+      //             Ext.Msg.alert(
+      //               "Remote Desktop Cli Service doesn't start",
+      //               `Run Remote Desktop Service by cmd:<br/><code>cd liga<br/>node rdservice</code>`
+      //             );
+      //             record.set('remoteDesktopSpinner', false);
+      //           },
+      //         });
+      //       },
+      //     },
+      //   ],
+      // },
+      // {
+      //   xtype: 'actioncolumn',
+      //   width: 40,
+      //   tooltip: 'Sync Domains',
+      //   text: 'SD',
+      //   dataIndex: 'isSyncedDomain',
+      //   hidden: true,
+      //   items: [
+      //     {
+      //       getClass: function (value, meta, record, rowIndex, colIndex) {
+      //         var iconCls = '';
+      //         switch (value) {
+      //           case false:
+      //             iconCls = 'checkCls';
+      //             break;
+      //           case 'spinner':
+      //             iconCls = 'spinner';
+      //             break;
+      //           case 'checkKoCls':
+      //             iconCls = 'checkKoCls';
+      //             break;
+      //           default:
+      //             iconCls = 'checkOkCls';
+      //             break;
+      //         }
+      //         return iconCls;
+      //       },
+      //       handler: function (grid, rowIndex, colIndex, item, e, record) {
+      //         rowIndex = grid.getStore().indexOf(record);
+      //         record = grid.getStore().getAt(rowIndex);
+      //         var name = record.get('name');
+      //         syncDomainsOneWhiteLabel(name, record, (success) =>
+      //           record.set(
+      //             'isSyncedDomain',
+      //             success ? 'checkOkCls' : 'checkKoCls'
+      //           )
+      //         );
+      //       },
+      //     },
+      //   ],
+      // },
       {
         xtype: 'actioncolumn',
         width: 30,
@@ -1371,7 +1411,19 @@ Ext.onReady(function () {
     ],
     viewConfig: {
       getRowClass: function (record, index, rowParams) {
-        return record.get('status') !== 'live' ? 'hasStatus' : '';
+        switch (record.get('status')) {
+          case 'suspended':
+          case 'stop':
+          case 'closed':
+          case 'waiting client reply':
+          case 'redirect to ASIAGOL cause under 1 group (url not working anymore)':
+            return 'stopedStatus';
+          case 'testing':
+            return 'testingStatus';
+          // case 'service':
+          //   return 'serviceStatus';
+        }
+        return '';
       },
     },
   });
