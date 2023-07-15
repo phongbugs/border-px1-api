@@ -28,6 +28,7 @@ let serverStores = {
   // send to grid domain selected specific server from white label grid
   selectedWhiteLabelName = '',
   selectedSpecificServer = '', // full server ip
+  selectedComptypeId = 0,
   selectedServers = '', // short hand ip 177-178-179
   sortAndToList = (array) => {
     let strWLs = array
@@ -260,6 +261,7 @@ Ext.onReady(function () {
           let whiteLabelName = record.get('name'),
             domainType = getDomainType().toLowerCase(),
             useDomainTypeFromPX1 = true;
+          selectedComptypeId = record.get('compType')
           Ext.getCmp('txtNameWLsDomain').getStore().loadData(listNameWLs);
           showDomainGridDataByWhitelabel({
             whiteLabelName,
