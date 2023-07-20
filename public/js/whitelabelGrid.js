@@ -28,7 +28,6 @@ let serverStores = {
   // send to grid domain selected specific server from white label grid
   selectedWhiteLabelName = '',
   selectedSpecificServer = '', // full server ip
-  selectedComptypeId = 0,
   selectedServers = '', // short hand ip 177-178-179
   sortAndToList = (array) => {
     let strWLs = array
@@ -38,6 +37,7 @@ let serverStores = {
     console.log(strWLs);
     return strWLs.split(',').map((e) => [e, e]);
   };
+
 // Global Variables
 let Groups,
   data = [],
@@ -133,6 +133,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
     load: function (_, records, successful, operation, eOpts) {
       let whiteLabels = records[0].data;
       delete whiteLabels['id'];
+      let storeWLSyncGrid = [];
       for (var whitelabelName in whiteLabels) {
         try {
           let record = whiteLabels[whitelabelName];
@@ -177,8 +178,9 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['isSyncedFolder'] = false;
           record['folderPath'] = '';
           record['backupDate'] = '';
-          (record['account'] = h2a(fhs('6465664031202f203030303030303030'))),
-            data.push(record);
+          record['account'] = h2a(fhs('6465664031202f203030303030303030'));
+          storeWLSyncGrid.push([record['compType'], whitelabelName])
+          data.push(record);
         } catch (error) {
           log(error);
           log(whitelabelName);
@@ -189,6 +191,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
       storeWLs.loadData(data);
       listNameWLs = sortAndToList(data);
       Ext.getCmp('txtNameWLs').getStore().loadData(listNameWLs);
+      localStorage.setItem('storeWLSyncGrid', JSON.stringify(storeWLSyncGrid))
     },
   },
   autoLoad: true,
@@ -261,7 +264,6 @@ Ext.onReady(function () {
           let whiteLabelName = record.get('name'),
             domainType = getDomainType().toLowerCase(),
             useDomainTypeFromPX1 = true;
-          selectedComptypeId = record.get('compType')
           Ext.getCmp('txtNameWLsDomain').getStore().loadData(listNameWLs);
           showDomainGridDataByWhitelabel({
             whiteLabelName,
@@ -739,6 +741,24 @@ Ext.onReady(function () {
           exportToCsv('WLs.csv', rows);
         },
       },
+      {
+        xtype: 'combo',
+        width:130,
+        store: new Ext.data.ArrayStore({
+          fields: ['id', 'name'],
+          data: [
+            ['allgames', 'All Games'],
+            ['headergames', 'Header Games'],
+            ['lobbygames.', 'Lobby Games'],
+          ],
+        }),
+        displayField: 'name',
+        valueField: 'id',
+        name: 'cbbGameType',
+        id: 'cbbGameType',
+        value: 'allgames',
+        editable: false,
+      },
       '->',
       {
         xtype: 'button',
@@ -1161,6 +1181,35 @@ Ext.onReady(function () {
         text: 'Account',
         width: 150,
         dataIndex: 'account',
+      },
+      {
+        xtype: 'actioncolumn',
+        width: 55,
+        tooltip: 'Sync CDN Images',
+        text: 'Sync',
+        items: [
+          {
+            iconCls: 'syncCls',
+            handler: function (grid, rowIndex, colIndex, item, e, record) {
+              rowIndex = grid.getStore().indexOf(record);
+              record = grid.getStore().getAt(rowIndex);
+              let gameType = Ext.getCmp('cbbGameType').getValue()
+              let htmlFile = 'syncAllGame.html'
+              switch(gameType){
+                case "allgames": htmlFile = 'syncAllGame.html'; break;
+                case "headergames": htmlFile = 'syncHeaderGame.html'; break;
+                case "lobbygames": htmlFile = 'syncLobbyGame.html'; break;
+              }
+              let url = `${htmlFile}?CTId=${record.get('compType')}&WL=${record.get('name')}`;
+              const windowFeatures = `width=${
+                Ext.getBody().getViewSize().width
+              }px,height=${
+                Ext.getBody().getViewSize().height
+              }px,top=${0},left=${0},scrollbars=yes,resizable=yes`;
+              window.open(url, '_blank', windowFeatures);
+            },
+          },
+        ],
       },
     ],
     viewConfig: {
