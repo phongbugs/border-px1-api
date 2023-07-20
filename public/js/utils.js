@@ -49,3 +49,12 @@ let getSiteTypeName = () =>
     // Trả về giá trị tham số hoặc null nếu không tìm thấy
     return paramValue;
   }
+
+  function getISharedHeaderSubMenuImage(CTId){
+    switch(CTId){
+      case 137:
+      case 262:
+        return false;
+      default: return true;
+    }
+  }

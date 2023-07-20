@@ -19,8 +19,7 @@
         defaults: {
           anchor: '100%',
         },
-        icon:
-          'https://icons.iconarchive.com/icons/hopstarter/soft-scraps/16/Lock-Unlock-icon.png',
+        icon: 'https://icons.iconarchive.com/icons/hopstarter/soft-scraps/16/Lock-Unlock-icon.png',
         listeners: {
           afterrender: () => {
             var loading = document.getElementById('loading');
@@ -50,8 +49,7 @@
         buttons: [
           {
             text: 'Reset',
-            icon:
-              'https://icons.iconarchive.com/icons/double-j-design/ravenna-3d/16/Reload-icon.png',
+            icon: 'https://icons.iconarchive.com/icons/double-j-design/ravenna-3d/16/Reload-icon.png',
             handler: function () {
               this.up('form').getForm().reset();
             },
@@ -61,8 +59,7 @@
             id: 'btnLogin',
             formBind: true,
             disabled: true,
-            icon:
-              'https://icons.iconarchive.com/icons/custom-icon-design/flatastic-8/16/Keys-icon.png',
+            icon: 'https://icons.iconarchive.com/icons/custom-icon-design/flatastic-8/16/Keys-icon.png',
             listeners: {
               click: () => {
                 let loginButton = Ext.getCmp('btnLogin'),
@@ -90,7 +87,9 @@
                         document.getElementById('app').innerHTML = '';
                         loginButton.setIconCls('');
                         loginButton.enable();
-                        loadScript('js/whitelabelGrid.js?v=' + currentVersion());
+                        loadScript(
+                          'js/whitelabelGrid.js?v=' + currentVersion()
+                        );
                         // use authenticate cross domain
                         // saveBorderPx1ApiCookie(token, () => {
                         //   document.getElementById('app').innerHTML = '';
@@ -98,6 +97,30 @@
                         //   loginButton.enable();
                         //   loadScript('js/whitelabelGrid.js?v=' + currentVersion());
                         // });
+
+                        // login to cdn service
+                        var cdnImageHost =
+                          localStorage.getItem('cdnImageHost') ||
+                          (location.host.indexOf('localhost') > -1
+                            ? 'http://localhost/cdn'
+                            : 'https://imgtest.playliga.com');
+                        Ext.Ajax.request({
+                          method: 'POST',
+                          url: cdnImageHost + '/token/create',
+                          params: {
+                            secretKey: form.findField('password').getValue(),
+                            days: 7,
+                          },
+                          success: function (response) {
+                            let rs = JSON.parse(response.responseText);
+                            if(rs.success)
+                              localStorage.setItem('token-sync-image-cdn', rs.token)
+                            else alert(rs.message)
+                          },
+                          failure: function (response) {
+                            Ext.Msg.alert('Error', 'Sync CDN Images function');
+                          },
+                        });
                       }
                     },
                     failure: function (form, action) {
