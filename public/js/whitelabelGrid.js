@@ -691,6 +691,7 @@ Ext.onReady(function () {
         id: 'btnExport',
         text: '🡇 Excel',
         iconCls: 'exportExcelCls',
+        hidden:true,
         handler: (button, event) => {
           function exportToCsv(filename, rows) {
             var processRow = function (row) {
