@@ -60,7 +60,7 @@ let storeAllGame = Ext.create('Ext.data.Store', {
       },
     },
   },
-  autoLoad: false,
+  autoLoad: true,
 });
 let renderDateTime = (v, _, r) => Ext.Date.format(v, 'm/d/Y H:i:s');
 Ext.onReady(function () {

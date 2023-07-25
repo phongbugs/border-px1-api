@@ -41,7 +41,7 @@ let storeHeaderGame = Ext.create('Ext.data.Store', {
   model: 'HeaderGame',
   proxy: {
     type: 'ajax',
-    url: cdnImageHost + '/sync/headergames/',
+    url: cdnImageHost + '/sync/headergames',
     params: {
       CTId: CTId,
     },
