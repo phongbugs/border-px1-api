@@ -77,6 +77,11 @@ Ext.onReady(function () {
     viewConfig: {
       loadMask: true,
     },
+    listeners: {
+      viewready: () => {
+        Ext.getCmp('txtNameWLsDomainHG').setValue(CTId);
+      },
+    },
     dockedItems: [
       {
         xtype: 'toolbar',
