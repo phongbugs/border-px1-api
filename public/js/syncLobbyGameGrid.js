@@ -1,24 +1,18 @@
-﻿//if (!isAuthenticated()) return;
-Ext.define('AllGame', {
+﻿Ext.define('LobbyGame', {
   extend: 'Ext.data.Model',
   fields: [
-    { name: 'GameListID', type: 'int' },
     { name: 'CTId', type: 'int' },
-    { name: 'type', type: 'string' },
-    { name: 'platform', type: 'string' },
-    { name: 'gameType', type: 'int' },
-    { name: 'gameDesc', type: 'string' },
-    { name: 'gameCode', type: 'string' },
-    { name: 'gameName', type: 'string' },
-    { name: 'SearchTags', type: 'string' },
+    { name: 'BrandCode', type: 'string' },
+    { name: 'GameCode', type: 'string' },
     { name: 'GameCurCode', type: 'string' },
-    { name: 'IsNewGame', type: 'bool' },
+    { name: 'GameLobbyId', type: 'string' },
+    { name: 'GameType', type: 'string' },
     { name: 'IdGameUrl', type: 'string' },
-    { name: 'GameImgeBase64', type: 'string' },
+    { name: 'LobbyImage', type: 'string' },
     { name: 'GameImgeCDN', type: 'string' },
     { name: 'ImageType', type: 'string' },
-    { name: 'BrandDisplayName', type: 'string' },
-    { name: 'BrandOrderId', type: 'string' },
+    { name: 'platform', type: 'string' },
+    { name: 'LastUpdatedTime', type: 'string' },
   ],
 });
 var tokenSync = '';
@@ -27,10 +21,10 @@ var cdnImageHost =
   (location.host.indexOf('localhost') > -1
     ? 'http://localhost/cdn'
     : 'https://imgtest.playliga.com');
-var pathSyncGame = '/sync/allgames';
+var pathSyncGame = '/sync/lobbygames';
 var CTId = getQueryParam('CTId');
 let storeAllGame = Ext.create('Ext.data.Store', {
-  model: 'AllGame',
+  model: 'LobbyGame',
   proxy: {
     type: 'ajax',
     url: cdnImageHost + pathSyncGame,
@@ -44,14 +38,12 @@ let storeAllGame = Ext.create('Ext.data.Store', {
     reader: {
       type: 'json',
       root: 'games',
-      //totalProperty: 'totalCount',
       transform: {
         fn: function (data) {
           if (data && data.success) {
             let images = data.images;
             data.games = data.games.map((record) => {
               record['ImageType'] = 'png';
-              record['GameImgeBase64'] = images[record['GameListID']];
               return record;
             });
           }
@@ -69,16 +61,16 @@ let featureGrouping = Ext.create('Ext.grid.feature.GroupingSummary', {
   groupHeaderTpl: [
     '<div style="color:#d14836; font-weight: bold">{name:this.formatName}<span style="color:green; font-weight: normal"> ({rows.length} {[values.rows.length > 1 ? "Records" : "Record"]})</span></div>',
     {
-      formatName: (name) => name ? name : 'NULL'
+      formatName: (name) => (name ? name : 'NULL'),
     },
   ],
 });
 Ext.onReady(function () {
-  let allGameGrid = Ext.create('Ext.grid.Panel', {
+  let lobbyGameGrid = Ext.create('Ext.grid.Panel', {
     renderTo: 'app',
-    id: 'allGameGrid',
+    id: 'lobbyGameGrid',
     store: storeAllGame,
-    title: getQueryParam('WL') + `'s Header Game Images`,
+    title: getQueryParam('WL') + `'s Lobby Game Images`,
     width:
       Ext.getBody().getViewSize().width < 1388
         ? 1388
@@ -92,9 +84,7 @@ Ext.onReady(function () {
         Ext.getCmp('txtNameWLsDomainHG').setValue(CTId);
       },
     },
-    features: [
-      featureGrouping
-    ],
+    features: [featureGrouping],
     dockedItems: [
       {
         xtype: 'toolbar',
@@ -124,8 +114,7 @@ Ext.onReady(function () {
               fields: ['id', 'name'],
               data: [
                 ['default ', 'Select group'],
-                ['BrandDisplayName ', 'BrandDisplayName'],
-                ['type', 'Type'],
+                ['GameType', 'Type'],
               ],
             }),
             queryMode: 'local',
@@ -133,7 +122,7 @@ Ext.onReady(function () {
             valueField: 'id',
             name: 'cbbGrouping',
             id: 'cbbGrouping',
-            value:  ['default ', 'Select group'],
+            value: ['default ', 'Select group'],
             editable: false,
             listeners: {
               change: (_, val) => {
@@ -231,7 +220,7 @@ Ext.onReady(function () {
                 storeAllGame.load();
                 allGameGrid.setTitle(
                   Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
-                    "'s All Game Images"
+                    "'s Lobby Game Images"
                 );
               },
             },
@@ -244,9 +233,9 @@ Ext.onReady(function () {
       new Ext.grid.RowNumberer({ dataIndex: 'no', text: 'No.', width: 60 }),
       {
         text: 'ID',
-        tooltip: 'GameListID',
+        tooltip: 'GameLobbyId',
         width: 60,
-        dataIndex: 'GameListID',
+        dataIndex: 'GameLobbyId',
       },
       {
         text: 'CTId',
@@ -254,20 +243,14 @@ Ext.onReady(function () {
         dataIndex: 'CTId',
       },
       {
-        text: 'type',
+        text: 'GameType',
         width: 90,
-        dataIndex: 'type',
+        dataIndex: 'GameType',
       },
       {
         text: 'PF',
         width: 70,
         dataIndex: 'platform',
-      },
-      {
-        text: 'GameType',
-        width: 100,
-        dataIndex: 'type',
-        hidden: true,
       },
       {
         text: 'Game Desc',
@@ -276,21 +259,16 @@ Ext.onReady(function () {
         hidden: true,
       },
       {
+        text: 'Brand Code',
+        tooltip: 'BrandCode',
+        width: 120,
+        dataIndex: 'BrandCode',
+      },
+      {
         text: 'Code',
-        tooltip: 'gameCode',
+        tooltip: 'GameCode',
         width: 120,
-        dataIndex: 'gameCode',
-      },
-      {
-        text: 'Name',
-        width: 150,
-        dataIndex: 'gameName',
-      },
-      {
-        text: 'SearchTags',
-        width: 120,
-        dataIndex: 'SearchTags',
-        hidden: true,
+        dataIndex: 'GameCode',
       },
       {
         text: 'GCC',
@@ -299,34 +277,14 @@ Ext.onReady(function () {
         dataIndex: 'GameCurCode',
       },
       {
-        text: 'IsNew',
-        width: 70,
-        tooltip: 'Is New Game',
-        dataIndex: 'IsNewGame',
-        hidden: true,
-      },
-      {
         text: 'IdGameUrl',
         width: 150,
         dataIndex: 'IdGameUrl',
-        hidden: true,
       },
       {
-        text: 'BrandDisplayName',
-        width: 150,
-        dataIndex: 'BrandDisplayName',
-        hidden: false,
-      },
-      {
-        text: 'OrderId',
-        width: 70,
-        dataIndex: 'BrandOrderId',
-        hidden: false,
-      },
-      {
-        text: 'Base64 Str',
+        text: 'LobbyImage',
         tooltip: 'Image from base64 string',
-        dataIndex: 'GameImgeBase64',
+        dataIndex: 'LobbyImage',
         width: 150,
         tdCls: 'headerIcons',
         renderer: (v, _, r) => {
@@ -349,8 +307,10 @@ Ext.onReady(function () {
         renderer: (v, _, r) => {
           return `<img style="width:100%; height:100%" src="${
             cdnImageHost +
-            '/allgames/' +
-            r.get('GameListID') +
+            '/lobbygames/' +
+            r.get('GameLobbyId') +
+            '_' +
+            r.get('GameCode') +
             '.' +
             r.get('ImageType')
           }?v=${Date.now()}" />`;
@@ -372,9 +332,13 @@ Ext.onReady(function () {
               record.set('syncSpinner', true);
               syncImage(
                 {
-                  record,
-                  imageType: record.get('ImageType'),
-                  strBase64: record.get('GameImgeBase64'),
+                  urlAPI: cdnImageHost + '/lobbygames/update',
+                  jsonData: {
+                    GameLobbyId: record.get('GameLobbyId').toString(),
+                    GameCode: record.get('GameCode'),
+                    ImageType: record.get('ImageType'),
+                    strBase64: record.get('LobbyImage'),
+                  },
                 },
                 (response) => {
                   let rs = JSON.parse(response.responseText);
@@ -391,18 +355,14 @@ Ext.onReady(function () {
     ],
   });
 });
-function syncImage({ record, imageType, strBase64 }, done) {
+function syncImage({ urlAPI, jsonData }, done) {
   Ext.Ajax.request({
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('token-sync-image-cdn'),
     },
     method: 'PUT',
-    url: cdnImageHost + '/allgames/update',
-    jsonData: {
-      GameListID: record.get('GameListID').toString(),
-      ImageType: imageType,
-      strBase64: strBase64,
-    },
+    url: urlAPI,
+    jsonData: jsonData,
     success: function (response) {
       if (done) done(response);
     },

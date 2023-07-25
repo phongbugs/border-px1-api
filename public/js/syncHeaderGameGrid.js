@@ -362,6 +362,8 @@ Ext.onReady(function () {
           {
             iconCls: 'syncCls',
             getClass: function (value, meta, record, rowIndex, colIndex) {
+              if(record.get('GameTypeMenuIcon') === '')
+              return ''
               var isSpinning = record.get('syncSpinner');
               return isSpinning ? 'spinner' : 'syncCls';
             },
@@ -400,6 +402,8 @@ Ext.onReady(function () {
           {
             iconCls: 'syncCls',
             getClass: function (value, meta, record, rowIndex, colIndex) {
+              if(record.get('GameTypeSubMenuIcon') === '') 
+                return ''
               var isSpinning = record.get('syncSpinnerCDN');
               return isSpinning ? 'spinner' : 'syncCls';
             },

@@ -750,7 +750,7 @@ Ext.onReady(function () {
           data: [
             ['allgames', 'All Games'],
             ['headergames', 'Header Games'],
-            ['lobbygames.', 'Lobby Games'],
+            ['lobbygames', 'Lobby Games'],
           ],
         }),
         displayField: 'name',

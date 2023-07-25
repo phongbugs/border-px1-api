@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>LIGA's Whitelabel Management</title>
+    <title>CLG's Whitelabel Lobby Game</title>
     <link rel="stylesheet" href="extjs/7.0/classic/theme-neptune/resources/theme-neptune-all.css" />
     <link rel="stylesheet" href="extjs/7.0/packages/ux/classic/neptune/resources/ux-all.css" />
     <script src="extjs/7.0/ext-all.js"></script>
@@ -119,7 +118,7 @@
             loadScript('js/utils.js?v=' + currentVersion())
             authenticate((isAuthenticated) => {
                 if (isAuthenticated)
-                    loadScript('js/syncAllGameGrid.js?v=' + currentVersion())
+                    loadScript('js/syncLobbyGameGrid.js?v=' + currentVersion())
                 else
                     loadScript('js/loginForm.js?v=' + currentVersion())
                 Ext.tip.QuickTipManager.init();
