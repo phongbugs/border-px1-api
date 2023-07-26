@@ -112,6 +112,7 @@ Ext.onReady(function () {
                 let proxy = storeAllGame.getProxy();
                 cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
                 proxy.setUrl(cdnImageHost + pathSyncGame);
+                CTId = Ext.getCmp('txtNameWLsDomainHG').getValue()
                 proxy.setExtraParams({ CTId: CTId });
                 storeAllGame.load();
               },
@@ -225,8 +226,9 @@ Ext.onReady(function () {
                 let proxy = storeAllGame.getProxy();
                 cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
                 proxy.setUrl(cdnImageHost + pathSyncGame);
+                CTId = Ext.getCmp('txtNameWLsDomainHG').getValue()
                 proxy.setExtraParams({
-                  CTId: Ext.getCmp('txtNameWLsDomainHG').getValue(),
+                  CTId: CTId,
                 });
                 storeAllGame.load();
                 allGameGrid.setTitle(
