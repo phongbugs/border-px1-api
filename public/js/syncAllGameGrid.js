@@ -188,7 +188,7 @@ Ext.onReady(function () {
             valueField: 'id',
             name: 'cbbUrlCDN',
             id: 'cbbUrlCDN',
-            value: 'http://localhost/cdn',
+            value: cdnImageHost,
             editable: true,
           },
           {
