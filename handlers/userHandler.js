@@ -34,17 +34,17 @@ async function login(req, res) {
         }
       ).toString();
       sendResponseCookie(req, res, token, 'border-px1-api');
-      let tokenApiImageCDN = (
-        await loginApiCDNImage({
-          cdnImageHost: loginData.cdnImageHost,
-          secretKey: loginData.password,
-        })
-      ).token;
-      res.send({
+      let responseApiImageCDN = await loginApiCDNImage({
+        cdnImageHost: loginData.cdnImageHost,
+        secretKey: loginData.password,
+      });
+      let responseValues = {
         success: true,
         token: token,
-        tokenApiImageCDN: tokenApiImageCDN,
-      });
+        responseApiImageCDN: responseApiImageCDN,
+      };
+      console.log(responseValues)
+      res.send(responseValues);
     } else res.send({ success: false, message: 'Password is wrong' });
   } catch (error) {
     res.send({ success: false, message: error.message });
@@ -102,15 +102,15 @@ function setCookieToBrowser(req, res) {
   }
 }
 async function loginApiCDNImage({ cdnImageHost, secretKey }) {
-  let form = new FormData();
-  form.append('secretKey', secretKey);
-  form.append('days', 7);
-  const response = await fetch(cdnImageHost + '/token/create', {
-    method: 'POST',
-    body: form,
-  });
-  let responseText = await response.text();
   try {
+    let form = new FormData();
+    form.append('secretKey', secretKey);
+    form.append('days', 7);
+    const response = await fetch(cdnImageHost + '/token/create', {
+      method: 'POST',
+      body: form,
+    });
+    let responseText = await response.text();
     let result = JSON.parse(responseText);
     return result;
   } catch (error) {
@@ -118,7 +118,7 @@ async function loginApiCDNImage({ cdnImageHost, secretKey }) {
       url: cdnImageHost,
       form: JSON.stringify(form),
       error: JSON.stringify(error),
-      responseText: JSON.stringify(responseText)
+      responseText: JSON.stringify(responseText),
     };
   }
 }

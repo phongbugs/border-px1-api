@@ -97,7 +97,7 @@
                         );
                         localStorage.setItem(
                           'token-sync-image-cdn',
-                          action.result.tokenApiImageCDN
+                          action.result.responseApiImageCDN.token
                         );
                       }
                     },
