@@ -1185,9 +1185,9 @@ Ext.onReady(function () {
       },
       {
         xtype: 'actioncolumn',
-        width: 55,
+        width: 130,
         tooltip: 'Sync CDN Images',
-        text: 'Sync',
+        text: 'Sync CDN Image',
         items: [
           {
             iconCls: 'syncCls',

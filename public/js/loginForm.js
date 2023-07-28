@@ -1,5 +1,7 @@
 ﻿Ext.onReady(() => {
-  var loginForm = Ext.create('Ext.Panel', {
+  let tokenPublicKey =
+    '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQAB-----END PUBLIC KEY-----';
+  Ext.create('Ext.Panel', {
     id: 'loginForm',
     layout: 'center',
     border: false,
@@ -41,8 +43,6 @@
                 if (e.getKey() == e.ENTER)
                   Ext.getCmp('btnLogin').fireEvent('click');
               },
-              // keypress: () => log('keypress'),
-              // keyup: () => log('keyup'),
             },
           },
         ],
@@ -65,12 +65,17 @@
                 let loginButton = Ext.getCmp('btnLogin'),
                   form = loginButton.up('form').getForm(),
                   crypt = new JSEncrypt(),
+                  cdnImageHost =
+                    localStorage.getItem('cdnImageHost') ||
+                    (location.host.indexOf('localhost') > -1
+                      ? 'http://localhost/cdn'
+                      : 'https://imgtest.playliga.com'),
                   loginData = {
                     password: form.findField('password').getValue(),
+                    cdnImageHost: cdnImageHost,
                   };
 
                 crypt.setKey(tokenPublicKey);
-                //log(loginData);
                 loginData = crypt.encrypt(JSON.stringify(loginData));
                 loginButton.setIconCls('spinner');
                 loginButton.disable();
@@ -90,37 +95,10 @@
                         loadScript(
                           'js/whitelabelGrid.js?v=' + currentVersion()
                         );
-                        // use authenticate cross domain
-                        // saveBorderPx1ApiCookie(token, () => {
-                        //   document.getElementById('app').innerHTML = '';
-                        //   loginButton.setIconCls('');
-                        //   loginButton.enable();
-                        //   loadScript('js/whitelabelGrid.js?v=' + currentVersion());
-                        // });
-
-                        // login to cdn service
-                        var cdnImageHost =
-                          localStorage.getItem('cdnImageHost') ||
-                          (location.host.indexOf('localhost') > -1
-                            ? 'http://localhost/cdn'
-                            : 'https://imgtest.playliga.com');
-                        Ext.Ajax.request({
-                          method: 'POST',
-                          url: cdnImageHost + '/token/create',
-                          params: {
-                            secretKey: form.findField('password').getValue(),
-                            days: 7,
-                          },
-                          success: function (response) {
-                            let rs = JSON.parse(response.responseText);
-                            if(rs.success)
-                              localStorage.setItem('token-sync-image-cdn', rs.token)
-                            else alert(rs.message)
-                          },
-                          failure: function (response) {
-                            Ext.Msg.alert('Error', 'Sync CDN Images function');
-                          },
-                        });
+                        localStorage.setItem(
+                          'token-sync-image-cdn',
+                          action.result.tokenApiImageCDN
+                        );
                       }
                     },
                     failure: function (form, action) {

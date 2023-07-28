@@ -1,13 +1,15 @@
 const JSEncrypt = require('node-jsencrypt'),
   crypt = new JSEncrypt(),
   CryptoJS = require('crypto-js'),
+  fetch = require('node-fetch'),
+  FormData = require('form-data'),
   sendResponseCookie = require('./utils').sendResponseCookie,
   tokenTimeOut = 168, // calc = hours = 168/24 = 7 days
-  tokenSecretKey= 'aA123Bb321@8*iPg',
+  tokenSecretKey = 'aA123Bb321@8*iPg',
   tokenPrivateKey =
     '-----BEGIN RSA PRIVATE KEY-----MIICXAIBAAKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQABAoGBAIQ04VguKg/uUjeg7AKnMMKsIuSI4g9Ej5U9CFN/UEQiOuiId77IBdT6nm+9nIRO73WCrDMkzrh7tfp3/st+0sCklR6IINTFH1+p9552qSDru6WpbIPsEK70yD6Cb8gfEC8PGQh1LRgzpLFMCGVcixuTRfbL3gXc2ZUmh+xmYMXBAkEA27ubu0MmMko3K/n02EU+Cij/fmlcnqkYblkDQxKJVQ3pmgVCmD4wfm2byT2TwbTPs+Rqp3nVnlR/RNJsDJESYQJBAMeMFTd6wOhB1d93HFxWgAYL/AA3B3znc5TxxxW7mn5v0c/uTR52UefoRfBDxxhqItCeTs+NsB5PIw3r6T95ri8CQHlr/4+IeLf7iOdVNba49KJ6q0y4fkTynhyENag/uwH0MS06UOV+ICANA7Q9wcOd3dTDmSg4zBG1Ear/OFPtaqECQC1gboayNGHcbr0lQd7BkNVPLlwCJ4LAwyjQnjwT8DrmRKjrAMB3mYKJ8DWFxCWKJSaZiURrbOxHhKoqxly31+MCQGDwutUtAE6q8E1hZ/+/tqr4fyG5vFW4EYXbeXcYPM6h+PoSBFSPaG/EAGfNmxPiFRll7ODBoHMHei/XXPlAHKg=-----END RSA PRIVATE KEY-----';
 
-function login(req, res) {
+async function login(req, res) {
   try {
     crypt.setKey(tokenPrivateKey);
     let loginData = JSON.parse(crypt.decrypt(req.body.loginData));
@@ -32,9 +34,14 @@ function login(req, res) {
         }
       ).toString();
       sendResponseCookie(req, res, token, 'border-px1-api');
+      let tokenApiImageCDN = (await loginApiCDNImage({
+        cdnImageHost: loginData.cdnImageHost,
+        secretKey: loginData.password,
+      })).token;
       res.send({
         success: true,
         token: token,
+        tokenApiImageCDN: tokenApiImageCDN,
       });
     } else res.send({ success: false, message: 'Password is wrong' });
   } catch (error) {
@@ -47,7 +54,7 @@ function getLoginStatus(req, res) {
     //let token = req.cookies['border-px1-api'],
     let token = req.headers.authorization.split(' ')[1],
       status = false;
-      console.log(token); 
+    console.log(token);
     if (!token) {
       res.send({ success: false, message: 'cookie does not exist' });
       return;
@@ -92,7 +99,16 @@ function setCookieToBrowser(req, res) {
     res.send(error.message);
   }
 }
-
+async function loginApiCDNImage({ cdnImageHost, secretKey }) {
+  let form = new FormData();
+  form.append('secretKey', secretKey);
+  form.append('days', 7);
+  const response = await fetch(cdnImageHost + '/token/create', {
+    method: 'POST',
+    body: form,
+  });
+  return JSON.parse(await response.text());
+}
 module.exports = {
   login,
   getLoginStatus,
