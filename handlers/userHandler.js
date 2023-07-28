@@ -109,8 +109,8 @@ async function loginApiCDNImage({ cdnImageHost, secretKey }) {
     method: 'POST',
     body: form,
   });
+  let responseText = await response.text();
   try {
-    let responseText = await response.text();
     let result = JSON.parse(responseText);
     return result;
   } catch (error) {
