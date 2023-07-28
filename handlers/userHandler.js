@@ -34,10 +34,12 @@ async function login(req, res) {
         }
       ).toString();
       sendResponseCookie(req, res, token, 'border-px1-api');
-      let tokenApiImageCDN = (await loginApiCDNImage({
-        cdnImageHost: loginData.cdnImageHost,
-        secretKey: loginData.password,
-      })).token;
+      let tokenApiImageCDN = (
+        await loginApiCDNImage({
+          cdnImageHost: loginData.cdnImageHost,
+          secretKey: loginData.password,
+        })
+      ).token;
       res.send({
         success: true,
         token: token,
@@ -107,7 +109,18 @@ async function loginApiCDNImage({ cdnImageHost, secretKey }) {
     method: 'POST',
     body: form,
   });
-  return JSON.parse(await response.text());
+  try {
+    let responseText = await response.text();
+    let result = JSON.parse(responseText);
+    return result;
+  } catch (error) {
+    return {
+      url: cdnImageHost,
+      form: JSON.stringify(form),
+      error: JSON.stringify(error),
+      responseText: JSON.stringify(responseText)
+    };
+  }
 }
 module.exports = {
   login,
