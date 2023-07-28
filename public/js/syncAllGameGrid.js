@@ -60,7 +60,7 @@ let storeAllGame = Ext.create('Ext.data.Store', {
       },
     },
   },
-  autoLoad: true,
+  autoLoad: false,
 });
 let renderDateTime = (v, _, r) => Ext.Date.format(v, 'm/d/Y H:i:s');
 let featureGrouping = Ext.create('Ext.grid.feature.GroupingSummary', {
@@ -78,6 +78,7 @@ Ext.onReady(function () {
     renderTo: 'app',
     id: 'allGameGrid',
     store: storeAllGame,
+    header: false,
     title: getQueryParam('WL') + `'s Header Game Images`,
     width:
       Ext.getBody().getViewSize().width < 1388

@@ -52,7 +52,7 @@ let storeLobbyGame = Ext.create('Ext.data.Store', {
       },
     },
   },
-  autoLoad: true,
+  autoLoad: false,
 });
 let renderDateTime = (v, _, r) => Ext.Date.format(v, 'm/d/Y H:i:s');
 let featureGrouping = Ext.create('Ext.grid.feature.GroupingSummary', {
@@ -70,6 +70,7 @@ Ext.onReady(function () {
     renderTo: 'app',
     id: 'lobbyGameGrid',
     store: storeLobbyGame,
+    header: false,
     title: getQueryParam('WL') + `'s Lobby Game Images`,
     width:
       Ext.getBody().getViewSize().width < 1388

@@ -93,7 +93,7 @@
                         loginButton.setIconCls('');
                         loginButton.enable();
                         loadScript(
-                          'js/whitelabelGrid.js?v=' + currentVersion()
+                          'js/index.js?v=' + currentVersion()
                         );
                         // localStorage.setItem(
                         //   'token-sync-image-cdn',

@@ -72,13 +72,14 @@ let storeHeaderGame = Ext.create('Ext.data.Store', {
       },
     },
   },
-  autoLoad: true,
+  autoLoad: false,
 });
 let renderDateTime = (v, _, r) => Ext.Date.format(v, 'm/d/Y H:i:s');
 Ext.onReady(function () {
   let headerGameGrid = Ext.create('Ext.grid.Panel', {
     renderTo: 'app',
     id: 'headerGameGrid',
+    header: false,
     store: storeHeaderGame,
     title: getQueryParam('WL') + `'s Header Game Images`,
     width:

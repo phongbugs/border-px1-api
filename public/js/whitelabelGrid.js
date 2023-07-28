@@ -204,7 +204,7 @@ Ext.onReady(function () {
     renderTo: 'app',
     id: 'gridWLs',
     store: storeWLs,
-    //hidden: true,
+    header: false,
     width:
       Ext.getBody().getViewSize().width < 1388
         ? 1388
