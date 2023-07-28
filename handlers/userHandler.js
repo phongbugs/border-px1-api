@@ -34,16 +34,15 @@ async function login(req, res) {
         }
       ).toString();
       sendResponseCookie(req, res, token, 'border-px1-api');
-      let responseApiImageCDN = await loginApiCDNImage({
-        cdnImageHost: loginData.cdnImageHost,
-        secretKey: loginData.password,
-      });
       let responseValues = {
         success: true,
         token: token,
-        responseApiImageCDN: responseApiImageCDN,
+        // responseApiImageCDN: await loginApiCDNImage({
+        //   cdnImageHost: loginData.cdnImageHost,
+        //   secretKey: loginData.password,
+        // }),
       };
-      console.log(responseValues)
+      console.log(responseValues);
       res.send(responseValues);
     } else res.send({ success: false, message: 'Password is wrong' });
   } catch (error) {

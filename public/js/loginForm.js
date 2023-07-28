@@ -95,10 +95,31 @@
                         loadScript(
                           'js/whitelabelGrid.js?v=' + currentVersion()
                         );
-                        localStorage.setItem(
-                          'token-sync-image-cdn',
-                          action.result.responseApiImageCDN.token
-                        );
+                        // localStorage.setItem(
+                        //   'token-sync-image-cdn',
+                        //   action.result.responseApiImageCDN.token
+                        // );
+                        // login to cdn service
+                        Ext.Ajax.request({
+                          method: 'POST',
+                          url: cdnImageHost + '/token/create',
+                          params: {
+                            secretKey: form.findField('password').getValue(),
+                            days: 7,
+                          },
+                          success: function (response) {
+                            let rs = JSON.parse(response.responseText);
+                            if (rs.success)
+                              localStorage.setItem(
+                                'token-sync-image-cdn',
+                                rs.token
+                              );
+                            else alert(rs.message);
+                          },
+                          failure: function (response) {
+                            Ext.Msg.alert('Error', 'Sync CDN Images function');
+                          },
+                        });
                       }
                     },
                     failure: function (form, action) {
