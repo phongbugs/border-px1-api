@@ -101,6 +101,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/domains.html',
               });
             },
+            hidden:true
           },
           {
             text: 'All Games Sync',

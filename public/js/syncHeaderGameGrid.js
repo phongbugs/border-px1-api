@@ -106,7 +106,7 @@ Ext.onReady(function () {
             iconCls: 'refreshCls',
             text: 'Refresh',
             dock: 'right',
-            hidden: false,
+            hidden: true,
             listeners: {
               click: () => {
                 let proxy = storeHeaderGame.getProxy();

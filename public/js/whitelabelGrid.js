@@ -192,6 +192,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
       listNameWLs = sortAndToList(data);
       Ext.getCmp('txtNameWLs').getStore().loadData(listNameWLs);
       localStorage.setItem('storeWLSyncGrid', JSON.stringify(storeWLSyncGrid))
+      localStorage.setItem('storeWLDomainGrid', JSON.stringify(listNameWLs))
     },
   },
   autoLoad: true,

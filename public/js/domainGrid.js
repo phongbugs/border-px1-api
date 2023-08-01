@@ -197,7 +197,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           width: 150,
           store: new Ext.data.ArrayStore({
             fields: ['id', 'name'],
-            data: listNameWLs,
+            data: JSON.parse(localStorage.getItem('storeWLDomainGrid')),
           }),
           displayField: 'name',
           valueField: 'id',
@@ -370,7 +370,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       dataIndex: 'specificServer',
       editor: {
         xtype: 'combo',
-        store: selectedServerGroupStore,
+        store:  selectedServerGroupStore,
         displayField: 'name',
         valueField: 'name',
         queryMode: 'local',
@@ -516,7 +516,7 @@ function fetchWhitelabelServers(store) {
       let success = result.success;
       if (success) {
         let servers = result.servers.map((server) => [server.Name]);
-        selectedServerGroupStore.loadData(servers);
+        if(selectedServerGroupStore) selectedServerGroupStore.loadData(servers);
         if (domainType === 'ip')
           store.getAt(0).set('specificServer', servers[0][0]);
       }

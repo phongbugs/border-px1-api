@@ -13,7 +13,7 @@ function saveBorderPx1ApiCookie(cookie, callback) {
   if (callback) callback();
 }
 
-let getDomainType; //= () =>
+let getDomainType = () => 'name'; //= () =>
 // Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
 //   ? 'ip'
 //   : 'name';
