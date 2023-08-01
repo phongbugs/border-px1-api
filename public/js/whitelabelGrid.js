@@ -760,6 +760,7 @@ Ext.onReady(function () {
         id: 'cbbGameType',
         value: 'allgames',
         editable: false,
+        hidden:true,
       },
       '->',
       {
@@ -810,6 +811,7 @@ Ext.onReady(function () {
         icon: 'https://icons.iconarchive.com/icons/saki/nuoveXT-2/16/Apps-session-logout-icon.png',
         text: 'Logout',
         dock: 'right',
+        hidden:true,
         //width: 100,
         listeners: {
           click: () => {
@@ -1189,6 +1191,7 @@ Ext.onReady(function () {
         width: 130,
         tooltip: 'Sync CDN Images',
         text: 'Sync CDN Image',
+        hidden:true,
         items: [
           {
             iconCls: 'syncCls',
