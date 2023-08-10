@@ -1,5 +1,7 @@
 ﻿Ext.onReady(() => {
-  var loginForm = Ext.create('Ext.Panel', {
+  let tokenPublicKey =
+    '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQAB-----END PUBLIC KEY-----';
+  Ext.create('Ext.Panel', {
     id: 'loginForm',
     layout: 'center',
     border: false,
@@ -19,8 +21,7 @@
         defaults: {
           anchor: '100%',
         },
-        icon:
-          'https://icons.iconarchive.com/icons/hopstarter/soft-scraps/16/Lock-Unlock-icon.png',
+        icon: 'https://icons.iconarchive.com/icons/hopstarter/soft-scraps/16/Lock-Unlock-icon.png',
         listeners: {
           afterrender: () => {
             var loading = document.getElementById('loading');
@@ -42,16 +43,13 @@
                 if (e.getKey() == e.ENTER)
                   Ext.getCmp('btnLogin').fireEvent('click');
               },
-              // keypress: () => log('keypress'),
-              // keyup: () => log('keyup'),
             },
           },
         ],
         buttons: [
           {
             text: 'Reset',
-            icon:
-              'https://icons.iconarchive.com/icons/double-j-design/ravenna-3d/16/Reload-icon.png',
+            icon: 'https://icons.iconarchive.com/icons/double-j-design/ravenna-3d/16/Reload-icon.png',
             handler: function () {
               this.up('form').getForm().reset();
             },
@@ -61,19 +59,23 @@
             id: 'btnLogin',
             formBind: true,
             disabled: true,
-            icon:
-              'https://icons.iconarchive.com/icons/custom-icon-design/flatastic-8/16/Keys-icon.png',
+            icon: 'https://icons.iconarchive.com/icons/custom-icon-design/flatastic-8/16/Keys-icon.png',
             listeners: {
               click: () => {
                 let loginButton = Ext.getCmp('btnLogin'),
                   form = loginButton.up('form').getForm(),
                   crypt = new JSEncrypt(),
+                  cdnImageHost =
+                    localStorage.getItem('cdnImageHost') ||
+                    (location.host.indexOf('localhost') > -1
+                      ? 'http://localhost/cdn'
+                      : 'https://imgtest.playliga.com'),
                   loginData = {
                     password: form.findField('password').getValue(),
+                    cdnImageHost: cdnImageHost,
                   };
 
                 crypt.setKey(tokenPublicKey);
-                //log(loginData);
                 loginData = crypt.encrypt(JSON.stringify(loginData));
                 loginButton.setIconCls('spinner');
                 loginButton.disable();
@@ -86,14 +88,37 @@
                       else {
                         token = action.result.token;
                         // use authenticate asp.net web
-                        localStorage.setItem('token', token);
-
-                        // use authenticate cross domain
-                        saveBorderPx1ApiCookie(token, () => {
-                          document.getElementById('app').innerHTML = '';
-                          loginButton.setIconCls('');
-                          loginButton.enable();
-                          loadScript('js/whitelabelGrid.js?v=' + currentVersion());
+                        localStorage.setItem('border-px1-api-cookie', token);
+                        document.getElementById('app').innerHTML = '';
+                        loginButton.setIconCls('');
+                        loginButton.enable();
+                        loadScript(
+                          'js/index.js?v=' + currentVersion()
+                        );
+                        // localStorage.setItem(
+                        //   'token-sync-image-cdn',
+                        //   action.result.responseApiImageCDN.token
+                        // );
+                        // login to cdn service
+                        Ext.Ajax.request({
+                          method: 'POST',
+                          url: cdnImageHost + '/token/create',
+                          params: {
+                            secretKey: form.findField('password').getValue(),
+                            days: 7,
+                          },
+                          success: function (response) {
+                            let rs = JSON.parse(response.responseText);
+                            if (rs.success)
+                              localStorage.setItem(
+                                'token-sync-image-cdn',
+                                rs.token
+                              );
+                            else alert(rs.message);
+                          },
+                          failure: function (response) {
+                            Ext.Msg.alert('Error', 'Sync CDN Images function');
+                          },
                         });
                       }
                     },

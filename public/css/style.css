@@ -1,0 +1,143 @@
+body,
+html {
+    overflow: hidden;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 4px #ddd solid;
+    border-top: 4px #2e93e6 solid;
+    border-radius: 50%;
+    animation: sp-anime 0.8s infinite linear;
+}
+
+.refreshCls {
+    background: url(https://icons.iconarchive.com/icons/graphicloads/polygon/16/refresh-4-icon.png) no-repeat center;
+}
+
+@keyframes sp-anime {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.openLink {
+    background: url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png) no-repeat center;
+}
+
+.remoteDesktop {
+    background: url(https://icons.iconarchive.com/icons/tpdkdesign.net/refresh-cl/16/Network-Remote-Desktop-icon.png) no-repeat center;
+}
+
+.checkCls {
+    background: url(https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-2/16/FAQ-icon.png) no-repeat center;
+}
+
+.checkOkCls {
+    background: url(https://icons.iconarchive.com/icons/hopstarter/sleek-xp-basic/16/Ok-icon.png) no-repeat center;
+}
+
+.checkKoCls {
+    background: url(https://icons.iconarchive.com/icons/elegantthemes/beautiful-flat/16/caution-icon.png) no-repeat center;
+}
+
+.defaultDomainCls {
+    background: url(https://icons.iconarchive.com/icons/google/noto-emoji-people-bodyparts/16/12003-OK-hand-light-skin-tone-icon.png) no-repeat center
+}
+
+.syncDomainCls {
+    background: url(https://icons.iconarchive.com/icons/paomedia/small-n-flat/16/cloud-down-icon.png) no-repeat center
+}
+
+.folderCls {
+    background: url(https://icons.iconarchive.com/icons/treetog/i/16/Folder-Downloads-icon.png) no-repeat center
+}
+
+.folderOkCls {
+    background: url(https://icons.iconarchive.com/icons/dryicons/aesthetica-2/16/folder-accept-icon.png) no-repeat center
+}
+
+.authenticationCls {
+    background: url(https://icons.iconarchive.com/icons/iconsmind/outline/16/Key-Lock-icon.png) no-repeat center
+}
+
+.center {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.expandCls {
+    background: url(https://icons.iconarchive.com/icons/icons8/ios7/16/Editing-Expand-icon.png) no-repeat center
+}
+
+.collapseCls {
+    background: url(https://icons.iconarchive.com/icons/icons8/ios7/16/Editing-Collapse-icon.png) no-repeat center
+}
+
+.extjsVersion7 {
+    background: url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Numbers-7-icon.png);
+}
+
+.extjsVersion6 {
+    background: url(https://icons.iconarchive.com/icons/icons8/windows-8/16/Numbers-6-icon.png);
+}
+
+.helpCls {
+    background: url(https://icons.iconarchive.com/icons/designbolts/ios8-cirtangle-concept/16/Help-icon.png);
+}
+
+.exportExcelCls {
+    background: url(https://icons.iconarchive.com/icons/carlosjj/microsoft-office-2013/16/Excel-icon.png);
+}
+
+.syncCls {
+    background: url(https://icons.iconarchive.com/icons/paomedia/small-n-flat/16/sign-sync-icon.png);
+}
+
+.hasStatus {
+    background-color: #adac01;
+    color: #fff;
+}
+
+.stopedStatus {
+    background-color: #c91919;
+    color: #fff;
+}
+
+.testingStatus {
+    background-color: #407e40;
+    color: #fff;
+}
+
+.waitingStatus {
+    background-color: #919131;
+    color: #fff;
+}
+
+.suspendedStatus {
+    background-color: #e7697f;
+    color: #fff;
+}
+
+.serviceStatus {
+    background-color: blue;
+    color: #fff;
+}
+
+.redirectStatus {
+    background-color: purple;
+    color: #fff;
+}
+
+.stopedStatus a {
+    color: #fff !important;
+}
+
+.testingStatus a {
+    color: #fff !important;
+}
+.headerIcons{ background-color: #ccceee;} 
