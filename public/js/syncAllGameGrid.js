@@ -93,9 +93,9 @@ Ext.onReady(function () {
         Ext.getCmp('txtNameWLsDomainHG').setValue(CTId);
       },
     },
-    features: [
-      featureGrouping
-    ],
+    // features: [
+    //   featureGrouping
+    // ],
     dockedItems: [
       {
         xtype: 'toolbar',
@@ -119,58 +119,58 @@ Ext.onReady(function () {
               },
             },
           },
-          {
-            xtype: 'combo',
-            width: 150,
-            store: new Ext.data.ArrayStore({
-              fields: ['id', 'name'],
-              data: [
-                ['default ', 'Select group'],
-                ['BrandDisplayName ', 'BrandDisplayName'],
-                ['type', 'Type'],
-              ],
-            }),
-            queryMode: 'local',
-            displayField: 'name',
-            valueField: 'id',
-            name: 'cbbGrouping',
-            id: 'cbbGrouping',
-            value:  ['default ', 'Select group'],
-            editable: false,
-            listeners: {
-              change: (_, val) => {
-                if (val !== 'default') {
-                  Ext.getCmp('btnGroupingWLs').setDisabled(false);
-                  storeAllGame.setGroupField(val);
-                  //storeAllGame.loadData(data);
-                  featureGrouping.collapseAll();
-                } else {
-                  storeAllGame.setGroupField(undefined);
-                  Ext.getCmp('btnGroupingWLs').setDisabled(true);
-                }
-              },
-            },
-          },
-          {
-            xtype: 'button',
-            disabled: true,
-            id: 'btnGroupingWLs',
-            tooltip: 'Expand all group',
-            iconCls: 'expandCls',
-            cls: 'expandCls',
-            handler: (btn) => {
-              let cls = btn.cls;
-              if (cls === 'expandCls') {
-                btn.setIconCls('collapseCls');
-                btn.cls = 'collapseCls';
-                featureGrouping.expandAll();
-              } else {
-                btn.setIconCls('expandCls');
-                btn.cls = 'expandCls';
-                featureGrouping.collapseAll();
-              }
-            },
-          },
+          // {
+          //   xtype: 'combo',
+          //   width: 150,
+          //   store: new Ext.data.ArrayStore({
+          //     fields: ['id', 'name'],
+          //     data: [
+          //       ['default ', 'Select group'],
+          //       ['BrandDisplayName ', 'BrandDisplayName'],
+          //       ['type', 'Type'],
+          //     ],
+          //   }),
+          //   queryMode: 'local',
+          //   displayField: 'name',
+          //   valueField: 'id',
+          //   name: 'cbbGrouping',
+          //   id: 'cbbGrouping',
+          //   value:  ['default ', 'Select group'],
+          //   editable: false,
+          //   listeners: {
+          //     change: (_, val) => {
+          //       if (val !== 'default') {
+          //         Ext.getCmp('btnGroupingWLs').setDisabled(false);
+          //         storeAllGame.setGroupField(val);
+          //         //storeAllGame.loadData(data);
+          //         featureGrouping.collapseAll();
+          //       } else {
+          //         storeAllGame.setGroupField(undefined);
+          //         Ext.getCmp('btnGroupingWLs').setDisabled(true);
+          //       }
+          //     },
+          //   },
+          // },
+          // {
+          // xtype: 'button',
+          // disabled: true,
+          // id: 'btnGroupingWLs',
+          // tooltip: 'Expand all group',
+          // iconCls: 'expandCls',
+          // cls: 'expandCls',
+          // handler: (btn) => {
+          //   let cls = btn.cls;
+          //   if (cls === 'expandCls') {
+          //     btn.setIconCls('collapseCls');
+          //     btn.cls = 'collapseCls';
+          //     featureGrouping.expandAll();
+          //   } else {
+          //     btn.setIconCls('expandCls');
+          //     btn.cls = 'expandCls';
+          //     featureGrouping.collapseAll();
+          //   }
+          // },
+          // },
           {
             xtype: 'combo',
             width: 230,
@@ -384,9 +384,11 @@ Ext.onReady(function () {
                   record.set('syncSpinner', false);
                   let img = `<img src="${rs.imagePath}?v=${Date.now()}" />`;
                   record.set('GameImgeCDN', img);
-                  grid.getStore().commitChanges();
+                  //grid.getStore().commitChanges();
                 }
               );
+              e.stopEvent();
+              return false;
             },
           },
         ],
