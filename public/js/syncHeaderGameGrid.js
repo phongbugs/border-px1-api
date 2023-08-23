@@ -132,7 +132,7 @@ Ext.onReady(function () {
                   'https://imgtest.playliga.com',
                   'https://imgtest.playliga.com',
                 ],
-                ['https://imgtest.playliga.com.', 'Live CDN'],
+                ['https://imguat.playliga.com', 'https://imguat.playliga.com'],
               ],
             }),
             displayField: 'name',

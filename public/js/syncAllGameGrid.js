@@ -6,6 +6,7 @@ Ext.define('AllGame', {
     { name: 'CTId', type: 'int' },
     { name: 'type', type: 'string' },
     { name: 'platform', type: 'string' },
+    { name: 'GamePlatformID', type: 'string' },
     { name: 'gameType', type: 'int' },
     { name: 'gameDesc', type: 'string' },
     { name: 'gameCode', type: 'string' },
@@ -182,7 +183,7 @@ Ext.onReady(function () {
                   'https://imgtest.playliga.com',
                   'https://imgtest.playliga.com',
                 ],
-                ['https://imgtest.playliga.com.', 'Live CDN'],
+                ['https://imguat.playliga.com', 'https://imguat.playliga.com'],
               ],
             }),
             displayField: 'name',
@@ -259,22 +260,32 @@ Ext.onReady(function () {
       {
         text: 'type',
         width: 90,
+        tooltip: 'type',
         dataIndex: 'type',
       },
       {
         text: 'PF',
         width: 70,
+        tooltip: 'platform',
         dataIndex: 'platform',
+      },
+      {
+        text: 'PFId',
+        width: 70,
+        tooltip: 'GamePlatformID',
+        dataIndex: 'GamePlatformID',
       },
       {
         text: 'GameType',
         width: 100,
+        tooltip: 'type',
         dataIndex: 'type',
         hidden: true,
       },
       {
         text: 'Game Desc',
         width: 100,
+        tooltip: 'gameDesc',
         dataIndex: 'gameDesc',
         hidden: true,
       },
@@ -287,6 +298,7 @@ Ext.onReady(function () {
       {
         text: 'Name',
         width: 150,
+        tooltip: 'gameName',
         dataIndex: 'gameName',
       },
       {

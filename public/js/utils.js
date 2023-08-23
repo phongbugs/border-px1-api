@@ -51,10 +51,11 @@ let getSiteTypeName = () =>
   }
 
   function getISharedHeaderSubMenuImage(CTId){
-    switch(CTId){
-      case 137:
-      case 262:
-        return false;
-      default: return true;
-    }
+    return true;
+    // switch(CTId){
+    //   case 137:
+    //   case 262:
+    //     return false;
+    //   default: return true;
+    // }
   }
