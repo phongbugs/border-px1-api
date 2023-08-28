@@ -14,7 +14,7 @@
         bodyStyle: 'background:transparent',
         title: 'Type Password',
         bodyPadding: 15,
-        width: 190,
+        width: 290,
         url: borderPx1ApiHost + '/user/login',
         layout: 'anchor',
         frame: true,
@@ -31,12 +31,16 @@
         defaultType: 'textfield',
         items: [
           {
-            xtype: 'textfield',
-            inputType: 'password',
-            placeholder: 'password',
-            name: 'password',
+            fieldLabel: 'Username',
+            name: 'username',
             allowBlank: false,
-            enableKeyEvents: true,
+            submitValue: false,
+          },
+          {
+            fieldLabel: 'Password',
+            name: 'password',
+            inputType: 'password',
+            allowBlank: false,
             submitValue: false,
             listeners: {
               keydown: (tf, e) => {
@@ -44,6 +48,13 @@
                   Ext.getCmp('btnLogin').fireEvent('click');
               },
             },
+          },
+          {
+            boxLabel: 'Remember me',
+            xtype: 'checkbox',
+            id: 'ckbRememberMe',
+            submitValue: false,
+            value: true,
           },
         ],
         buttons: [
@@ -71,6 +82,7 @@
                       ? 'http://localhost/cdn'
                       : 'https://imgtest.playliga.com'),
                   loginData = {
+                    username: form.findField('username').getValue(),
                     password: form.findField('password').getValue(),
                     cdnImageHost: cdnImageHost,
                   };
