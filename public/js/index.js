@@ -15,7 +15,8 @@ const getCmp = function (query) {
       },
     });
     tabPanel.setActiveTab(tab);
-  };
+  },
+  isFEAccount = () => localStorage.getItem('username') === 'feadmin'
 Ext.define('KitchenSink.view.layout.Border', {
   extend: 'Ext.panel.Panel',
   xtype: 'layout-border',
@@ -48,13 +49,14 @@ Ext.define('KitchenSink.view.layout.Border', {
   },
   listeners: {
     afterrender: () => {
-      createTab({
-        itemIdTabPanel: '#mainContent',
-        title: 'CLG WLs Management',
-        iconCls: 'users',
-        icon: 'https://icons.iconarchive.com/icons/dtafalonso/android-lollipop/16/Docs-icon.png',
-        htmlFile: '/7.html',
-      });
+      if(isFEAccount())
+        createTab({
+          itemIdTabPanel: '#mainContent',
+          title: 'CLG WLs Management',
+          iconCls: 'users',
+          icon: 'https://icons.iconarchive.com/icons/dtafalonso/android-lollipop/16/Docs-icon.png',
+          htmlFile: '/7.html',
+        });
     },
   },
   items: [
@@ -89,6 +91,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/7.html',
               });
             },
+            hidden: !isFEAccount()
           },
           {
             text: 'Domain Infomations',

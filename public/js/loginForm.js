@@ -33,6 +33,7 @@
           {
             fieldLabel: 'Username',
             name: 'username',
+            value: localStorage.getItem('username') || '',
             allowBlank: false,
             submitValue: false,
           },
@@ -40,6 +41,10 @@
             fieldLabel: 'Password',
             name: 'password',
             inputType: 'password',
+            value: CryptoJS.AES.decrypt(
+              localStorage.getItem('password'),
+              location.hostname
+            ).toString(CryptoJS.enc.Utf8),
             allowBlank: false,
             submitValue: false,
             listeners: {
@@ -55,6 +60,7 @@
             id: 'ckbRememberMe',
             submitValue: false,
             value: true,
+            hidden: true,
           },
         ],
         buttons: [
@@ -104,9 +110,7 @@
                         document.getElementById('app').innerHTML = '';
                         loginButton.setIconCls('');
                         loginButton.enable();
-                        loadScript(
-                          'js/index.js?v=' + currentVersion()
-                        );
+                        loadScript('js/index.js?v=' + currentVersion());
                         // localStorage.setItem(
                         //   'token-sync-image-cdn',
                         //   action.result.responseApiImageCDN.token
@@ -132,6 +136,16 @@
                             Ext.Msg.alert('Error', 'Sync CDN Images function');
                           },
                         });
+
+                        // save info
+                        localStorage.setItem('username', form.findField('username').getValue());
+                        localStorage.setItem(
+                          'password',
+                          CryptoJS.AES.encrypt(
+                            form.findField('password').getValue(),
+                            location.hostname
+                          ).toString()
+                        );
                       }
                     },
                     failure: function (form, action) {
