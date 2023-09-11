@@ -177,6 +177,26 @@ Ext.onReady(function () {
               },
             },
           },
+          {
+            xtype: 'button',
+            id: 'btnSyncAll',
+            text: 'Sync All',
+            dock: 'right',
+            iconCls: 'syncCls',
+            listeners: {
+              click: (btn) => {
+                if (storeLobbyGame.getCount() > 0) {
+                  btn.setIconCls('spinner');
+                  btn.setDisabled(true);
+                  syncAllImages(0, storeLobbyGame, () => {
+                    btn.setIconCls('syncCls');
+                    btn.setDisabled(false);
+                    alert('Sync All Image Done!');
+                  });
+                } else alert('Please search before sync !');
+              },
+            },
+          },
         ],
       },
     ],
@@ -185,9 +205,9 @@ Ext.onReady(function () {
       new Ext.grid.RowNumberer({ dataIndex: 'no', text: 'No.', width: 60 }),
       {
         text: 'ID',
-        tooltip: 'GameLobbyId',
         width: 60,
         dataIndex: 'GameLobbyId',
+        tooltip: 'Game Lobby Id',
       },
       {
         text: 'CTId',
@@ -195,14 +215,15 @@ Ext.onReady(function () {
         dataIndex: 'CTId',
       },
       {
-        text: 'GameType',
-        width: 90,
+        text: 'Game Type',
+        width: 110,
         dataIndex: 'GameType',
       },
       {
-        text: 'PF',
-        width: 70,
+        text: 'Platform',
+        width: 110,
         dataIndex: 'platform',
+        tooltip: 'Platform',
       },
       {
         text: 'Game Desc',
@@ -212,19 +233,19 @@ Ext.onReady(function () {
       },
       {
         text: 'Brand Code',
-        tooltip: 'BrandCode',
+        tooltip: 'Brand Code',
         width: 120,
         dataIndex: 'BrandCode',
       },
       {
-        text: 'Code',
+        text: 'Game Code',
         tooltip: 'GameCode',
-        width: 120,
+        width: 110,
         dataIndex: 'GameCode',
       },
       {
         text: 'GCC',
-        tooltip: 'GameCurCode',
+        tooltip: 'Game Cur Code',
         width: 50,
         dataIndex: 'GameCurCode',
       },
@@ -324,4 +345,29 @@ function syncImage({ urlAPI, jsonData }, done) {
       Ext.Msg.alert('Error', 'Sync CDN Images function');
     },
   });
+}
+function syncAllImages(currentIndex, store, done) {
+  if (currentIndex < store.getCount()) {
+    let record = store.getAt(currentIndex);
+    record.set('syncSpinner', true);
+    var grid = Ext.getCmp('lobbyGameGrid');
+    var view = grid.getView();
+    view.scrollBy(0, view.getEl().getHeight());
+    let urlAPI = cdnImageHost + '/lobbygames/update';
+    let jsonData = {
+      GameLobbyId: record.get('GameLobbyId').toString(),
+      GameCode: record.get('GameCode'),
+      ImageType: record.get('ImageType'),
+      strBase64: record.get('LobbyImage'),
+    };
+    syncImage({ urlAPI, jsonData }, (response) => {
+      let rs = JSON.parse(response.responseText);
+      record.set('syncSpinner', false);
+      let img = `<img src="${rs.imagePath}?v=${Date.now()}" />`;
+      record.set('GameImgeCDN', img);
+      store.commitChanges();
+      currentIndex = currentIndex + 1;
+      syncAllImages(currentIndex, store, done);
+    });
+  } else if (done) done();
 }

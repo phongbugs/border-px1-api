@@ -57,12 +57,8 @@ let storeHeaderGame = Ext.create('Ext.data.Store', {
           if (data.success) {
             data.menus = data.menus.map((record) => {
               let subMenuIcon = data.submenuIcons[record['HGameId']];
-              //let isHeaderSubMenuImage =
-              //  (record['GameTypeMenuIcon'] === '' && record['HasSubGame']) || ;
-              //if (isHeaderSubMenuImage) {
               record['GameTypeSubMenuIcon'] = subMenuIcon;
               record['ImageTypeSubMenu'] = 'png';
-              //}
               return record;
             });
           }
@@ -110,10 +106,8 @@ Ext.onReady(function () {
             listeners: {
               click: () => {
                 let proxy = storeHeaderGame.getProxy();
-                cdnImageHost =  Ext.getCmp('cbbUrlCDN').getRawValue()
-                proxy.setUrl(
-                  cdnImageHost + pathSyncGame
-                );
+                cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
+                proxy.setUrl(cdnImageHost + pathSyncGame);
                 proxy.setExtraParams({
                   CTId: Ext.getCmp('txtNameWLsDomainHG').getValue(),
                 });
@@ -200,10 +194,8 @@ Ext.onReady(function () {
             listeners: {
               click: () => {
                 let proxy = storeHeaderGame.getProxy();
-                cdnImageHost =  Ext.getCmp('cbbUrlCDN').getRawValue()
-                proxy.setUrl(
-                  cdnImageHost + pathSyncGame
-                );
+                cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
+                proxy.setUrl(cdnImageHost + pathSyncGame);
                 proxy.setExtraParams({
                   CTId: Ext.getCmp('txtNameWLsDomainHG').getValue(),
                 });
@@ -212,20 +204,48 @@ Ext.onReady(function () {
                   Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
                     "'s Header Game Images"
                 );
-                Ext.getCmp('chkIsSharedSubmenuIcon').setValue(
-                  getISharedHeaderSubMenuImage(
-                    Ext.getCmp('txtNameWLsDomainHG').getValue()
-                  )
-                );
               },
             },
           },
           {
-            xtype: 'checkboxfield',
-            id: 'chkIsSharedSubmenuIcon',
-            boxLabel: 'Is Shared Submenu Icon',
-            checked: getISharedHeaderSubMenuImage(CTId),
-            //disabled:true
+            xtype: 'button',
+            id: 'btnSyncAllMenu',
+            text: 'Sync All Menu Header Images',
+            dock: 'right',
+            iconCls: 'syncCls',
+            listeners: {
+              click: (btn) => {
+                if (storeHeaderGame.getCount() > 0) {
+                  btn.setIconCls('spinner');
+                  btn.setDisabled(true);
+                  syncAllMenuHeaderImages(0, storeHeaderGame, () => {
+                    btn.setIconCls('syncCls');
+                    btn.setDisabled(false);
+                    alert('Sync All Menu Header Images Done!');
+                  });
+                } else alert('Please search before sync !');
+              },
+            },
+          },
+          {
+            xtype: 'button',
+            id: 'btnSyncAllSubMenu',
+            text: 'Sync All Sub Menu Header Images',
+            dock: 'right',
+            iconCls: 'syncCls',
+            listeners: {
+              click: (btn) => {
+                if (storeHeaderGame.getCount() > 0) {
+                  btn.setIconCls('spinner');
+                  btn.setDisabled(true);
+                  syncAllSubMenuHeaderImages(0, storeHeaderGame, () => {
+                    btn.setIconCls('syncCls');
+                    btn.setDisabled(false);
+                    alert('Sync All Submenu Header Images Done!');
+                  });
+                } else alert('Please search before sync !');
+              },
+            },
           },
         ],
       },
@@ -247,6 +267,7 @@ Ext.onReady(function () {
         text: 'GameMenuDisplayName',
         width: 90,
         dataIndex: 'GameMenuDisplayName',
+        tooltip: 'Game Menu Display Name',
       },
       {
         text: 'GameType',
@@ -361,16 +382,15 @@ Ext.onReady(function () {
       },
       {
         xtype: 'actioncolumn',
-        width: 55,
+        width: 90,
         tooltip: 'Sync Menu Images',
-        text: 'SMenu',
+        text: 'Sync Menu',
         dataIndex: 'GameTypeMenuIconCDN',
         items: [
           {
             iconCls: 'syncCls',
             getClass: function (value, meta, record, rowIndex, colIndex) {
-              if(record.get('GameTypeMenuIcon') === '')
-              return ''
+              if (record.get('GameTypeMenuIcon') === '') return '';
               var isSpinning = record.get('syncSpinner');
               return isSpinning ? 'spinner' : 'syncCls';
             },
@@ -382,13 +402,18 @@ Ext.onReady(function () {
               record.set('syncSpinner', true);
               syncImage(
                 {
-                  record,
+                  HGameId: record.get('HGameId').toString(),
+                  GameName: record.get('GameName'),
+                  GameType: record.get('GameType'),
+                  CTId: record.get('CTId').toString(),
                   imageType: record.get('ImageType'),
                   strBase64: record.get('GameTypeMenuIcon'),
                   isHeaderSubMenuImage: false,
                 },
                 (response) => {
                   let rs = JSON.parse(response.responseText);
+                  if(!rs.success) 
+                    alert(rs.message)
                   record.set('syncSpinner', false);
                   let img = `<img src="${rs.imagePath}?v=${Date.now()}" />`;
                   record.set('GameTypeMenuIconCDN', img);
@@ -401,17 +426,16 @@ Ext.onReady(function () {
       },
       {
         xtype: 'actioncolumn',
-        width: 55,
+        width: 100,
         tooltip: 'Sync Sub Menu Images',
-        text: 'SMenu',
+        text: 'Sync SMenu',
         dataIndex: 'GameTypeSubMenuIconCDN',
         items: [
           {
             iconCls: 'syncCls',
             getClass: function (value, meta, record, rowIndex, colIndex) {
-              if(record.get('GameTypeSubMenuIcon') === '') 
-                return ''
-              var isSpinning = record.get('syncSpinnerCDN');
+              if (record.get('GameTypeSubMenuIcon') === '') return '';
+              var isSpinning = record.get('syncSpinnerSMN');
               return isSpinning ? 'spinner' : 'syncCls';
             },
             handler: function (grid, rowIndex, colIndex, item, e, record) {
@@ -419,17 +443,22 @@ Ext.onReady(function () {
                 alert('Base64 String is blank');
                 return;
               }
-              record.set('syncSpinnerCDN', true);
+              record.set('syncSpinnerSMN', true);
               syncImage(
                 {
-                  record,
-                  imageType: record.get('ImageTypeSubMenu'),
+                  HGameId: record.get('HGameId').toString(),
+                  GameName: record.get('GameName'),
+                  GameType: record.get('GameType'),
+                  CTId: record.get('CTId').toString(),
+                  imageType: record.get('ImageType'),
                   strBase64: record.get('GameTypeSubMenuIcon'),
                   isHeaderSubMenuImage: true,
                 },
                 (response) => {
                   let rs = JSON.parse(response.responseText);
-                  record.set('syncSpinnerCDN', false);
+                  if(!rs.success) 
+                    alert(rs.message)
+                  record.set('syncSpinnerSMN', false);
                   let img = `<img src="${rs.imagePath}?v=${Date.now()}" />`;
                   record.set('GameTypeSubMenuIconCDN', img);
                   grid.getStore().commitChanges();
@@ -457,29 +486,106 @@ Ext.onReady(function () {
   });
 });
 function syncImage(
-  { record, imageType, strBase64, isHeaderSubMenuImage },
+  {
+    HGameId,
+    GameName,
+    GameType,
+    CTId,
+    imageType,
+    strBase64,
+    isHeaderSubMenuImage,
+  },
   done
 ) {
-  Ext.Ajax.request({
-    headers: {
-      Authorization: 'Bearer ' + localStorage.getItem('token-sync-image-cdn'),
-    },
-    method: 'POST',
-    url: cdnImageHost + '/headergames/update',
-    jsonData: {
-      HGameId: record.get('HGameId').toString(),
-      GameName: record.get('GameName'),
-      GameType: record.get('GameType'),
-      CTId: record.get('CTId').toString(),
-      ImageType: imageType,
-      IsHeaderSubMenuImage: isHeaderSubMenuImage,
-      strBase64: strBase64,
-    },
-    success: function (response) {
-      if (done) done(response);
-    },
-    failure: function (response) {
-      Ext.Msg.alert('Error', 'Sync CDN Images function');
-    },
-  });
+  if (strBase64 !== '')
+    Ext.Ajax.request({
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('token-sync-image-cdn'),
+      },
+      method: 'POST',
+      url: cdnImageHost + '/headergames/update',
+      jsonData: {
+        HGameId: HGameId,
+        GameName: GameName,
+        GameType: GameType,
+        CTId: CTId,
+        ImageType: imageType,
+        IsHeaderSubMenuImage: isHeaderSubMenuImage,
+        strBase64: strBase64,
+      },
+      success: function (response) {
+        if (done) done(response);
+      },
+      failure: function (response) {
+        Ext.Msg.alert('Error', 'Sync CDN Images function');
+      },
+    });
+  else {
+    if (done) done();
+  }
+}
+function syncAllMenuHeaderImages(currentIndex, store, done) {
+  if (currentIndex < store.getCount()) {
+    let record = store.getAt(currentIndex);
+    record.set('syncSpinner', true);
+
+    var grid = Ext.getCmp('headerGameGrid');
+    var view = grid.getView();
+    view.scrollBy(0, view.getEl().getHeight());
+    // sync menu image
+    syncImage(
+      {
+        HGameId: record.get('HGameId').toString(),
+        GameName: record.get('GameName'),
+        GameType: record.get('GameType'),
+        CTId: record.get('CTId').toString(),
+        imageType: record.get('ImageType'),
+        isHeaderSubMenuImage: false,
+        strBase64: record.get('GameTypeMenuIcon'),
+      },
+      (response) => {
+        if (response) {
+          let rs = JSON.parse(response.responseText);
+          let img = `<img src="${rs.imagePath}?v=${Date.now()}" />`;
+          record.set('GameTypeMenuIconCDN', img);
+          store.commitChanges();
+        }
+        record.set('syncSpinner', false);
+        currentIndex = currentIndex + 1;
+        syncAllMenuHeaderImages(currentIndex, store, done);
+      }
+    );
+  } else if (done) done();
+}
+
+function syncAllSubMenuHeaderImages(currentIndex, store, done) {
+  if (currentIndex < store.getCount()) {
+    let record = store.getAt(currentIndex);
+    record.set('syncSpinnerSMN', true);
+    var grid = Ext.getCmp('headerGameGrid');
+    var view = grid.getView();
+    view.scrollBy(0, view.getEl().getHeight());
+    syncImage(
+      {
+        HGameId: record.get('HGameId').toString(),
+        GameName: record.get('GameName'),
+        GameType: record.get('GameType'),
+        CTId: record.get('CTId').toString(),
+        imageType: record.get('ImageType'),
+        isHeaderSubMenuImage: true,
+        strBase64: record.get('GameTypeSubMenuIcon'),
+      },
+      (response) => {
+        if (response) {
+          let rs = JSON.parse(response.responseText);
+          let img = `<img src="${rs.imagePath}?v=${Date.now()}" />`;
+          record.set('GameTypeSubMenuIconCDN', img);
+          store.commitChanges();
+        }
+        record.set('syncSpinnerSMN', false);
+        currentIndex = currentIndex + 1;
+        syncAllSubMenuHeaderImages(currentIndex, store, done);
+      }
+    );
+  } else if (done) done();
 }
