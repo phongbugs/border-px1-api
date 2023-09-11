@@ -59,6 +59,9 @@ let storeAllGame = Ext.create('Ext.data.Store', {
             localStorage.removeItem('border-px1-api-cookie');
             setTimeout(() => window.parent.location.reload(), 1000);
           }
+          else {
+            alert(data.message)
+          }
           return data;
         },
       },
@@ -382,7 +385,7 @@ Ext.onReady(function () {
         text: 'Image File CDN',
         tooltip: 'Image File from CDN',
         dataIndex: 'GameImgeCDN',
-        width: 170,
+        width: 150,
         tdCls: 'headerIcons',
         renderer: (v, _, r) => {
           return `<img style="width:100%; height:100%" src="${
@@ -406,21 +409,6 @@ Ext.onReady(function () {
               var isSpinning = record.get('syncSpinner');
               return isSpinning ? 'spinner' : 'syncCls';
             },
-            renderer: function (
-              value,
-              metaData,
-              record,
-              rowIndex,
-              colIndex,
-              store,
-              view
-            ) {
-              // Calculate the tabIndex for the button based on rowIndex
-              var tabIndex = rowIndex + 1;
-
-              // Create the action button HTML with the calculated tabIndex
-              return `<button class="syncCls" tabindex="${tabIndex}">Sync</button>`;
-            },
             handler: function (grid, rowIndex, colIndex, item, e, record) {
               record.set('syncSpinner', true);
               syncImage(
@@ -437,8 +425,6 @@ Ext.onReady(function () {
                   grid.getStore().commitChanges();
                 }
               );
-              e.stopEvent();
-              return false;
             },
           },
         ],
