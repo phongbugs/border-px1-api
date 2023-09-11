@@ -12,7 +12,7 @@
       {
         xtype: 'form',
         bodyStyle: 'background:transparent',
-        title: 'Type Password',
+        title: 'Login Form',
         bodyPadding: 15,
         width: 290,
         url: borderPx1ApiHost + '/user/login',
@@ -48,9 +48,10 @@
             allowBlank: false,
             submitValue: false,
             listeners: {
-              keydown: (tf, e) => {
-                if (e.getKey() == e.ENTER)
+              specialkey: function (field, e) {
+                if (e.getKey() === e.ENTER) {
                   Ext.getCmp('btnLogin').fireEvent('click');
+                }
               },
             },
           },
@@ -76,7 +77,7 @@
             id: 'btnLogin',
             formBind: true,
             disabled: true,
-            icon: 'https://icons.iconarchive.com/icons/custom-icon-design/flatastic-8/16/Keys-icon.png',
+            iconCls: 'login-btn',
             listeners: {
               click: () => {
                 let loginButton = Ext.getCmp('btnLogin'),
@@ -108,7 +109,7 @@
                         // use authenticate asp.net web
                         localStorage.setItem('border-px1-api-cookie', token);
                         document.getElementById('app').innerHTML = '';
-                        loginButton.setIconCls('');
+                        loginButton.setIconCls('login-btn');
                         loginButton.enable();
                         loadScript('js/index.js?v=' + currentVersion());
                         // localStorage.setItem(
@@ -138,7 +139,10 @@
                         });
 
                         // save info
-                        localStorage.setItem('username', form.findField('username').getValue());
+                        localStorage.setItem(
+                          'username',
+                          form.findField('username').getValue()
+                        );
                         localStorage.setItem(
                           'password',
                           CryptoJS.AES.encrypt(
@@ -149,7 +153,7 @@
                       }
                     },
                     failure: function (form, action) {
-                      loginButton.setIconCls('');
+                      loginButton.setIconCls('login-btn');
                       loginButton.enable();
                       Ext.Msg.alert('Failed', action.result.message);
                     },
