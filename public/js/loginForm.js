@@ -69,7 +69,9 @@
             text: 'Reset',
             icon: 'https://icons.iconarchive.com/icons/double-j-design/ravenna-3d/16/Reload-icon.png',
             handler: function () {
-              this.up('form').getForm().reset();
+              let form = this.up('form').getForm();
+              form.findField('username').setValue('')
+              form.findField('password').setValue('')
             },
           },
           {
