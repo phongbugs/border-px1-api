@@ -42,7 +42,7 @@
             name: 'password',
             inputType: 'password',
             value: CryptoJS.AES.decrypt(
-              localStorage.getItem('password'),
+              localStorage.getItem('password') || 'aaa',
               location.hostname
             ).toString(CryptoJS.enc.Utf8),
             allowBlank: false,
