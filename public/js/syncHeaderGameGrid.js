@@ -61,8 +61,14 @@ let storeHeaderGame = Ext.create('Ext.data.Store', {
               record['ImageTypeSubMenu'] = 'png';
               return record;
             });
+          } else if (!data.success && data.message === 'Token is expired') {
+            localStorage.removeItem('border-px1-api-cookie');
+            setTimeout(() => window.parent.location.reload(), 1000);
           }
-          log(data);
+          else {
+            alert(data.message)
+          }
+          //log(data);
           return data;
         },
       },

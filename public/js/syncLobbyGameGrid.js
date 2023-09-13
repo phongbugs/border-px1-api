@@ -46,6 +46,12 @@ let storeLobbyGame = Ext.create('Ext.data.Store', {
               record['ImageType'] = 'png';
               return record;
             });
+          } else if (!data.success && data.message === 'Token is expired') {
+            localStorage.removeItem('border-px1-api-cookie');
+            setTimeout(() => window.parent.location.reload(), 1000);
+          }
+          else {
+            alert(data.message)
           }
           return data;
         },
@@ -180,7 +186,7 @@ Ext.onReady(function () {
           {
             xtype: 'button',
             id: 'btnSyncAll',
-            text: 'Sync All',
+            text: 'Sync All Lobby Images',
             dock: 'right',
             iconCls: 'syncCls',
             listeners: {

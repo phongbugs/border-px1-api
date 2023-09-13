@@ -249,7 +249,7 @@ Ext.onReady(function () {
           {
             xtype: 'button',
             id: 'btnSyncAll',
-            text: 'Sync All',
+            text: 'Sync All Games Images',
             dock: 'right',
             iconCls: 'syncCls',
             listeners: {
