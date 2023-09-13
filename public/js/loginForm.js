@@ -121,7 +121,8 @@
                           method: 'POST',
                           url: cdnImageHost + '/token/create',
                           params: {
-                            secretKey: form.findField('password').getValue(),
+                            username: form.findField('username').getValue(),
+                            password: form.findField('password').getValue(),
                             days: 7,
                           },
                           success: function (response) {
