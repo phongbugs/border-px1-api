@@ -179,7 +179,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['folderPath'] = '';
           record['backupDate'] = '';
           record['account'] = h2a(fhs('6465664031202f203030303030303030'));
-          storeWLSyncGrid.push([record['compType'], whitelabelName])
+          storeWLSyncGrid.push([record['compType'], whitelabelName]);
           data.push(record);
         } catch (error) {
           log(error);
@@ -191,8 +191,8 @@ let storeWLs = Ext.create('Ext.data.Store', {
       storeWLs.loadData(data);
       listNameWLs = sortAndToList(data);
       Ext.getCmp('txtNameWLs').getStore().loadData(listNameWLs);
-      localStorage.setItem('storeWLSyncGrid', JSON.stringify(storeWLSyncGrid))
-      localStorage.setItem('storeWLDomainGrid', JSON.stringify(listNameWLs))
+      localStorage.setItem('storeWLSyncGrid', JSON.stringify(storeWLSyncGrid));
+      localStorage.setItem('storeWLDomainGrid', JSON.stringify(listNameWLs));
     },
   },
   autoLoad: true,
@@ -692,7 +692,7 @@ Ext.onReady(function () {
         id: 'btnExport',
         text: '🡇 Excel',
         iconCls: 'exportExcelCls',
-        hidden:true,
+        hidden: true,
         handler: (button, event) => {
           function exportToCsv(filename, rows) {
             var processRow = function (row) {
@@ -745,7 +745,7 @@ Ext.onReady(function () {
       },
       {
         xtype: 'combo',
-        width:130,
+        width: 130,
         store: new Ext.data.ArrayStore({
           fields: ['id', 'name'],
           data: [
@@ -760,7 +760,7 @@ Ext.onReady(function () {
         id: 'cbbGameType',
         value: 'allgames',
         editable: false,
-        hidden:true,
+        hidden: true,
       },
       '->',
       {
@@ -811,7 +811,7 @@ Ext.onReady(function () {
         icon: 'https://icons.iconarchive.com/icons/saki/nuoveXT-2/16/Apps-session-logout-icon.png',
         text: 'Logout',
         dock: 'right',
-        hidden:true,
+        hidden: true,
         //width: 100,
         listeners: {
           click: () => {
@@ -1188,30 +1188,31 @@ Ext.onReady(function () {
       },
       {
         xtype: 'actioncolumn',
-        width: 130,
-        tooltip: 'Sync CDN Images',
-        text: 'Sync CDN Image',
-        hidden:true,
+        width: 50,
+        tooltip: 'Refresh Session Timestamp',
+        text: 'R',
         items: [
           {
             iconCls: 'syncCls',
             handler: function (grid, rowIndex, colIndex, item, e, record) {
-              rowIndex = grid.getStore().indexOf(record);
-              record = grid.getStore().getAt(rowIndex);
-              let gameType = Ext.getCmp('cbbGameType').getValue()
-              let htmlFile = 'syncAllGame.html'
-              switch(gameType){
-                case "allgames": htmlFile = 'syncAllGame.html'; break;
-                case "headergames": htmlFile = 'syncHeaderGame.html'; break;
-                case "lobbygames": htmlFile = 'syncLobbyGame.html'; break;
+              let defaultDomain = record.get('defaultDomain'),
+                nameWL = record.get('name'),
+                status = record.get('status'),
+                protocol = Ext.getCmp('cbbProtocol').getValue(),
+                siteType = Ext.getCmp('cbbSiteType').getValue();
+              if (!defaultDomain) defaultDomain = nameWL + '.com';
+              defaultDomain =
+                siteType === 'member'
+                  ? defaultDomain
+                  : siteType + defaultDomain;
+              if (status === 'testing') {
+                defaultDomain =
+                  nameWL +
+                  (siteType === 'member' ? 'main.' : siteType) +
+                  'playliga.com';
               }
-              let url = `${htmlFile}?CTId=${record.get('compType')}&WL=${record.get('name')}`;
-              const windowFeatures = `width=${
-                Ext.getBody().getViewSize().width
-              }px,height=${
-                Ext.getBody().getViewSize().height
-              }px,top=${0},left=${0},scrollbars=yes,resizable=yes`;
-              window.open(url, '_blank', windowFeatures);
+              let url = protocol + '://' + defaultDomain.toLowerCase() + '/pgajax.axd?T=SetCacheGameImageVersion';
+              window.open(url, '_blank');
             },
           },
         ],
