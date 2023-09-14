@@ -198,6 +198,26 @@ Ext.onReady(function () {
               },
             },
           },
+          { 
+            xtype: 'button', 
+            id: 'btnSyncAllMenu', 
+            text: 'Sync All Menu Header Images', 
+            dock: 'right', 
+            iconCls: 'syncCls', 
+            listeners: { 
+              click: (btn) => { 
+                if (storeHeaderGame.getCount() > 0) { 
+                  btn.setIconCls('spinner'); 
+                  btn.setDisabled(true); 
+                  syncAllMenuHeaderImages(0, storeHeaderGame, () => { 
+                    btn.setIconCls('syncCls'); 
+                    btn.setDisabled(false); 
+                    alert('Sync All Menu Header Images Done!'); 
+                  }); 
+                } else alert('Please search before sync !'); 
+              }, 
+            }, 
+          }, 
           {
             xtype: 'button',
             id: 'btnSyncAllSubMenu',
