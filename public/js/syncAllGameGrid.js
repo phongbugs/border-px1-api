@@ -1,5 +1,4 @@
-﻿//if (!isAuthenticated()) return;
-Ext.define('AllGame', {
+﻿Ext.define('AllGame', {
   extend: 'Ext.data.Model',
   fields: [
     { name: 'GameListID', type: 'int' },
@@ -58,9 +57,8 @@ let storeAllGame = Ext.create('Ext.data.Store', {
           } else if (!data.success && data.message === 'Token is expired') {
             localStorage.removeItem('border-px1-api-cookie');
             setTimeout(() => window.parent.location.reload(), 1000);
-          }
-          else {
-            alert(data.message)
+          } else {
+            alert(data.message);
           }
           return data;
         },
@@ -70,16 +68,6 @@ let storeAllGame = Ext.create('Ext.data.Store', {
   autoLoad: false,
 });
 let renderDateTime = (v, _, r) => Ext.Date.format(v, 'm/d/Y H:i:s');
-let featureGrouping = Ext.create('Ext.grid.feature.GroupingSummary', {
-  startCollapsed: true,
-  showSummaryRow: false,
-  groupHeaderTpl: [
-    '<div style="color:#d14836; font-weight: bold">{name:this.formatName}<span style="color:green; font-weight: normal"> ({rows.length} {[values.rows.length > 1 ? "Records" : "Record"]})</span></div>',
-    {
-      formatName: (name) => (name ? name : 'NULL'),
-    },
-  ],
-});
 Ext.onReady(function () {
   let allGameGrid = Ext.create('Ext.grid.Panel', {
     renderTo: 'app',
@@ -100,9 +88,6 @@ Ext.onReady(function () {
         Ext.getCmp('txtNameWLsDomainHG').setValue(CTId);
       },
     },
-    // features: [
-    //   featureGrouping
-    // ],
     dockedItems: [
       {
         xtype: 'toolbar',
@@ -120,64 +105,13 @@ Ext.onReady(function () {
                 let proxy = storeAllGame.getProxy();
                 cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
                 proxy.setUrl(cdnImageHost + pathSyncGame);
-                CTId = Ext.getCmp('txtNameWLsDomainHG').getValue();
-                proxy.setExtraParams({ CTId: CTId });
+                proxy.setExtraParams({
+                  CTId: Ext.getCmp('txtNameWLsDomainHG').getValue(),
+                });
                 storeAllGame.load();
               },
             },
           },
-          // {
-          //   xtype: 'combo',
-          //   width: 150,
-          //   store: new Ext.data.ArrayStore({
-          //     fields: ['id', 'name'],
-          //     data: [
-          //       ['default ', 'Select group'],
-          //       ['BrandDisplayName ', 'BrandDisplayName'],
-          //       ['type', 'Type'],
-          //     ],
-          //   }),
-          //   queryMode: 'local',
-          //   displayField: 'name',
-          //   valueField: 'id',
-          //   name: 'cbbGrouping',
-          //   id: 'cbbGrouping',
-          //   value:  ['default ', 'Select group'],
-          //   editable: false,
-          //   listeners: {
-          //     change: (_, val) => {
-          //       if (val !== 'default') {
-          //         Ext.getCmp('btnGroupingWLs').setDisabled(false);
-          //         storeAllGame.setGroupField(val);
-          //         //storeAllGame.loadData(data);
-          //         featureGrouping.collapseAll();
-          //       } else {
-          //         storeAllGame.setGroupField(undefined);
-          //         Ext.getCmp('btnGroupingWLs').setDisabled(true);
-          //       }
-          //     },
-          //   },
-          // },
-          // {
-          // xtype: 'button',
-          // disabled: true,
-          // id: 'btnGroupingWLs',
-          // tooltip: 'Expand all group',
-          // iconCls: 'expandCls',
-          // cls: 'expandCls',
-          // handler: (btn) => {
-          //   let cls = btn.cls;
-          //   if (cls === 'expandCls') {
-          //     btn.setIconCls('collapseCls');
-          //     btn.cls = 'collapseCls';
-          //     featureGrouping.expandAll();
-          //   } else {
-          //     btn.setIconCls('expandCls');
-          //     btn.cls = 'expandCls';
-          //     featureGrouping.collapseAll();
-          //   }
-          // },
-          // },
           {
             xtype: 'combo',
             width: 230,
@@ -230,19 +164,29 @@ Ext.onReady(function () {
             id: 'btnFindHG',
             icon: 'https://icons.iconarchive.com/icons/zerode/plump/16/Search-icon.png',
             listeners: {
-              click: () => {
+              click: (btn) => {
+                btn.setDisabled(true);
                 let proxy = storeAllGame.getProxy();
                 cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
                 proxy.setUrl(cdnImageHost + pathSyncGame);
                 CTId = Ext.getCmp('txtNameWLsDomainHG').getValue();
-                proxy.setExtraParams({
-                  CTId: CTId,
-                });
-                storeAllGame.load();
-                allGameGrid.setTitle(
-                  Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
-                    "'s All Game Images"
-                );
+                if (CTId && !isNaN(CTId)) {
+                  proxy.setExtraParams({
+                    CTId: CTId,
+                  });
+                  storeAllGame.load({
+                    callback: function (records, operation, success) {
+                      btn.setDisabled(false);
+                    },
+                  });
+                  allGameGrid.setTitle(
+                    Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
+                      "'s All Game Images"
+                  );
+                } else {
+                  Ext.Msg.alert('Caution', 'Selected WL not found');
+                  btn.setDisabled(false);
+                }
               },
             },
           },
@@ -260,7 +204,7 @@ Ext.onReady(function () {
                   syncAllImages(0, storeAllGame, () => {
                     btn.setIconCls('syncCls');
                     btn.setDisabled(false);
-                    alert('Sync All Image Done!');
+                    alert('Sync All Images Done!');
                   });
                 } else alert('Please search before sync !');
               },
@@ -453,14 +397,13 @@ function syncImage({ gameListId, imageType, strBase64 }, done) {
   });
 }
 function syncAllImages(currentIndex, store, done) {
+  var grid = Ext.getCmp('allGameGrid');
   if (currentIndex < store.getCount()) {
     let record = store.getAt(currentIndex);
     record.set('syncSpinner', true);
-
-    var grid = Ext.getCmp('allGameGrid');
+    grid.setDisabled(true);
     var view = grid.getView();
     view.scrollBy(0, view.getEl().getHeight());
-
     syncImage(
       {
         gameListId: record.get('GameListID'),
@@ -477,5 +420,8 @@ function syncAllImages(currentIndex, store, done) {
         syncAllImages(currentIndex, store, done);
       }
     );
-  } else if (done) done();
+  } else {
+    grid.setDisabled(false);
+    if (done) done();
+  }
 }

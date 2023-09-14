@@ -49,9 +49,8 @@ let storeLobbyGame = Ext.create('Ext.data.Store', {
           } else if (!data.success && data.message === 'Token is expired') {
             localStorage.removeItem('border-px1-api-cookie');
             setTimeout(() => window.parent.location.reload(), 1000);
-          }
-          else {
-            alert(data.message)
+          } else {
+            alert(data.message);
           }
           return data;
         },
@@ -61,16 +60,6 @@ let storeLobbyGame = Ext.create('Ext.data.Store', {
   autoLoad: false,
 });
 let renderDateTime = (v, _, r) => Ext.Date.format(v, 'm/d/Y H:i:s');
-let featureGrouping = Ext.create('Ext.grid.feature.GroupingSummary', {
-  startCollapsed: true,
-  showSummaryRow: false,
-  groupHeaderTpl: [
-    '<div style="color:#d14836; font-weight: bold">{name:this.formatName}<span style="color:green; font-weight: normal"> ({rows.length} {[values.rows.length > 1 ? "Records" : "Record"]})</span></div>',
-    {
-      formatName: (name) => (name ? name : 'NULL'),
-    },
-  ],
-});
 Ext.onReady(function () {
   let lobbyGameGrid = Ext.create('Ext.grid.Panel', {
     renderTo: 'app',
@@ -91,7 +80,6 @@ Ext.onReady(function () {
         Ext.getCmp('txtNameWLsDomainHG').setValue(CTId);
       },
     },
-    //features: [featureGrouping],
     dockedItems: [
       {
         xtype: 'toolbar',
@@ -109,8 +97,9 @@ Ext.onReady(function () {
                 let proxy = storeLobbyGame.getProxy();
                 cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
                 proxy.setUrl(cdnImageHost + pathSyncGame);
-                CTId = Ext.getCmp('txtNameWLsDomainHG').getValue();
-                proxy.setExtraParams({ CTId: CTId });
+                proxy.setExtraParams({
+                  CTId: Ext.getCmp('txtNameWLsDomainHG').getValue(),
+                });
                 storeLobbyGame.load();
               },
             },
@@ -167,19 +156,29 @@ Ext.onReady(function () {
             id: 'btnFindHG',
             icon: 'https://icons.iconarchive.com/icons/zerode/plump/16/Search-icon.png',
             listeners: {
-              click: () => {
+              click: (btn) => {
+                btn.setDisabled(true);
                 let proxy = storeLobbyGame.getProxy();
                 cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
                 proxy.setUrl(cdnImageHost + pathSyncGame);
                 CTId = Ext.getCmp('txtNameWLsDomainHG').getValue();
-                proxy.setExtraParams({
-                  CTId: CTId,
-                });
-                storeLobbyGame.load();
-                lobbyGameGrid.setTitle(
-                  Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
-                    "'s Lobby Game Images"
-                );
+                if (CTId && !isNaN(CTId)) {
+                  proxy.setExtraParams({
+                    CTId: CTId,
+                  });
+                  storeLobbyGame.load({
+                    callback: function (records, operation, success) {
+                      btn.setDisabled(false);
+                    },
+                  });
+                  lobbyGameGrid.setTitle(
+                    Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
+                      "'s Lobby Game Images"
+                  );
+                } else {
+                  Ext.Msg.alert('Caution', 'Selected WL not found');
+                  btn.setDisabled(false);
+                }
               },
             },
           },
@@ -353,10 +352,11 @@ function syncImage({ urlAPI, jsonData }, done) {
   });
 }
 function syncAllImages(currentIndex, store, done) {
+  var grid = Ext.getCmp('lobbyGameGrid');
   if (currentIndex < store.getCount()) {
     let record = store.getAt(currentIndex);
     record.set('syncSpinner', true);
-    var grid = Ext.getCmp('lobbyGameGrid');
+    grid.setDisabled(true);
     var view = grid.getView();
     view.scrollBy(0, view.getEl().getHeight());
     let urlAPI = cdnImageHost + '/lobbygames/update';
@@ -375,5 +375,8 @@ function syncAllImages(currentIndex, store, done) {
       currentIndex = currentIndex + 1;
       syncAllImages(currentIndex, store, done);
     });
-  } else if (done) done();
+  } else {
+    grid.setDisabled(false);
+    if (done) done();
+  }
 }

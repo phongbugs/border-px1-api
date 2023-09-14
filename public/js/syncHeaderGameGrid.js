@@ -41,10 +41,11 @@ let storeHeaderGame = Ext.create('Ext.data.Store', {
   model: 'HeaderGame',
   proxy: {
     type: 'ajax',
-    url: cdnImageHost + '/sync/headergames',
+    url: cdnImageHost + pathSyncGame,
     extraParams: {
       CTId: CTId,
     },
+    timeout: 60000,
     headers: {
       Authorization: 'Basic ' + localStorage.getItem('border-px1-api-cookie'),
     },
@@ -63,12 +64,10 @@ let storeHeaderGame = Ext.create('Ext.data.Store', {
             });
           } else if (!data.success && data.message === 'Token is expired') {
             localStorage.removeItem('border-px1-api-cookie');
-            setTimeout(() => window.parent.location.reload(), 1000);
+            setTimeout(() => window.parent.location.reload(), 1000);            
+          } else {
+            alert(data.message);
           }
-          else {
-            alert(data.message)
-          }
-          //log(data);
           return data;
         },
       },
@@ -81,8 +80,8 @@ Ext.onReady(function () {
   let headerGameGrid = Ext.create('Ext.grid.Panel', {
     renderTo: 'app',
     id: 'headerGameGrid',
-    header: false,
     store: storeHeaderGame,
+    header: false,
     title: getQueryParam('WL') + `'s Header Game Images`,
     width:
       Ext.getBody().getViewSize().width < 1388
@@ -144,26 +143,6 @@ Ext.onReady(function () {
           },
           {
             xtype: 'combo',
-            width: 85,
-            store: new Ext.data.ArrayStore({
-              fields: ['id', 'name'],
-              data: [
-                ['mobile.', 'Mobile'],
-                ['member', 'Member'],
-                ['ag.', 'Agent'],
-              ],
-            }),
-            displayField: 'name',
-            valueField: 'id',
-            name: 'cbbSiteTypeDomainHG',
-            id: 'cbbSiteTypeDomainHG',
-            value: 'member',
-            disabled: true,
-            hidden: true,
-            editable: false,
-          },
-          {
-            xtype: 'combo',
             width: 150,
             store: new Ext.data.ArrayStore({
               fields: ['id', 'name'],
@@ -186,11 +165,6 @@ Ext.onReady(function () {
                 );
               }
             },
-            listeners: {
-              // change: function (cb, e) {
-              //   Ext.getCmp('btnFindHG').fireEvent('click');
-              // },
-            },
           },
           {
             xtype: 'button',
@@ -198,38 +172,29 @@ Ext.onReady(function () {
             id: 'btnFindHG',
             icon: 'https://icons.iconarchive.com/icons/zerode/plump/16/Search-icon.png',
             listeners: {
-              click: () => {
+              click: (btn) => {
+                btn.setDisabled(true);
                 let proxy = storeHeaderGame.getProxy();
                 cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
                 proxy.setUrl(cdnImageHost + pathSyncGame);
-                proxy.setExtraParams({
-                  CTId: Ext.getCmp('txtNameWLsDomainHG').getValue(),
-                });
-                storeHeaderGame.load();
-                headerGameGrid.setTitle(
-                  Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
-                    "'s Header Game Images"
-                );
-              },
-            },
-          },
-          {
-            xtype: 'button',
-            id: 'btnSyncAllMenu',
-            text: 'Sync All Menu Header Images',
-            dock: 'right',
-            iconCls: 'syncCls',
-            listeners: {
-              click: (btn) => {
-                if (storeHeaderGame.getCount() > 0) {
-                  btn.setIconCls('spinner');
-                  btn.setDisabled(true);
-                  syncAllMenuHeaderImages(0, storeHeaderGame, () => {
-                    btn.setIconCls('syncCls');
-                    btn.setDisabled(false);
-                    alert('Sync All Menu Header Images Done!');
+                CTId = Ext.getCmp('txtNameWLsDomainHG').getValue();
+                if (CTId && !isNaN(CTId)) {
+                  proxy.setExtraParams({
+                    CTId: CTId,
                   });
-                } else alert('Please search before sync !');
+                  storeHeaderGame.load({
+                    callback: function (records, operation, success) {
+                      btn.setDisabled(false);
+                    },
+                  });
+                  allGameGrid.setTitle(
+                    Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
+                      "'s Header Game Images"
+                  );
+                } else {
+                  Ext.Msg.alert('Caution', 'Selected WL not found');
+                  btn.setDisabled(false);
+                }
               },
             },
           },
@@ -530,15 +495,15 @@ function syncImage(
     if (done) done();
   }
 }
+
 function syncAllMenuHeaderImages(currentIndex, store, done) {
+  var grid = Ext.getCmp('headerGameGrid');
   if (currentIndex < store.getCount()) {
     let record = store.getAt(currentIndex);
     record.set('syncSpinner', true);
-
-    var grid = Ext.getCmp('headerGameGrid');
+    grid.setDisabled(true);
     var view = grid.getView();
     view.scrollBy(0, view.getEl().getHeight());
-    // sync menu image
     syncImage(
       {
         HGameId: record.get('HGameId').toString(),
@@ -561,7 +526,10 @@ function syncAllMenuHeaderImages(currentIndex, store, done) {
         syncAllMenuHeaderImages(currentIndex, store, done);
       }
     );
-  } else if (done) done();
+  } else{
+    grid.setDisabled(false);
+    if (done) done();
+  }
 }
 
 function syncAllSubMenuHeaderImages(currentIndex, store, done) {
