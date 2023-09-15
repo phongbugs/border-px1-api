@@ -49,7 +49,7 @@ Ext.define('KitchenSink.view.layout.Border', {
   },
   listeners: {
     afterrender: () => {
-      if(isFEAccount())
+      //if(isFEAccount())
       createTab({
         itemIdTabPanel: '#mainContent',
         title: 'CLG WLs Management',
@@ -91,7 +91,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/7.html',
               });
             },
-            hidden: !isFEAccount()
+            //hidden: !isFEAccount()
           },
           {
             text: 'Domain Infomations',
