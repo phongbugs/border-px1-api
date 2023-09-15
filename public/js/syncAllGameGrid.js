@@ -147,6 +147,11 @@ Ext.onReady(function () {
             id: 'txtNameWLsDomainHG',
             itemId: 'txtNameWLsDomainHG',
             enableKeyEvents: true,
+            listeners: {
+              keyup: function (field, e) {
+                field.setValue(field.getValue().toUpperCase());
+              },
+            },
             doQuery: function (queryString, forceAll) {
               this.expand();
               this.store.clearFilter(!forceAll);
