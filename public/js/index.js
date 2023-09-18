@@ -94,20 +94,7 @@ Ext.define('KitchenSink.view.layout.Border', {
             //hidden: !isFEAccount()
           },
           {
-            text: 'Domain Infomations',
-            icon: 'https://icons.iconarchive.com/icons/dtafalonso/android-lollipop/16/Docs-icon.png',
-            handler: (cmp) => {
-              createTab({
-                itemIdTabPanel: '#mainContent',
-                title: cmp.text,
-                icon: cmp.icon,
-                htmlFile: '/domains.html',
-              });
-            },
-            hidden: true,
-          },
-          {
-            text: 'All Games Sync',
+            text: 'All Games WL Sync',
             icon: 'https://icons.iconarchive.com/icons/ariil/alphabet/16/Letter-A-icon.png',
             handler: (cmp) => {
               createTab({
@@ -115,6 +102,19 @@ Ext.define('KitchenSink.view.layout.Border', {
                 title: cmp.text,
                 icon: cmp.icon,
                 htmlFile: '/syncAllGame.html',
+              });
+            },
+            hidden: !isFEAccount()
+          },
+          {
+            text: 'All Games All WLs Sync',
+            icon: 'https://icons.iconarchive.com/icons/ariil/alphabet/16/Letter-A-icon.png',
+            handler: (cmp) => {
+              createTab({
+                itemIdTabPanel: '#mainContent',
+                title: cmp.text,
+                icon: cmp.icon,
+                htmlFile: '/syncAllGameAllWLs.html',
               });
             },
           },
@@ -129,9 +129,46 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/syncHeaderGame.html',
               });
             },
+            hidden: !isFEAccount()
           },
           {
-            text: 'Lobby Games Sync',
+            text: 'Header Menu All WLs Sync',
+            icon: 'https://icons.iconarchive.com/icons/ariil/alphabet/16/Letter-H-icon.png',
+            handler: (cmp) => {
+              createTab({
+                itemIdTabPanel: '#mainContent',
+                title: cmp.text,
+                icon: cmp.icon,
+                htmlFile: '/syncHeaderGameAllWLs.html',
+              });
+            },
+          },
+          {
+            text: 'Header SubMenu All WLs Sync',
+            icon: 'https://icons.iconarchive.com/icons/ariil/alphabet/16/Letter-H-icon.png',
+            handler: (cmp) => {
+              createTab({
+                itemIdTabPanel: '#mainContent',
+                title: cmp.text,
+                icon: cmp.icon,
+                htmlFile: '/syncHeaderGameSubMenu.html',
+              });
+            },
+          },
+          {
+            text: 'Lobby Games All WLs Sync',
+            icon: 'https://icons.iconarchive.com/icons/ariil/alphabet/16/Letter-L-icon.png',
+            handler: (cmp) => {
+              createTab({
+                itemIdTabPanel: '#mainContent',
+                title: cmp.text,
+                icon: cmp.icon,
+                htmlFile: '/syncLobbyGameAllWLs.html',
+              });
+            },
+          },
+          {
+            text: 'Lobby Games WL Sync',
             icon: 'https://icons.iconarchive.com/icons/ariil/alphabet/16/Letter-L-icon.png',
             handler: (cmp) => {
               createTab({
@@ -141,6 +178,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/syncLobbyGame.html',
               });
             },
+            hidden: !isFEAccount()
           },
           {
             text: 'SP Member docs',

@@ -134,6 +134,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
       let whiteLabels = records[0].data;
       delete whiteLabels['id'];
       let storeWLSyncGrid = [];
+      //storeWLSyncGrid.push(['ALL WLs', 'ALL WLs']);
       for (var whitelabelName in whiteLabels) {
         try {
           let record = whiteLabels[whitelabelName];
@@ -197,6 +198,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
   },
   autoLoad: true,
 });
+let isFEAccount = () => localStorage.getItem('username') === 'feadmin';
 Ext.onReady(function () {
   authenticate((isAuthenticated) => {
     if (!isAuthenticated) location.reload();
@@ -607,6 +609,7 @@ Ext.onReady(function () {
         listeners: {
           click: () => authForm.setHidden(false),
         },
+        hidden: !isFEAccount()
       },
       {
         xtype: 'button',
@@ -988,7 +991,7 @@ Ext.onReady(function () {
         text: 'Server Pool',
         width: 190,
         dataIndex: 'serverPoolIPs',
-        hidden: false,
+        hidden: !isFEAccount(),
       },
       {
         text: 'H/D Number',
@@ -996,6 +999,7 @@ Ext.onReady(function () {
         dataIndex: 'headerNumber',
         tooltip: 'Header/Default number',
         renderer: (val, _, record) => val + '/' + record.get('defaultNumber'),
+        hidden: !isFEAccount(),
       },
       {
         text: 'Specific Server',
