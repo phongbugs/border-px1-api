@@ -151,7 +151,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 itemIdTabPanel: '#mainContent',
                 title: cmp.text,
                 icon: cmp.icon,
-                htmlFile: '/syncHeaderGameSubMenu.html',
+                htmlFile: '/syncHeaderGameSubMenuAllWLs.html',
               });
             },
           },

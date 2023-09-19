@@ -16,7 +16,7 @@ var cdnImageHost =
   (location.host.indexOf('localhost') > -1
     ? 'http://localhost/cdn'
     : 'https://imgtest.playliga.com');
-var pathSyncGame = '/sync/submenuheadergames';
+var pathSyncGame = '/sync/headergamessubmenuallwls';
 let storeHeaderGame = Ext.create('Ext.data.Store', {
   model: 'HeaderGame',
   proxy: {
@@ -96,6 +96,7 @@ Ext.onReady(function () {
                   'https://imgtest.playliga.com',
                 ],
                 ['https://imguat.playliga.com', 'https://imguat.playliga.com'],
+                ['https://imgshare.iuf-cfl.cloud/', 'https://imgshare.iuf-cfl.cloud/'],
               ],
             }),
             displayField: 'name',
