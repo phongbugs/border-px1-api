@@ -96,7 +96,7 @@ Ext.onReady(function () {
                   'https://imgtest.playliga.com',
                 ],
                 ['https://imguat.playliga.com', 'https://imguat.playliga.com'],
-                ['https://imgshare.iuf-cfl.cloud/', 'https://imgshare.iuf-cfl.cloud/'],
+                ['https://imgshare.iuf-cfl.cloud', 'https://imgshare.iuf-cfl.cloud'],
               ],
             }),
             displayField: 'name',
