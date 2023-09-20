@@ -68,7 +68,7 @@ Ext.define('KitchenSink.view.layout.Border', {
       title: 'Menu of ' + localStorage.getItem('username'),
       icon: 'https://icons.iconarchive.com/icons/icons8/windows-8/16/Very-Basic-Menu-icon.png',
       region: 'west',
-      width: 200,
+      width: 222,
       height: 500,
       bodyPadding: 0,
       bodyBorder: 'none',
@@ -104,7 +104,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/syncAllGame.html',
               });
             },
-            hidden: !isFEAccount()
+            //hidden: !isFEAccount()
           },
           {
             text: 'All Games All WLs Sync',
@@ -129,7 +129,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/syncHeaderGame.html',
               });
             },
-            hidden: !isFEAccount()
+            //hidden: !isFEAccount()
           },
           {
             text: 'Header Menu All WLs Sync',
@@ -178,7 +178,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/syncLobbyGame.html',
               });
             },
-            hidden: !isFEAccount()
+            //hidden: !isFEAccount()
           },
           {
             text: 'SP Member docs',
