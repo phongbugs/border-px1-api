@@ -911,7 +911,7 @@ Ext.onReady(function () {
         text: 'Prefix',
         width: 90,
         dataIndex: 'prefix',
-        hidden: true,
+        hidden: isFEAccount(),
       },
 
       {
@@ -1015,10 +1015,10 @@ Ext.onReady(function () {
         hidden: true,
       },
       {
-        text: 'Referral Feature',
-        width: 130,
+        text: 'Referral',
+        width: 100,
         dataIndex: 'referralFunction',
-        hidden: true,
+        hidden: isFEAccount(),
       },
       {
         xtype: 'actioncolumn',
@@ -1078,11 +1078,11 @@ Ext.onReady(function () {
         hidden: true,
       },
       {
-        text: 'Meta Feature (🦶)',
-        width: 50,
+        text: 'WS Meta (🦶)',
+        width: 120,
         dataIndex: 'dynamicFooter',
         //renderer: (value) => (value !== 'None' ? '✅' : '❌'),
-        hidden: true,
+        hidden: isFEAccount(),
       },
 
       // {
@@ -1193,7 +1193,7 @@ Ext.onReady(function () {
       {
         xtype: 'actioncolumn',
         width: 50,
-        tooltip: 'Refresh Session Timestamp',
+        tooltip: 'Force refresh session timestamp to get new header menu image latest from CDN',
         text: 'R',
         items: [
           {
