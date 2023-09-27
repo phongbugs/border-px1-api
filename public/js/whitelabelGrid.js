@@ -168,7 +168,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
           //         : undefined
           //       : servers;
           // }
-          record['specificServer'] = serverStores[record['serverPool']][0][0];
+          //record['specificServer'] = serverStores[record['serverPool']][0][0];
           //log(serverStores[record['serverPool'][0][0]])
           if (!record['referredIconMenu'])
             record['referredIconMenu'] = '__TEXT-MENU__';
@@ -180,6 +180,18 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['folderPath'] = '';
           record['backupDate'] = '';
           record['account'] = h2a(fhs('6465664031202f203030303030303030'));
+          let versionSW = record['versionSW'];
+          switch (versionSW) {
+            case undefined:
+              record['versionSW'] = 'None';
+              break;
+            case 0:
+              record['versionSW'] = 'Activated';
+              break;
+            case 1:
+              record['versionSW'] = 'Activated(SSM)';
+              break;
+          }
           storeWLSyncGrid.push([record['compType'], whitelabelName]);
           data.push(record);
         } catch (error) {
@@ -390,6 +402,7 @@ Ext.onReady(function () {
           data: [
             ['default', 'Select Group'],
             ['serverPoolIPs', 'Server Pool'],
+            ['versionSW', 'Version SW'],
             ['machineKey', 'Machine Key'],
             ['status', 'Status'],
             ['isResponsive', 'Responsive'],
@@ -609,7 +622,7 @@ Ext.onReady(function () {
         listeners: {
           click: () => authForm.setHidden(false),
         },
-        hidden: !isFEAccount()
+        hidden: !isFEAccount(),
       },
       {
         xtype: 'button',
@@ -920,54 +933,6 @@ Ext.onReady(function () {
         dataIndex: 'status',
         hidden: true,
       },
-      // {
-      //   text: 'panel',
-      //   width: 150,
-      //   dataIndex: 'defaultDomain',
-      //   hidden: true,
-      //   renderer: (v, _, r) =>
-      //     Ext.String.format(
-      //       '<a target="_blank" href="https://{0}">{0}</a>',
-      //       v ? v : r.get('name').toLowerCase() + '.com' + '/_Bet/Panel.aspx'
-      //     ),
-      // },
-      // {
-      //   text: 'Robots',
-      //   width: 150,
-      //   dataIndex: 'defaultDomain',
-      //   hidden: true,
-      //   renderer: (v, _, r) =>
-      //     Ext.String.format(
-      //       '<a target="_blank" href="https://{0}">{0}</a>',
-      //       (v ? v : r.get('name').toLowerCase() + '.com') + '/robots.txt'
-      //     ),
-      // },
-      // {
-      //   text: 'Sitemap',
-      //   width: 150,
-      //   dataIndex: 'defaultDomain',
-      //   hidden: true,
-      //   renderer: (v, _, r) =>
-      //     Ext.String.format(
-      //       '<a target="_blank" href="https://{0}">{0}</a>',
-      //       v ? v : r.get('name').toLowerCase() + '.com' + '/sitemap.xml'
-      //     ),
-      // },
-      // {
-      //   text: 'Google',
-      //   width: 150,
-      //   dataIndex: 'defaultDomain',
-      //   hidden: true,
-      //   renderer: (v, _, r) =>
-      //     Ext.String.format(
-      //       '<a target="_blank" href="https://{0}">{0}</a>',
-      //       v
-      //         ? v
-      //         : r.get('name').toLowerCase() +
-      //             '.com' +
-      //             '/googleae669996542f22e8.html'
-      //     ),
-      // },
       {
         text: 'Refered WL',
         width: 150,
@@ -981,17 +946,13 @@ Ext.onReady(function () {
         dataIndex: 'mainColor',
         hidden: true,
       },
-      // {
-      //   text: 'Servers',
-      //   width: 120,
-      //   dataIndex: 'servers',
-      //   hidden: true,
-      // },
       {
         text: 'Server Pool',
         width: 190,
         dataIndex: 'serverPoolIPs',
         hidden: !isFEAccount(),
+        hideable: false,
+        menuDisabled: true,
       },
       {
         text: 'H/D Number',
@@ -1013,12 +974,16 @@ Ext.onReady(function () {
           queryMode: 'local',
         },
         hidden: true,
+        hideable: false,
+        menuDisabled: true,
       },
       {
         text: 'Referral',
         width: 100,
         dataIndex: 'referralFunction',
         hidden: isFEAccount(),
+        hideable: false,
+        menuDisabled: true,
       },
       {
         xtype: 'actioncolumn',
@@ -1052,13 +1017,6 @@ Ext.onReady(function () {
           },
         ],
       },
-      // {
-      //   text: '📵',
-      //   width: 50,
-      //   dataIndex: 'mobileRedirect',
-      //   renderer: (v, _, r) => (!v ? '✅' : '❌'),
-      //   hidden: true,
-      // },
       {
         text: '📵 IP',
         width: 80,
@@ -1084,14 +1042,6 @@ Ext.onReady(function () {
         //renderer: (value) => (value !== 'None' ? '✅' : '❌'),
         hidden: isFEAccount(),
       },
-
-      // {
-      //   text: '🔒',
-      //   width: 50,
-      //   dataIndex: 'securityQuestion',
-      //   renderer: (value) => (value ? '✅' : '❌'),
-      //   hidden: true,
-      // },
       // {
       //   text: '✉',
       //   width: 50,
@@ -1107,93 +1057,22 @@ Ext.onReady(function () {
       //   renderer: (value) => (!value ? '▶' : '❌'),
       //   hidden: true,
       // },
-
-      // {
-      //   xtype: 'actioncolumn',
-      //   width: 30,
-      //   tooltip: 'Open Remote Desktop Connection',
-      //   text: 'R',
-      //   dataIndex: 'servers',
-      //   hidden: true,
-      //   items: [
-      //     {
-      //       getClass: function (value, meta, record, rowIndex, colIndex) {
-      //         var isSpinning = record.get('remoteDesktopSpinner');
-      //         return isSpinning ? 'spinner' : 'remoteDesktop';
-      //       },
-      //       handler: function (grid, rowIndex, colIndex, item, e, record) {
-      //         rowIndex = grid.getStore().indexOf(record);
-      //         record = grid.getStore().getAt(rowIndex);
-      //         var ip = record.get('specificServer');
-      //         record.set('remoteDesktopSpinner', true);
-      //         Ext.Ajax.request({
-      //           method: 'GET',
-      //           url: remoteDesktopServiceUrl + ip.replace('192.', '10.'),
-      //           success: function (response) {
-      //             record.set('remoteDesktopSpinner', false);
-      //           },
-      //           failure: function (response) {
-      //             Ext.Msg.alert(
-      //               "Remote Desktop Cli Service doesn't start",
-      //               `Run Remote Desktop Service by cmd:<br/><code>cd liga<br/>node rdservice</code>`
-      //             );
-      //             record.set('remoteDesktopSpinner', false);
-      //           },
-      //         });
-      //       },
-      //     },
-      //   ],
-      // },
-      // {
-      //   xtype: 'actioncolumn',
-      //   width: 40,
-      //   tooltip: 'Sync Domains',
-      //   text: 'SD',
-      //   dataIndex: 'isSyncedDomain',
-      //   hidden: true,
-      //   items: [
-      //     {
-      //       getClass: function (value, meta, record, rowIndex, colIndex) {
-      //         var iconCls = '';
-      //         switch (value) {
-      //           case false:
-      //             iconCls = 'checkCls';
-      //             break;
-      //           case 'spinner':
-      //             iconCls = 'spinner';
-      //             break;
-      //           case 'checkKoCls':
-      //             iconCls = 'checkKoCls';
-      //             break;
-      //           default:
-      //             iconCls = 'checkOkCls';
-      //             break;
-      //         }
-      //         return iconCls;
-      //       },
-      //       handler: function (grid, rowIndex, colIndex, item, e, record) {
-      //         rowIndex = grid.getStore().indexOf(record);
-      //         record = grid.getStore().getAt(rowIndex);
-      //         var name = record.get('name');
-      //         syncDomainsOneWhiteLabel(name, record, (success) =>
-      //           record.set(
-      //             'isSyncedDomain',
-      //             success ? 'checkOkCls' : 'checkKoCls'
-      //           )
-      //         );
-      //       },
-      //     },
-      //   ],
-      // },
       {
         text: 'Account',
         width: 150,
         dataIndex: 'account',
       },
       {
+        text: 'SW Version',
+        width: 150,
+        dataIndex: 'versionSW',
+        tooltip: 'SW Version.<br/> SSM: SPORT SubMenu',
+      },
+      {
         xtype: 'actioncolumn',
         width: 50,
-        tooltip: 'Force refresh session timestamp to get new header menu image latest from CDN',
+        tooltip:
+          'Force refresh session timestamp to get new header menu image latest from CDN',
         text: 'R',
         items: [
           {
@@ -1215,7 +1094,11 @@ Ext.onReady(function () {
                   (siteType === 'member' ? 'main.' : siteType) +
                   'playliga.com';
               }
-              let url = protocol + '://' + defaultDomain.toLowerCase() + '/pgajax.axd?T=SetCacheGameImageVersion';
+              let url =
+                protocol +
+                '://' +
+                defaultDomain.toLowerCase() +
+                '/pgajax.axd?T=SetCacheGameImageVersion';
               window.open(url, '_blank');
             },
           },
