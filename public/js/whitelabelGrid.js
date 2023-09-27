@@ -1093,13 +1093,16 @@ Ext.onReady(function () {
                   nameWL +
                   (siteType === 'member' ? 'main.' : siteType) +
                   'playliga.com';
+
+                let url =
+                  protocol +
+                  '://' +
+                  defaultDomain.toLowerCase() +
+                  '/pgajax.axd?T=SetCacheGameImageVersion';
+                window.open(url, '_blank');
               }
-              let url =
-                protocol +
-                '://' +
-                defaultDomain.toLowerCase() +
-                '/pgajax.axd?T=SetCacheGameImageVersion';
-              window.open(url, '_blank');
+              else
+                alert('This WL gone live, this button only available for test site')
             },
           },
         ],

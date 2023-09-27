@@ -438,10 +438,10 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
       text: 'R',
       items: [
         {
-          iconCls: 'refreshCls',
+          iconCls: 'syncCls',
           getClass: function (value, meta, record, rowIndex, colIndex) {
             var isSpinning = record.get('refreshSessionSpinner');
-            return isSpinning ? 'spinner' : 'refreshCls';
+            return isSpinning ? 'spinner' : 'syncCls';
           },
           handler: function (grid, rowIndex, colIndex, item, e, record) {
             rowIndex = grid.getStore().indexOf(record);
@@ -452,7 +452,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
                 ? 'border-px1-cookie-ip'
                 : 'border-px1-cookie';
             var ip = record.get('specificServer');
-            record.set('refreshSessionSpinner', true);
+            //record.set('refreshSessionSpinner', true);
             Ext.Ajax.request({
               method: 'POST',
               url:
@@ -463,7 +463,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
               //withCredentials: true,
               success: function (response) {
                 //log(response);
-                record.set('specificServerSpinner', false);
+                //record.set('specificServerSpinner', false);
                 let result = JSON.parse(response.responseText);
                 if (result.success) {
                   let defaultDomain = record.get('Domain'),
@@ -479,6 +479,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
                 }
               },
               failure: function (response) {
+                //record.set('specificServerSpinner', false);
                 alert(JSON.stringify(response));
               },
             });
