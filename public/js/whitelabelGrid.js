@@ -168,7 +168,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
           //         : undefined
           //       : servers;
           // }
-          //record['specificServer'] = serverStores[record['serverPool']][0][0];
+          record['specificServer'] = serverStores[record['serverPool']][0][0];
           //log(serverStores[record['serverPool'][0][0]])
           if (!record['referredIconMenu'])
             record['referredIconMenu'] = '__TEXT-MENU__';
@@ -211,6 +211,23 @@ let storeWLs = Ext.create('Ext.data.Store', {
   autoLoad: true,
 });
 let isFEAccount = () => localStorage.getItem('username') === 'feadmin';
+let groupingMenuItems = [
+  ['default', 'Select Group'],
+  ['versionSW', 'Version SW'],
+  ['machineKey', 'Machine Key'],
+  ['status', 'Status'],
+  ['isResponsive', 'Responsive'],
+  ['mainColor', 'Color'],
+  ['referralFunction', 'Referral Function'],
+  ['mobileRedirect', 'Mobile Redirect'],
+  ['dynamicFooter', 'Meta Feature'],
+  ['referredIconMenu', 'Menu Icon'],
+  ['hasPopup', 'Has Popup'],
+  ['referredWL', 'Referred WL'],
+  ['closedMail', 'Closed Mail'],
+];
+if (isFEAccount())
+  groupingMenuItems.splice(1, 0, ['serverPoolIPs', 'Server Pool']);
 Ext.onReady(function () {
   authenticate((isAuthenticated) => {
     if (!isAuthenticated) location.reload();
@@ -399,24 +416,7 @@ Ext.onReady(function () {
         width: 150,
         store: new Ext.data.ArrayStore({
           fields: ['id', 'name'],
-          data: [
-            ['default', 'Select Group'],
-            ['serverPoolIPs', 'Server Pool'],
-            ['versionSW', 'Version SW'],
-            ['machineKey', 'Machine Key'],
-            ['status', 'Status'],
-            ['isResponsive', 'Responsive'],
-            ['mainColor', 'Color'],
-            ['referralFunction', 'Referral Function'],
-            ['mobileRedirect', 'Mobile Redirect'],
-            ['dynamicFooter', 'Meta Feature'],
-            ['referredIconMenu', 'Menu Icon'],
-            ['hasPopup', 'Has Popup'],
-            ['referredWL', 'Referred WL'],
-            ['closedMail', 'Closed Mail'],
-            ['securityQuestion', 'Security Question'],
-            //['servers', 'Server'],
-          ],
+          data: groupingMenuItems,
         }),
         queryMode: 'local',
         displayField: 'name',
