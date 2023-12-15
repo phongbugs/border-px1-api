@@ -193,7 +193,7 @@ Ext.onReady(function () {
                       btn.setDisabled(false);
                     },
                   });
-                  allGameGrid.setTitle(
+                  headerGameGrid.setTitle(
                     Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
                       "'s Header Game Images"
                   );
