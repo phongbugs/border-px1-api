@@ -528,6 +528,9 @@ Ext.onReady(function () {
           fields: ['id', 'name'],
           data: [
             ['default', 'Select Col'],
+            ['Default.aspx?ref=TestSSM', 'Test SSM DF'],
+            ['Main.aspx?ref=TestSSM', 'Test SSM BF'],
+            ['Main.aspx?ref=TestHAF', 'Test SSM AF'],
             ['Robots.txt', 'Robots.txt'],
             ['defaultDomain', 'Default.aspx'],
             ['Main.aspx', 'Main.aspx'],
@@ -547,7 +550,7 @@ Ext.onReady(function () {
         id: 'cbbColumn',
         hidden: true,
         value: 'default',
-        editable: false,
+        editable: true,
       },
       {
         xtype: 'numberfield',
