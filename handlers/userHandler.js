@@ -9,14 +9,29 @@ const JSEncrypt = require('node-jsencrypt'),
   tokenPrivateKey =
     '-----BEGIN RSA PRIVATE KEY-----MIICXAIBAAKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQABAoGBAIQ04VguKg/uUjeg7AKnMMKsIuSI4g9Ej5U9CFN/UEQiOuiId77IBdT6nm+9nIRO73WCrDMkzrh7tfp3/st+0sCklR6IINTFH1+p9552qSDru6WpbIPsEK70yD6Cb8gfEC8PGQh1LRgzpLFMCGVcixuTRfbL3gXc2ZUmh+xmYMXBAkEA27ubu0MmMko3K/n02EU+Cij/fmlcnqkYblkDQxKJVQ3pmgVCmD4wfm2byT2TwbTPs+Rqp3nVnlR/RNJsDJESYQJBAMeMFTd6wOhB1d93HFxWgAYL/AA3B3znc5TxxxW7mn5v0c/uTR52UefoRfBDxxhqItCeTs+NsB5PIw3r6T95ri8CQHlr/4+IeLf7iOdVNba49KJ6q0y4fkTynhyENag/uwH0MS06UOV+ICANA7Q9wcOd3dTDmSg4zBG1Ear/OFPtaqECQC1gboayNGHcbr0lQd7BkNVPLlwCJ4LAwyjQnjwT8DrmRKjrAMB3mYKJ8DWFxCWKJSaZiURrbOxHhKoqxly31+MCQGDwutUtAE6q8E1hZ/+/tqr4fyG5vFW4EYXbeXcYPM6h+PoSBFSPaG/EAGfNmxPiFRll7ODBoHMHei/XXPlAHKg=-----END RSA PRIVATE KEY-----';
 
+let accounts = [
+  { username:'feadmin', password:'4196e4326eea0f8875b058f42fa9b0bd'},
+  { username:'dbadmin', password:'9e689cb0bbae63db72fc99bdd7392266'},
+]
+function validateCredentials(inputUsername, inputPassword, accounts) {
+  const crypto = require('crypto');
+
+  for (const account of accounts) {
+      if (account.username === inputUsername) {
+          const hashedInputPassword = CryptoJS.MD5(inputPassword).toString();
+          if (hashedInputPassword === account.password) {
+              return true;
+          }
+      }
+  }
+  
+  return false; 
+}
 async function login(req, res) {
   try {
     crypt.setKey(tokenPrivateKey);
-    let loginData = JSON.parse(crypt.decrypt(req.body.loginData));
-    if (
-      CryptoJS.MD5(loginData.password).toString() ===
-      '4196e4326eea0f8875b058f42fa9b0bd'
-    ) {
+    let {username, password} = JSON.parse(crypt.decrypt(req.body.loginData));
+    if (validateCredentials(username, password, accounts)) {
       var key = CryptoJS.enc.Utf8.parse(tokenSecretKey);
       var iv = CryptoJS.enc.Utf8.parse(tokenSecretKey);
       let token = CryptoJS.AES.encrypt(

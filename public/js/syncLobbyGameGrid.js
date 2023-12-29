@@ -46,6 +46,11 @@ let storeLobbyGame = Ext.create('Ext.data.Store', {
               record['ImageType'] = 'png';
               return record;
             });
+          } else if (!data.success && data.message === 'Token is expired') {
+            localStorage.removeItem('border-px1-api-cookie');
+            setTimeout(() => window.parent.location.reload(), 1000);
+          } else {
+            alert(data.message);
           }
           return data;
         },
@@ -55,16 +60,6 @@ let storeLobbyGame = Ext.create('Ext.data.Store', {
   autoLoad: false,
 });
 let renderDateTime = (v, _, r) => Ext.Date.format(v, 'm/d/Y H:i:s');
-let featureGrouping = Ext.create('Ext.grid.feature.GroupingSummary', {
-  startCollapsed: true,
-  showSummaryRow: false,
-  groupHeaderTpl: [
-    '<div style="color:#d14836; font-weight: bold">{name:this.formatName}<span style="color:green; font-weight: normal"> ({rows.length} {[values.rows.length > 1 ? "Records" : "Record"]})</span></div>',
-    {
-      formatName: (name) => (name ? name : 'NULL'),
-    },
-  ],
-});
 Ext.onReady(function () {
   let lobbyGameGrid = Ext.create('Ext.grid.Panel', {
     renderTo: 'app',
@@ -85,7 +80,6 @@ Ext.onReady(function () {
         Ext.getCmp('txtNameWLsDomainHG').setValue(CTId);
       },
     },
-    //features: [featureGrouping],
     dockedItems: [
       {
         xtype: 'toolbar',
@@ -103,8 +97,9 @@ Ext.onReady(function () {
                 let proxy = storeLobbyGame.getProxy();
                 cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
                 proxy.setUrl(cdnImageHost + pathSyncGame);
-                CTId = Ext.getCmp('txtNameWLsDomainHG').getValue();
-                proxy.setExtraParams({ CTId: CTId });
+                proxy.setExtraParams({
+                  CTId: Ext.getCmp('txtNameWLsDomainHG').getValue(),
+                });
                 storeLobbyGame.load();
               },
             },
@@ -120,7 +115,8 @@ Ext.onReady(function () {
                   'https://imgtest.playliga.com',
                   'https://imgtest.playliga.com',
                 ],
-                ['https://imgtest.playliga.com.', 'Live CDN'],
+                ['https://imguat.playliga.com', 'https://imguat.playliga.com'],
+                ['https://imgshare.iuf-cfl.cloud', 'https://imgshare.iuf-cfl.cloud'],
               ],
             }),
             displayField: 'name',
@@ -144,6 +140,11 @@ Ext.onReady(function () {
             id: 'txtNameWLsDomainHG',
             itemId: 'txtNameWLsDomainHG',
             enableKeyEvents: true,
+            listeners: {
+              keyup: function (field, e) {
+                field.setValue(field.getValue().toUpperCase());
+              },
+            },
             doQuery: function (queryString, forceAll) {
               this.expand();
               this.store.clearFilter(!forceAll);
@@ -161,19 +162,49 @@ Ext.onReady(function () {
             id: 'btnFindHG',
             icon: 'https://icons.iconarchive.com/icons/zerode/plump/16/Search-icon.png',
             listeners: {
-              click: () => {
+              click: (btn) => {
+                btn.setDisabled(true);
                 let proxy = storeLobbyGame.getProxy();
                 cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
                 proxy.setUrl(cdnImageHost + pathSyncGame);
                 CTId = Ext.getCmp('txtNameWLsDomainHG').getValue();
-                proxy.setExtraParams({
-                  CTId: CTId,
-                });
-                storeLobbyGame.load();
-                lobbyGameGrid.setTitle(
-                  Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
-                    "'s Lobby Game Images"
-                );
+                if (CTId && !isNaN(CTId)) {
+                  proxy.setExtraParams({
+                    CTId: CTId,
+                  });
+                  storeLobbyGame.load({
+                    callback: function (records, operation, success) {
+                      btn.setDisabled(false);
+                    },
+                  });
+                  lobbyGameGrid.setTitle(
+                    Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
+                      "'s Lobby Game Images"
+                  );
+                } else {
+                  Ext.Msg.alert('Caution', 'Selected WL not found');
+                  btn.setDisabled(false);
+                }
+              },
+            },
+          },
+          {
+            xtype: 'button',
+            id: 'btnSyncAll',
+            text: 'Sync All Lobby Images',
+            dock: 'right',
+            iconCls: 'syncCls',
+            listeners: {
+              click: (btn) => {
+                if (storeLobbyGame.getCount() > 0) {
+                  btn.setIconCls('spinner');
+                  btn.setDisabled(true);
+                  syncAllImages(0, storeLobbyGame, () => {
+                    btn.setIconCls('syncCls');
+                    btn.setDisabled(false);
+                    alert('Sync All Image Done!');
+                  });
+                } else alert('Please search before sync !');
               },
             },
           },
@@ -185,9 +216,9 @@ Ext.onReady(function () {
       new Ext.grid.RowNumberer({ dataIndex: 'no', text: 'No.', width: 60 }),
       {
         text: 'ID',
-        tooltip: 'GameLobbyId',
         width: 60,
         dataIndex: 'GameLobbyId',
+        tooltip: 'Game Lobby Id',
       },
       {
         text: 'CTId',
@@ -195,14 +226,15 @@ Ext.onReady(function () {
         dataIndex: 'CTId',
       },
       {
-        text: 'GameType',
-        width: 90,
+        text: 'Game Type',
+        width: 110,
         dataIndex: 'GameType',
       },
       {
-        text: 'PF',
-        width: 70,
+        text: 'Platform',
+        width: 110,
         dataIndex: 'platform',
+        tooltip: 'Platform',
       },
       {
         text: 'Game Desc',
@@ -212,19 +244,19 @@ Ext.onReady(function () {
       },
       {
         text: 'Brand Code',
-        tooltip: 'BrandCode',
+        tooltip: 'Brand Code',
         width: 120,
         dataIndex: 'BrandCode',
       },
       {
-        text: 'Code',
+        text: 'Game Code',
         tooltip: 'GameCode',
-        width: 120,
+        width: 110,
         dataIndex: 'GameCode',
       },
       {
         text: 'GCC',
-        tooltip: 'GameCurCode',
+        tooltip: 'Game Cur Code',
         width: 50,
         dataIndex: 'GameCurCode',
       },
@@ -324,4 +356,33 @@ function syncImage({ urlAPI, jsonData }, done) {
       Ext.Msg.alert('Error', 'Sync CDN Images function');
     },
   });
+}
+function syncAllImages(currentIndex, store, done) {
+  var grid = Ext.getCmp('lobbyGameGrid');
+  if (currentIndex < store.getCount()) {
+    let record = store.getAt(currentIndex);
+    record.set('syncSpinner', true);
+    grid.setDisabled(true);
+    var view = grid.getView();
+    view.scrollBy(0, view.getEl().getHeight());
+    let urlAPI = cdnImageHost + '/lobbygames/update';
+    let jsonData = {
+      GameLobbyId: record.get('GameLobbyId').toString(),
+      GameCode: record.get('GameCode'),
+      ImageType: record.get('ImageType'),
+      strBase64: record.get('LobbyImage'),
+    };
+    syncImage({ urlAPI, jsonData }, (response) => {
+      let rs = JSON.parse(response.responseText);
+      record.set('syncSpinner', false);
+      let img = `<img src="${rs.imagePath}?v=${Date.now()}" />`;
+      record.set('GameImgeCDN', img);
+      store.commitChanges();
+      currentIndex = currentIndex + 1;
+      syncAllImages(currentIndex, store, done);
+    });
+  } else {
+    grid.setDisabled(false);
+    if (done) done();
+  }
 }

@@ -134,6 +134,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
       let whiteLabels = records[0].data;
       delete whiteLabels['id'];
       let storeWLSyncGrid = [];
+      //storeWLSyncGrid.push(['ALL WLs', 'ALL WLs']);
       for (var whitelabelName in whiteLabels) {
         try {
           let record = whiteLabels[whitelabelName];
@@ -182,7 +183,19 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['checked'] = 0;
           record['batUpload'] = 0;
           record['account'] = h2a(fhs('6465664031202f203030303030303030'));
-          storeWLSyncGrid.push([record['compType'], whitelabelName])
+          let versionSW = record['versionSW'];
+          switch (versionSW) {
+            case undefined:
+              record['versionSW'] = 'None';
+              break;
+            case 0:
+              record['versionSW'] = 'Activated';
+              break;
+            case 1:
+              record['versionSW'] = 'Activated(SSM)';
+              break;
+          }
+          storeWLSyncGrid.push([record['compType'], whitelabelName]);
           data.push(record);
         } catch (error) {
           log(error);
@@ -194,12 +207,30 @@ let storeWLs = Ext.create('Ext.data.Store', {
       storeWLs.loadData(data);
       listNameWLs = sortAndToList(data);
       Ext.getCmp('txtNameWLs').getStore().loadData(listNameWLs);
-      localStorage.setItem('storeWLSyncGrid', JSON.stringify(storeWLSyncGrid))
-      localStorage.setItem('storeWLDomainGrid', JSON.stringify(listNameWLs))
+      localStorage.setItem('storeWLSyncGrid', JSON.stringify(storeWLSyncGrid));
+      localStorage.setItem('storeWLDomainGrid', JSON.stringify(listNameWLs));
     },
   },
   autoLoad: true,
 });
+let isFEAccount = () => localStorage.getItem('username') === 'feadmin';
+let groupingMenuItems = [
+  ['default', 'Select Group'],
+  ['versionSW', 'Version SW'],
+  ['machineKey', 'Machine Key'],
+  ['status', 'Status'],
+  ['isResponsive', 'Responsive'],
+  ['mainColor', 'Color'],
+  ['referralFunction', 'Referral Function'],
+  ['mobileRedirect', 'Mobile Redirect'],
+  ['dynamicFooter', 'Meta Feature'],
+  ['referredIconMenu', 'Menu Icon'],
+  ['hasPopup', 'Has Popup'],
+  ['referredWL', 'Referred WL'],
+  ['closedMail', 'Closed Mail'],
+];
+if (isFEAccount())
+  groupingMenuItems.splice(1, 0, ['serverPoolIPs', 'Server Pool']);
 Ext.onReady(function () {
   authenticate((isAuthenticated) => {
     if (!isAuthenticated) location.reload();
@@ -399,23 +430,7 @@ Ext.onReady(function () {
         width: 150,
         store: new Ext.data.ArrayStore({
           fields: ['id', 'name'],
-          data: [
-            ['default', 'Select Group'],
-            ['serverPoolIPs', 'Server Pool'],
-            ['machineKey', 'Machine Key'],
-            ['status', 'Status'],
-            ['isResponsive', 'Responsive'],
-            ['mainColor', 'Color'],
-            ['referralFunction', 'Referral Function'],
-            ['mobileRedirect', 'Mobile Redirect'],
-            ['dynamicFooter', 'Meta Feature'],
-            ['referredIconMenu', 'Menu Icon'],
-            ['hasPopup', 'Has Popup'],
-            ['referredWL', 'Referred WL'],
-            ['closedMail', 'Closed Mail'],
-            ['securityQuestion', 'Security Question'],
-            //['servers', 'Server'],
-          ],
+          data: groupingMenuItems,
         }),
         queryMode: 'local',
         displayField: 'name',
@@ -539,6 +554,9 @@ Ext.onReady(function () {
           fields: ['id', 'name'],
           data: [
             ['default', 'Select Col'],
+            ['Default.aspx?ref=TestSSM', 'Test SSM DF'],
+            ['Main.aspx?ref=TestSSM', 'Test SSM BF'],
+            ['Main.aspx?ref=TestHAF', 'Test SSM AF'],
             ['Robots.txt', 'Robots.txt'],
             ['defaultDomain', 'Default.aspx'],
             ['Main.aspx', 'Main.aspx'],
@@ -646,6 +664,7 @@ Ext.onReady(function () {
         listeners: {
           click: () => authForm.setHidden(false),
         },
+        hidden: !isFEAccount(),
       },
       {
         xtype: 'button',
@@ -718,7 +737,7 @@ Ext.onReady(function () {
         id: 'btnExport',
         text: '🡇 Excel',
         iconCls: 'exportExcelCls',
-        hidden:true,
+        hidden: true,
         handler: (button, event) => {
           function exportToCsv(filename, rows) {
             var processRow = function (row) {
@@ -771,7 +790,7 @@ Ext.onReady(function () {
       },
       {
         xtype: 'combo',
-        width:130,
+        width: 130,
         store: new Ext.data.ArrayStore({
           fields: ['id', 'name'],
           data: [
@@ -786,7 +805,7 @@ Ext.onReady(function () {
         id: 'cbbGameType',
         value: 'allgames',
         editable: false,
-        hidden:true,
+        hidden: true,
       },
       '->',
       {
@@ -837,7 +856,7 @@ Ext.onReady(function () {
         icon: 'https://icons.iconarchive.com/icons/saki/nuoveXT-2/16/Apps-session-logout-icon.png',
         text: 'Logout',
         dock: 'right',
-        hidden:true,
+        hidden: true,
         //width: 100,
         listeners: {
           click: () => {
@@ -934,7 +953,7 @@ Ext.onReady(function () {
         text: 'Prefix',
         width: 90,
         dataIndex: 'prefix',
-        hidden: true,
+        hidden: isFEAccount(),
       },
 
       {
@@ -943,54 +962,6 @@ Ext.onReady(function () {
         dataIndex: 'status',
         hidden: true,
       },
-      // {
-      //   text: 'panel',
-      //   width: 150,
-      //   dataIndex: 'defaultDomain',
-      //   hidden: true,
-      //   renderer: (v, _, r) =>
-      //     Ext.String.format(
-      //       '<a target="_blank" href="https://{0}">{0}</a>',
-      //       v ? v : r.get('name').toLowerCase() + '.com' + '/_Bet/Panel.aspx'
-      //     ),
-      // },
-      // {
-      //   text: 'Robots',
-      //   width: 150,
-      //   dataIndex: 'defaultDomain',
-      //   hidden: true,
-      //   renderer: (v, _, r) =>
-      //     Ext.String.format(
-      //       '<a target="_blank" href="https://{0}">{0}</a>',
-      //       (v ? v : r.get('name').toLowerCase() + '.com') + '/robots.txt'
-      //     ),
-      // },
-      // {
-      //   text: 'Sitemap',
-      //   width: 150,
-      //   dataIndex: 'defaultDomain',
-      //   hidden: true,
-      //   renderer: (v, _, r) =>
-      //     Ext.String.format(
-      //       '<a target="_blank" href="https://{0}">{0}</a>',
-      //       v ? v : r.get('name').toLowerCase() + '.com' + '/sitemap.xml'
-      //     ),
-      // },
-      // {
-      //   text: 'Google',
-      //   width: 150,
-      //   dataIndex: 'defaultDomain',
-      //   hidden: true,
-      //   renderer: (v, _, r) =>
-      //     Ext.String.format(
-      //       '<a target="_blank" href="https://{0}">{0}</a>',
-      //       v
-      //         ? v
-      //         : r.get('name').toLowerCase() +
-      //             '.com' +
-      //             '/googleae669996542f22e8.html'
-      //     ),
-      // },
       {
         text: 'Refered WL',
         width: 150,
@@ -1004,17 +975,13 @@ Ext.onReady(function () {
         dataIndex: 'mainColor',
         hidden: true,
       },
-      // {
-      //   text: 'Servers',
-      //   width: 120,
-      //   dataIndex: 'servers',
-      //   hidden: true,
-      // },
       {
         text: 'Server Pool',
         width: 190,
         dataIndex: 'serverPoolIPs',
-        hidden: false,
+        hidden: !isFEAccount(),
+        hideable: false,
+        menuDisabled: true,
       },
       {
         text: 'H/D Number',
@@ -1022,6 +989,7 @@ Ext.onReady(function () {
         dataIndex: 'headerNumber',
         tooltip: 'Header/Default number',
         renderer: (val, _, record) => val + '/' + record.get('defaultNumber'),
+        hidden: !isFEAccount(),
       },
       {
         text: 'Specific Server',
@@ -1035,12 +1003,16 @@ Ext.onReady(function () {
           queryMode: 'local',
         },
         hidden: true,
+        hideable: false,
+        menuDisabled: true,
       },
       {
-        text: 'Referral Feature',
-        width: 130,
+        text: 'Referral',
+        width: 100,
         dataIndex: 'referralFunction',
-        hidden: true,
+        hidden: isFEAccount(),
+        hideable: false,
+        menuDisabled: true,
       },
       {
         xtype: 'actioncolumn',
@@ -1074,13 +1046,6 @@ Ext.onReady(function () {
           },
         ],
       },
-      // {
-      //   text: '📵',
-      //   width: 50,
-      //   dataIndex: 'mobileRedirect',
-      //   renderer: (v, _, r) => (!v ? '✅' : '❌'),
-      //   hidden: true,
-      // },
       {
         text: '📵 IP',
         width: 80,
@@ -1100,20 +1065,12 @@ Ext.onReady(function () {
         hidden: true,
       },
       {
-        text: 'Meta Feature (🦶)',
-        width: 50,
+        text: 'WS Meta (🦶)',
+        width: 120,
         dataIndex: 'dynamicFooter',
         //renderer: (value) => (value !== 'None' ? '✅' : '❌'),
-        hidden: true,
+        hidden: isFEAccount(),
       },
-
-      // {
-      //   text: '🔒',
-      //   width: 50,
-      //   dataIndex: 'securityQuestion',
-      //   renderer: (value) => (value ? '✅' : '❌'),
-      //   hidden: true,
-      // },
       // {
       //   text: '✉',
       //   width: 50,
@@ -1128,84 +1085,6 @@ Ext.onReady(function () {
       //   dataIndex: 'closedPlaytech',
       //   renderer: (value) => (!value ? '▶' : '❌'),
       //   hidden: true,
-      // },
-
-      // {
-      //   xtype: 'actioncolumn',
-      //   width: 30,
-      //   tooltip: 'Open Remote Desktop Connection',
-      //   text: 'R',
-      //   dataIndex: 'servers',
-      //   hidden: true,
-      //   items: [
-      //     {
-      //       getClass: function (value, meta, record, rowIndex, colIndex) {
-      //         var isSpinning = record.get('remoteDesktopSpinner');
-      //         return isSpinning ? 'spinner' : 'remoteDesktop';
-      //       },
-      //       handler: function (grid, rowIndex, colIndex, item, e, record) {
-      //         rowIndex = grid.getStore().indexOf(record);
-      //         record = grid.getStore().getAt(rowIndex);
-      //         var ip = record.get('specificServer');
-      //         record.set('remoteDesktopSpinner', true);
-      //         Ext.Ajax.request({
-      //           method: 'GET',
-      //           url: remoteDesktopServiceUrl + ip.replace('192.', '10.'),
-      //           success: function (response) {
-      //             record.set('remoteDesktopSpinner', false);
-      //           },
-      //           failure: function (response) {
-      //             Ext.Msg.alert(
-      //               "Remote Desktop Cli Service doesn't start",
-      //               `Run Remote Desktop Service by cmd:<br/><code>cd liga<br/>node rdservice</code>`
-      //             );
-      //             record.set('remoteDesktopSpinner', false);
-      //           },
-      //         });
-      //       },
-      //     },
-      //   ],
-      // },
-      // {
-      //   xtype: 'actioncolumn',
-      //   width: 40,
-      //   tooltip: 'Sync Domains',
-      //   text: 'SD',
-      //   dataIndex: 'isSyncedDomain',
-      //   hidden: true,
-      //   items: [
-      //     {
-      //       getClass: function (value, meta, record, rowIndex, colIndex) {
-      //         var iconCls = '';
-      //         switch (value) {
-      //           case false:
-      //             iconCls = 'checkCls';
-      //             break;
-      //           case 'spinner':
-      //             iconCls = 'spinner';
-      //             break;
-      //           case 'checkKoCls':
-      //             iconCls = 'checkKoCls';
-      //             break;
-      //           default:
-      //             iconCls = 'checkOkCls';
-      //             break;
-      //         }
-      //         return iconCls;
-      //       },
-      //       handler: function (grid, rowIndex, colIndex, item, e, record) {
-      //         rowIndex = grid.getStore().indexOf(record);
-      //         record = grid.getStore().getAt(rowIndex);
-      //         var name = record.get('name');
-      //         syncDomainsOneWhiteLabel(name, record, (success) =>
-      //           record.set(
-      //             'isSyncedDomain',
-      //             success ? 'checkOkCls' : 'checkKoCls'
-      //           )
-      //         );
-      //       },
-      //     },
-      //   ],
       // },
       {
         xtype: 'actioncolumn',
@@ -1250,6 +1129,12 @@ Ext.onReady(function () {
             },
           },
         ],
+      },
+      {
+        text: 'SW Version',
+        width: 150,
+        dataIndex: 'versionSW',
+        tooltip: 'SW Version.<br/> SSM: SPORT SubMenu',
       },
       {
         xtype: 'actioncolumn',

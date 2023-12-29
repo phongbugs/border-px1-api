@@ -62,7 +62,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
   renderTo: 'app',
   id: 'domainGrid',
   store: storeDomain,
-  width: 520,
+  width: 560,
   height: 368,
   title: 'Domains',
   style: {
@@ -423,6 +423,62 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
                 }
               },
               failure: function (response) {
+                alert(JSON.stringify(response));
+              },
+            });
+          },
+        },
+      ],
+    },
+    {
+      xtype: 'actioncolumn',
+      width: 35,
+      tooltip: 'Refresh Session Cache Image Game Version',
+      text: 'R',
+      items: [
+        {
+          iconCls: 'syncCls',
+          getClass: function (value, meta, record, rowIndex, colIndex) {
+            var isSpinning = record.get('refreshSessionSpinner');
+            return isSpinning ? 'spinner' : 'syncCls';
+          },
+          handler: function (grid, rowIndex, colIndex, item, e, record) {
+            rowIndex = grid.getStore().indexOf(record);
+            record = grid.getStore().getAt(rowIndex);
+            let domainType = getDomainType();
+            let cookieKey =
+              domainType === 'ip'
+                ? 'border-px1-cookie-ip'
+                : 'border-px1-cookie';
+            var ip = record.get('specificServer');
+            //record.set('refreshSessionSpinner', true);
+            Ext.Ajax.request({
+              method: 'POST',
+              url:
+                borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
+              headers: {
+                Authorization: 'Basic ' + localStorage.getItem(cookieKey),
+              },
+              //withCredentials: true,
+              success: function (response) {
+                //log(response);
+                //record.set('specificServerSpinner', false);
+                let result = JSON.parse(response.responseText);
+                if (result.success) {
+                  let defaultDomain = record.get('Domain'),
+                    protocol = Ext.getCmp('cbbProtocol').getValue(),
+                    backendId = result.backendId;
+                  let url = protocol + '://' + defaultDomain + '/';
+                  url += '/pgajax.axd?T=SetCacheGameImageVersion&bpx-backend-id=' + backendId;
+                  window.open(url, '_blank');
+                } else {
+                  if(result.message.indexOf('Invalid URI "undefined/api/domainEdit/token"') > -1)
+                    authForm.setHidden(false)
+                  else alert(result.message);
+                }
+              },
+              failure: function (response) {
+                //record.set('specificServerSpinner', false);
                 alert(JSON.stringify(response));
               },
             });

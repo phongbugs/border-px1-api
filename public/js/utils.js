@@ -39,22 +39,14 @@ function getQueryParam(paramName) {
   // Lấy URL hiện tại
   var url_string = window.location.href;
 
-  // Tạo đối tượng URL từ URL hiện tại
-  var url = new URL(url_string);
-
-  // Lấy giá trị của tham số "paramName"
-  var paramValue = url.searchParams.get(paramName);
-
-  // Trả về giá trị tham số hoặc null nếu không tìm thấy
-  return paramValue;
-}
-
-function getISharedHeaderSubMenuImage(CTId){
-  switch(CTId){
-    case 137:
-    case 262:
-      return false;
-    default: return true;
+  function getISharedHeaderSubMenuImage(CTId){
+    return true;
+    // switch(CTId){
+    //   case 137:
+    //   case 262:
+    //     return false;
+    //   default: return true;
+    // }
   }
 }
 

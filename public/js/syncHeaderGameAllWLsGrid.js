@@ -25,8 +25,7 @@ var cdnImageHost =
   (location.host.indexOf('localhost') > -1
     ? 'http://localhost/cdn'
     : 'https://imgtest.playliga.com');
-var pathSyncGame = '/sync/headergames';
-var CTId = getQueryParam('CTId');
+var pathSyncGame = '/sync/headergamesallwls';
 var renderBase64StrToImg = (imageType, strBase64) => {
   if (strBase64 !== '') {
     if (imageType === 'svg') {
@@ -42,9 +41,6 @@ let storeHeaderGame = Ext.create('Ext.data.Store', {
   proxy: {
     type: 'ajax',
     url: cdnImageHost + pathSyncGame,
-    extraParams: {
-      CTId: CTId,
-    },
     timeout: 60000,
     headers: {
       Authorization: 'Basic ' + localStorage.getItem('border-px1-api-cookie'),
@@ -56,15 +52,10 @@ let storeHeaderGame = Ext.create('Ext.data.Store', {
       transform: {
         fn: function (data) {
           if (data.success) {
-            data.menus = data.menus.map((record) => {
-              let subMenuIcon = data.submenuIcons[record['HGameId']];
-              record['GameTypeSubMenuIcon'] = subMenuIcon;
-              record['ImageTypeSubMenu'] = 'png';
-              return record;
-            });
+            console.log();
           } else if (!data.success && data.message === 'Token is expired') {
             localStorage.removeItem('border-px1-api-cookie');
-            setTimeout(() => window.parent.location.reload(), 1000);            
+            setTimeout(() => window.parent.location.reload(), 1000);
           } else {
             alert(data.message);
           }
@@ -82,7 +73,6 @@ Ext.onReady(function () {
     id: 'headerGameGrid',
     store: storeHeaderGame,
     header: false,
-    title: getQueryParam('WL') + `'s Header Game Images`,
     width:
       Ext.getBody().getViewSize().width < 1388
         ? 1388
@@ -90,11 +80,6 @@ Ext.onReady(function () {
     height: Ext.getBody().getViewSize().height,
     viewConfig: {
       loadMask: true,
-    },
-    listeners: {
-      viewready: () => {
-        Ext.getCmp('txtNameWLsDomainHG').setValue(CTId);
-      },
     },
     dockedItems: [
       {
@@ -113,9 +98,6 @@ Ext.onReady(function () {
                 let proxy = storeHeaderGame.getProxy();
                 cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
                 proxy.setUrl(cdnImageHost + pathSyncGame);
-                proxy.setExtraParams({
-                  CTId: Ext.getCmp('txtNameWLsDomainHG').getValue(),
-                });
                 storeHeaderGame.load();
               },
             },
@@ -143,36 +125,6 @@ Ext.onReady(function () {
             editable: true,
           },
           {
-            xtype: 'combo',
-            width: 150,
-            store: new Ext.data.ArrayStore({
-              fields: ['id', 'name'],
-              data: JSON.parse(localStorage.getItem('storeWLSyncGrid')),
-            }),
-            displayField: 'name',
-            valueField: 'id',
-            queryMode: 'local',
-            value: '',
-            id: 'txtNameWLsDomainHG',
-            itemId: 'txtNameWLsDomainHG',
-            enableKeyEvents: true,
-            listeners: {
-              keyup: function (field, e) {
-                field.setValue(field.getValue().toUpperCase());
-              },
-            },
-            doQuery: function (queryString, forceAll) {
-              this.expand();
-              this.store.clearFilter(!forceAll);
-              if (!forceAll) {
-                this.store.filter(
-                  this.displayField,
-                  new RegExp(Ext.String.escapeRegex(queryString), 'i')
-                );
-              }
-            },
-          },
-          {
             xtype: 'button',
             text: '',
             id: 'btnFindHG',
@@ -183,51 +135,18 @@ Ext.onReady(function () {
                 let proxy = storeHeaderGame.getProxy();
                 cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
                 proxy.setUrl(cdnImageHost + pathSyncGame);
-                CTId = Ext.getCmp('txtNameWLsDomainHG').getValue();
-                if (CTId && !isNaN(CTId)) {
-                  proxy.setExtraParams({
-                    CTId: CTId,
-                  });
-                  storeHeaderGame.load({
-                    callback: function (records, operation, success) {
-                      btn.setDisabled(false);
-                    },
-                  });
-                  headerGameGrid.setTitle(
-                    Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
-                      "'s Header Game Images"
-                  );
-                } else {
-                  Ext.Msg.alert('Caution', 'Selected WL not found');
-                  btn.setDisabled(false);
-                }
+                storeHeaderGame.load({
+                  callback: function (records, operation, success) {
+                    btn.setDisabled(false);
+                  },
+                });
               },
             },
           },
-          { 
-            xtype: 'button', 
-            id: 'btnSyncAllMenu', 
-            text: 'Sync All Menu Header Images', 
-            dock: 'right', 
-            iconCls: 'syncCls', 
-            listeners: { 
-              click: (btn) => { 
-                if (storeHeaderGame.getCount() > 0) { 
-                  btn.setIconCls('spinner'); 
-                  btn.setDisabled(true); 
-                  syncAllMenuHeaderImages(0, storeHeaderGame, () => { 
-                    btn.setIconCls('syncCls'); 
-                    btn.setDisabled(false); 
-                    alert('Sync All Menu Header Images Done!'); 
-                  }); 
-                } else alert('Please search before sync !'); 
-              }, 
-            }, 
-          }, 
           {
             xtype: 'button',
-            id: 'btnSyncAllSubMenu',
-            text: 'Sync All Sub Menu Header Images',
+            id: 'btnSyncAllMenu',
+            text: 'Sync All Menu Header Images',
             dock: 'right',
             iconCls: 'syncCls',
             listeners: {
@@ -235,10 +154,10 @@ Ext.onReady(function () {
                 if (storeHeaderGame.getCount() > 0) {
                   btn.setIconCls('spinner');
                   btn.setDisabled(true);
-                  syncAllSubMenuHeaderImages(0, storeHeaderGame, () => {
+                  syncAllMenuHeaderImages(0, storeHeaderGame, () => {
                     btn.setIconCls('syncCls');
                     btn.setDisabled(false);
-                    alert('Sync All Submenu Header Images Done!');
+                    alert('Sync All Menu Header Images Done!');
                   });
                 } else alert('Please search before sync !');
               },
@@ -299,31 +218,12 @@ Ext.onReady(function () {
         renderer: (v, _, r) => renderBase64StrToImg(r.get('ImageType'), v),
       },
       {
-        text: 'SMenuBase64',
-        width: 130,
-        dataIndex: 'GameTypeSubMenuIcon',
-        tdCls: 'headerIcons',
-        tooltip: 'SubMenu Icon (Base64)',
-        renderer: (v, _, r) => {
-          let imageType = r.get('ImageTypeSubMenu');
-          if (imageType === 'svg') {
-            imageType = 'svg+xml';
-            return `<img style="width:70%; height:70%" src="data:image/${imageType};base64, ${v}" />`;
-          }
-          if (v !== '')
-            return `<img style="width:70%; height:70%" src="data:image/${r.get(
-              'ImageTypeSubMenu'
-            )};base64, ${v}" />`;
-          return 'NULL';
-        },
-      },
-      {
         text: 'MenuCDN',
         tooltip: '',
         dataIndex: 'GameTypeMenuIcon',
         tdCls: 'headerIcons',
         tooltip: 'Menu Icon (File)',
-        width: 120,
+        width: 160,
         renderer: (v, _, r) => {
           if (v !== '')
             return `<img src="${
@@ -335,33 +235,6 @@ Ext.onReady(function () {
               '.' +
               r.get('ImageType')
             }?v=${Date.now()}" />`;
-          return 'NULL';
-        },
-      },
-      {
-        text: 'SMenuCDN',
-        tooltip: '',
-        dataIndex: 'GameTypeSubMenuIcon',
-        tdCls: 'headerIcons',
-        tooltip: 'SubMenu Icon (File)',
-        width: 130,
-        renderer: (v, _, r) => {
-          if (v !== '') {
-            let isSharedHeaderSubMenuImage = getISharedHeaderSubMenuImage(
-              r.get('CTId')
-            );
-            return `<img style="width:70%; height:70%" src="${
-              cdnImageHost +
-              '/headergames' +
-              (isSharedHeaderSubMenuImage ? '' : '/' + r.get('CTId')) +
-              '/SubMenuIcon_' +
-              r.get('HGameId') +
-              '_' +
-              r.get('GameName') +
-              '.' +
-              r.get('ImageTypeSubMenu')
-            }?v=${Date.now()}" />`;
-          }
           return 'NULL';
         },
       },
@@ -409,8 +282,7 @@ Ext.onReady(function () {
                 },
                 (response) => {
                   let rs = JSON.parse(response.responseText);
-                  if(!rs.success) 
-                    alert(rs.message)
+                  if (!rs.success) alert(rs.message);
                   record.set('syncSpinner', false);
                   let img = `<img src="${rs.imagePath}?v=${Date.now()}" />`;
                   record.set('GameTypeMenuIconCDN', img);
@@ -453,8 +325,7 @@ Ext.onReady(function () {
                 },
                 (response) => {
                   let rs = JSON.parse(response.responseText);
-                  if(!rs.success) 
-                    alert(rs.message)
+                  if (!rs.success) alert(rs.message);
                   record.set('syncSpinnerSMN', false);
                   let img = `<img src="${rs.imagePath}?v=${Date.now()}" />`;
                   record.set('GameTypeSubMenuIconCDN', img);
@@ -552,40 +423,8 @@ function syncAllMenuHeaderImages(currentIndex, store, done) {
         syncAllMenuHeaderImages(currentIndex, store, done);
       }
     );
-  } else{
+  } else {
     grid.setDisabled(false);
     if (done) done();
   }
-}
-
-function syncAllSubMenuHeaderImages(currentIndex, store, done) {
-  if (currentIndex < store.getCount()) {
-    let record = store.getAt(currentIndex);
-    record.set('syncSpinnerSMN', true);
-    var grid = Ext.getCmp('headerGameGrid');
-    var view = grid.getView();
-    view.scrollBy(0, view.getEl().getHeight());
-    syncImage(
-      {
-        HGameId: record.get('HGameId').toString(),
-        GameName: record.get('GameName'),
-        GameType: record.get('GameType'),
-        CTId: record.get('CTId').toString(),
-        imageType: record.get('ImageType'),
-        isHeaderSubMenuImage: true,
-        strBase64: record.get('GameTypeSubMenuIcon'),
-      },
-      (response) => {
-        if (response) {
-          let rs = JSON.parse(response.responseText);
-          let img = `<img src="${rs.imagePath}?v=${Date.now()}" />`;
-          record.set('GameTypeSubMenuIconCDN', img);
-          store.commitChanges();
-        }
-        record.set('syncSpinnerSMN', false);
-        currentIndex = currentIndex + 1;
-        syncAllSubMenuHeaderImages(currentIndex, store, done);
-      }
-    );
-  } else if (done) done();
 }

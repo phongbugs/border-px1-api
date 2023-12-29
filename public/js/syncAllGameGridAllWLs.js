@@ -2,23 +2,9 @@
   extend: 'Ext.data.Model',
   fields: [
     { name: 'GameListID', type: 'int' },
-    { name: 'CTId', type: 'int' },
-    { name: 'type', type: 'string' },
-    { name: 'platform', type: 'string' },
-    { name: 'GamePlatformID', type: 'string' },
-    { name: 'gameType', type: 'int' },
-    { name: 'gameDesc', type: 'string' },
-    { name: 'gameCode', type: 'string' },
-    { name: 'gameName', type: 'string' },
-    { name: 'SearchTags', type: 'string' },
-    { name: 'GameCurCode', type: 'string' },
-    { name: 'IsNewGame', type: 'bool' },
-    { name: 'IdGameUrl', type: 'string' },
-    { name: 'GameImageBase64', type: 'string' },
-    { name: 'GameImgeCDN', type: 'string' },
+    { name: 'imgBase64Str', type: 'string' },
+    { name: 'imgCDN', type: 'string' },
     { name: 'ImageType', type: 'string' },
-    { name: 'BrandDisplayName', type: 'string' },
-    { name: 'BrandOrderId', type: 'string' },
   ],
 });
 var tokenSync = '';
@@ -27,16 +13,12 @@ var cdnImageHost =
   (location.host.indexOf('localhost') > -1
     ? 'http://localhost/cdn'
     : 'https://imgtest.playliga.com');
-var pathSyncGame = '/sync/allgames';
-var CTId = getQueryParam('CTId');
+var pathSyncGame = '/sync/allgamesallwls';
 let storeAllGame = Ext.create('Ext.data.Store', {
   model: 'AllGame',
   proxy: {
     type: 'ajax',
     url: cdnImageHost + pathSyncGame,
-    extraParams: {
-      CTId: CTId,
-    },
     timeout: 60000,
     headers: {
       Authorization: 'Basic ' + localStorage.getItem('border-px1-api-cookie'),
@@ -48,10 +30,8 @@ let storeAllGame = Ext.create('Ext.data.Store', {
       transform: {
         fn: function (data) {
           if (data && data.success) {
-            let images = data.images;
             data.games = data.games.map((record) => {
               record['ImageType'] = 'png';
-              record['GameImageBase64'] = images[record['GameListID']];
               return record;
             });
           } else if (!data.success && data.message === 'Token is expired') {
@@ -74,7 +54,7 @@ Ext.onReady(function () {
     id: 'allGameGrid',
     store: storeAllGame,
     header: false,
-    title: getQueryParam('WL') + `'s Header Game Images`,
+    title: 'ALL GAMES',
     width:
       Ext.getBody().getViewSize().width < 1388
         ? 1388
@@ -82,11 +62,6 @@ Ext.onReady(function () {
     height: Ext.getBody().getViewSize().height,
     viewConfig: {
       loadMask: true,
-    },
-    listeners: {
-      viewready: () => {
-        Ext.getCmp('txtNameWLsDomainHG').setValue(CTId);
-      },
     },
     dockedItems: [
       {
@@ -105,9 +80,6 @@ Ext.onReady(function () {
                 let proxy = storeAllGame.getProxy();
                 cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
                 proxy.setUrl(cdnImageHost + pathSyncGame);
-                proxy.setExtraParams({
-                  CTId: Ext.getCmp('txtNameWLsDomainHG').getValue(),
-                });
                 storeAllGame.load();
               },
             },
@@ -135,36 +107,6 @@ Ext.onReady(function () {
             editable: true,
           },
           {
-            xtype: 'combo',
-            width: 150,
-            store: new Ext.data.ArrayStore({
-              fields: ['id', 'name'],
-              data: JSON.parse(localStorage.getItem('storeWLSyncGrid')),
-            }),
-            displayField: 'name',
-            valueField: 'id',
-            queryMode: 'local',
-            value: '',
-            id: 'txtNameWLsDomainHG',
-            itemId: 'txtNameWLsDomainHG',
-            enableKeyEvents: true,
-            listeners: {
-              keyup: function (field, e) {
-                field.setValue(field.getValue().toUpperCase());
-              },
-            },
-            doQuery: function (queryString, forceAll) {
-              this.expand();
-              this.store.clearFilter(!forceAll);
-              if (!forceAll) {
-                this.store.filter(
-                  this.displayField,
-                  new RegExp(Ext.String.escapeRegex(queryString), 'i')
-                );
-              }
-            },
-          },
-          {
             xtype: 'button',
             text: '',
             id: 'btnFindHG',
@@ -175,24 +117,15 @@ Ext.onReady(function () {
                 let proxy = storeAllGame.getProxy();
                 cdnImageHost = Ext.getCmp('cbbUrlCDN').getRawValue();
                 proxy.setUrl(cdnImageHost + pathSyncGame);
-                CTId = Ext.getCmp('txtNameWLsDomainHG').getValue();
-                if (CTId && !isNaN(CTId)) {
-                  proxy.setExtraParams({
-                    CTId: CTId,
-                  });
-                  storeAllGame.load({
-                    callback: function (records, operation, success) {
-                      btn.setDisabled(false);
-                    },
-                  });
-                  allGameGrid.setTitle(
-                    Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
-                      "'s All Game Images"
-                  );
-                } else {
-                  Ext.Msg.alert('Caution', 'Selected WL not found');
-                  btn.setDisabled(false);
-                }
+                storeAllGame.load({
+                  callback: function (records, operation, success) {
+                    btn.setDisabled(false);
+                  },
+                });
+                allGameGrid.setTitle(
+                  Ext.getCmp('txtNameWLsDomainHG').getRawValue() +
+                    "'s All Game Images"
+                );
               },
             },
           },
@@ -223,101 +156,15 @@ Ext.onReady(function () {
     columns: [
       new Ext.grid.RowNumberer({ dataIndex: 'no', text: 'No.', width: 60 }),
       {
-        text: 'ID',
+        text: 'GameListID',
         tooltip: 'GameListID',
-        width: 60,
+        width: 120,
         dataIndex: 'GameListID',
-      },
-      {
-        text: 'CTId',
-        width: 50,
-        dataIndex: 'CTId',
-      },
-      {
-        text: 'type',
-        width: 90,
-        tooltip: 'type',
-        dataIndex: 'type',
-      },
-      {
-        text: 'PF',
-        width: 70,
-        tooltip: 'platform',
-        dataIndex: 'platform',
-      },
-      {
-        text: 'PFId',
-        width: 70,
-        tooltip: 'GamePlatformID',
-        dataIndex: 'GamePlatformID',
-      },
-      {
-        text: 'GameType',
-        width: 100,
-        tooltip: 'type',
-        dataIndex: 'type',
-        hidden: true,
-      },
-      {
-        text: 'Game Desc',
-        width: 100,
-        tooltip: 'gameDesc',
-        dataIndex: 'gameDesc',
-        hidden: true,
-      },
-      {
-        text: 'Code',
-        tooltip: 'gameCode',
-        width: 120,
-        dataIndex: 'gameCode',
-      },
-      {
-        text: 'Name',
-        width: 150,
-        tooltip: 'gameName',
-        dataIndex: 'gameName',
-      },
-      {
-        text: 'SearchTags',
-        width: 120,
-        dataIndex: 'SearchTags',
-        hidden: true,
-      },
-      {
-        text: 'GCC',
-        tooltip: 'GameCurCode',
-        width: 50,
-        dataIndex: 'GameCurCode',
-      },
-      {
-        text: 'IsNew',
-        width: 70,
-        tooltip: 'Is New Game',
-        dataIndex: 'IsNewGame',
-        hidden: true,
-      },
-      {
-        text: 'IdGameUrl',
-        width: 150,
-        dataIndex: 'IdGameUrl',
-        hidden: true,
-      },
-      {
-        text: 'BrandDisplayName',
-        width: 150,
-        dataIndex: 'BrandDisplayName',
-        hidden: false,
-      },
-      {
-        text: 'OrderId',
-        width: 70,
-        dataIndex: 'BrandOrderId',
-        hidden: false,
       },
       {
         text: 'Image Base64',
         tooltip: 'Image from base64 string',
-        dataIndex: 'GameImageBase64',
+        dataIndex: 'imgBase64Str',
         width: 150,
         tdCls: 'headerIcons',
         renderer: (v, _, r) => {
@@ -328,23 +175,23 @@ Ext.onReady(function () {
           }
           if (v !== '')
             return `<img style="width:100%; height:100%" src="data:image/${imageType};base64, ${v}" />`;
-          return `<img src="data:image/${r.get('ImageType')};base64, ${v}" />`;
+          return `NULL`;
         },
       },
       {
         text: 'Image File CDN',
         tooltip: 'Image File from CDN',
-        dataIndex: 'GameImgeCDN',
+        dataIndex: 'imgBase64Str',
         width: 150,
         tdCls: 'headerIcons',
         renderer: (v, _, r) => {
-          return `<img style="width:100%; height:100%" src="${
+          return v !== '' ? `<img style="width:100%; height:100%" src="${
             cdnImageHost +
             '/allgames/' +
             r.get('GameListID') +
             '.' +
             r.get('ImageType')
-          }?v=${Date.now()}" />`;
+          }?v=${Date.now()}" />`: 'NULL'
         },
       },
       {
@@ -365,13 +212,13 @@ Ext.onReady(function () {
                 {
                   gameListId: record.get('GameListID'),
                   imageType: record.get('ImageType'),
-                  strBase64: record.get('GameImageBase64'),
+                  strBase64: record.get('imgBase64Str'),
                 },
                 (response) => {
                   let rs = JSON.parse(response.responseText);
                   record.set('syncSpinner', false);
                   let img = `<img src="${rs.imagePath}?v=${Date.now()}" />`;
-                  record.set('GameImgeCDN', img);
+                  record.set('imgCDN', img);
                   grid.getStore().commitChanges();
                 }
               );
@@ -414,13 +261,13 @@ function syncAllImages(currentIndex, store, done) {
       {
         gameListId: record.get('GameListID'),
         imageType: record.get('ImageType'),
-        strBase64: record.get('GameImageBase64'),
+        strBase64: record.get('imgBase64Str'),
       },
       (response) => {
         let rs = JSON.parse(response.responseText);
         record.set('syncSpinner', false);
         let img = `<img src="${rs.imagePath}?v=${Date.now()}" />`;
-        record.set('GameImgeCDN', img);
+        record.set('imgCDN', img);
         store.commitChanges();
         currentIndex = currentIndex + 1;
         syncAllImages(currentIndex, store, done);
