@@ -927,7 +927,7 @@ Ext.onReady(function () {
         text: 'Prefix',
         width: 90,
         dataIndex: 'prefix',
-        hidden: isFEAccount(),
+        hidden: false,
       },
 
       {
