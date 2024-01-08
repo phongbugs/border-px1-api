@@ -223,6 +223,37 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           },
         },
         {
+          xtype: 'combo',
+          width: 115,
+          store: new Ext.data.ArrayStore({
+            fields: ['id', 'name'],
+            data: [
+              ['default', 'Select Col'],
+              ['Default.aspx?ref=TestSSM', 'Test SSM DF'],
+              ['Main.aspx?ref=TestSSM', 'Test SSM BF'],
+              ['Main.aspx?ref=TestHAF', 'Test SSM AF'],
+              ['Robots.txt', 'Robots.txt'],
+              ['defaultDomain', 'Default.aspx'],
+              ['Main.aspx', 'Main.aspx'],
+              ['_Bet/Panel.aspx', 'Panel.aspx'],
+              ['Google.html', 'Google.html'],
+              ['Sitemap.xml', 'Sitemap.xml'],
+              ['Header.aspx', 'Header.aspx'],
+              ['_View/Register.aspx?ref=12AVF', 'Register.aspx'],
+              ['_View/Odds4.aspx', 'Odd4.aspx'],
+              ['_View/Odds10.aspx', 'Odd10.aspx'],
+              ['public/temp.aspx', 'temp.aspx'],
+            ],
+          }),
+          displayField: 'name',
+          valueField: 'id',
+          name: 'cbbColumnPage',
+          id: 'cbbColumnPage',
+          hidden: false,
+          value: 'default',
+          editable: true,
+        },
+        {
           xtype: 'button',
           text: '',
           id: 'btnFindDomain',
@@ -414,7 +445,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
                     protocol = Ext.getCmp('cbbProtocol').getValue(),
                     backendId = result.backendId;
                   let url = protocol + '://' + defaultDomain + '/';
-                  url += '?bpx-backend-id=' + backendId;
+                  url += Ext.getCmp('cbbColumnPage').getValue() + '&bpx-backend-id=' + backendId;
                   window.open(url, '_blank');
                 } else {
                   if(result.message.indexOf('Invalid URI "undefined/api/domainEdit/token"') > -1)
