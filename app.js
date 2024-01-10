@@ -11,7 +11,7 @@ var infoRouter = require('./routes/info');
 var deploymentRouter = require('./routes/deployment');
 
 const bodyParser = require('body-parser');
-var busboy = require('connect-busboy');
+//var busboy = require('connect-busboy');
 var app = express();
 
 const swaggerUi = require('swagger-ui-express');
@@ -50,7 +50,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(busboy());
+//app.use(busboy());
 // const cors = require('cors');
 // //app.use(cors())
 // app.use(cors({
