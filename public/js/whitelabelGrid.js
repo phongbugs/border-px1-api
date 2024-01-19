@@ -1,4 +1,4 @@
-// Global Data
+﻿// Global Data
 let serverStores = {
     'CLG Pool 01': [
       ['CLG-P01-CTG-130'],
@@ -441,7 +441,7 @@ Ext.onReady(function () {
         editable: false,
         listeners: {
           change: (_, groupByValue) => {
-            let columnUpload = Ext.getCmp('gridWLs').getColumns()[23];
+            let columnUpload = Ext.getCmp('gridWLs').getColumns()[22];
             if (groupByValue !== 'default') {
               Ext.getCmp('btnGroupingWLs').setDisabled(false);
               storeWLs.setGroupField(groupByValue);
@@ -553,7 +553,7 @@ Ext.onReady(function () {
         store: new Ext.data.ArrayStore({
           fields: ['id', 'name'],
           data: [
-            ['default', 'Select Col'],
+            ['Default.aspx', 'Select Col'],
             ['Default.aspx?ref=TestSSM', 'Test SSM DF'],
             ['Main.aspx?ref=TestSSM', 'Test SSM BF'],
             ['Main.aspx?ref=TestHAF', 'Test SSM AF'],
@@ -1851,7 +1851,10 @@ function fetchDomainsBySiteName(record, callback) {
     siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
   Ext.Ajax.request({
     method: 'GET',
-    withCredentials: true,
+    //withCredentials: true,
+    headers: {
+      Authorization: 'Basic ' + localStorage.getItem('border-px1-cookie'),
+    },
     url: borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
     success: function (response) {
       let result = JSON.parse(response.responseText);

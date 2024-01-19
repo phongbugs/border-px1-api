@@ -35,18 +35,19 @@ let getSiteTypeValue = () => {
 };
 let getSiteTypeName = () => Ext.getCmp('cbbSiteType').getRawValue().toLowerCase();
 
-function getQueryParam(paramName) {
-  // Lấy URL hiện tại
-  var url_string = window.location.href;
-
-  function getISharedHeaderSubMenuImage(CTId){
-    return true;
-    // switch(CTId){
-    //   case 137:
-    //   case 262:
-    //     return false;
-    //   default: return true;
-    // }
-  }
+function getQueryParam(name, queryString) {
+    var match = RegExp(name + '=([^&]*)').exec(queryString || location.search);
+    return match && decodeURIComponent(match[1]);
 }
+
+function getISharedHeaderSubMenuImage(CTId){
+  return true;
+  // switch(CTId){
+  //   case 137:
+  //   case 262:
+  //     return false;
+  //   default: return true;
+  // }
+}
+
 
