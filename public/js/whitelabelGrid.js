@@ -153,7 +153,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['referralFunction'] = record['referralFunction']
             ? 'RF'
             : 'None';
-          record['dynamicFooter'] = record['dynamicFooter']
+          record['dynamicFooter'] = (record['dynamicFooter'] || +record['compType'] > 257 )
             ? 'Activated'
             : 'None';
           // if (record['servers']) {
@@ -192,6 +192,8 @@ let storeWLs = Ext.create('Ext.data.Store', {
               record['versionSW'] = 'Activated(SSM)';
               break;
           }
+          let isOpenLigaSb = record['isOpenLigaSB'];
+          record['isOpenLigaSB'] = isOpenLigaSb ? 'Open': 'None'
           storeWLSyncGrid.push([record['compType'], whitelabelName]);
           data.push(record);
         } catch (error) {
@@ -214,6 +216,7 @@ let isFEAccount = () => localStorage.getItem('username') === 'feadmin';
 let groupingMenuItems = [
   ['default', 'Select Group'],
   ['versionSW', 'Version SW'],
+  ['isOpenLigaSB', 'Liga SB'],
   ['machineKey', 'Machine Key'],
   ['status', 'Status'],
   ['isResponsive', 'Responsive'],
@@ -1070,6 +1073,12 @@ Ext.onReady(function () {
         width: 150,
         dataIndex: 'versionSW',
         tooltip: 'SW Version.<br/> SSM: SPORT SubMenu',
+      },
+      {
+        text: 'Liga SB',
+        width: 100,
+        dataIndex: 'isOpenLigaSB',
+        tooltip: 'Open LigaSB record',
       },
       {
         xtype: 'actioncolumn',
