@@ -1,47 +1,48 @@
 const fs = require('fs'),
   yauzl = require('yauzl'),
   fetch = require('node-fetch'),
+  path = require('path'),
   FormData = require('form-data'),
-  formidable = require('formidable')
-  getModifiedDateOfFileInZip = (fileName, callback) => {
-    var jsonObjs = '';
-    var i = 0;
-    yauzl.open(fileName, function (err, zipfile) {
-      if (err) {
-        throw err;
-      }
-      zipfile.on('entry', function (entry) {
-        // directory file names end with '/'
-        if (/\/$/.test(entry.fileName)) {
-          //i++;
-          if (i == 0) jsonObjs = '';
-          if (++i == zipfile.entryCount) {
-            jsonObjs = '[' + jsonObjs.substr(0, jsonObjs.length - 1) + ']';
-            //reset i
-            i = 0;
-            callback(jsonObjs);
-          } else return;
-        }
-        // reset jsonObjs when do twice time
+  formidable = require('formidable');
+getModifiedDateOfFileInZip = (fileName, callback) => {
+  var jsonObjs = '';
+  var i = 0;
+  yauzl.open(fileName, function (err, zipfile) {
+    if (err) {
+      throw err;
+    }
+    zipfile.on('entry', function (entry) {
+      // directory file names end with '/'
+      if (/\/$/.test(entry.fileName)) {
+        //i++;
         if (i == 0) jsonObjs = '';
-        // Read the last date modified per archive entry
-        // 12/15/2015, 3:23:41 PM --> 12/15/2015 3:23:41 PM : will be convert by client ( browser )
-        jsonObjs +=
-          '{' +
-          '"fileName":"' +
-          entry.fileName +
-          '","modifiedDate":"' +
-          entry.getLastModDate().toLocaleString() +
-          '"},';
         if (++i == zipfile.entryCount) {
           jsonObjs = '[' + jsonObjs.substr(0, jsonObjs.length - 1) + ']';
           //reset i
           i = 0;
           callback(jsonObjs);
-        }
-      });
+        } else return;
+      }
+      // reset jsonObjs when do twice time
+      if (i == 0) jsonObjs = '';
+      // Read the last date modified per archive entry
+      // 12/15/2015, 3:23:41 PM --> 12/15/2015 3:23:41 PM : will be convert by client ( browser )
+      jsonObjs +=
+        '{' +
+        '"fileName":"' +
+        entry.fileName +
+        '","modifiedDate":"' +
+        entry.getLastModDate().toLocaleString() +
+        '"},';
+      if (++i == zipfile.entryCount) {
+        jsonObjs = '[' + jsonObjs.substr(0, jsonObjs.length - 1) + ']';
+        //reset i
+        i = 0;
+        callback(jsonObjs);
+      }
     });
-  };
+  });
+};
 
 async function fetchDateModifiedFiles(req, res) {
   //console.log(req.body.whitelabelUrl);
@@ -54,14 +55,11 @@ async function fetchDateModifiedFiles(req, res) {
     let form = new FormData();
     form.append('cmd', 'GetModifiedDate');
     form.append('files', req.body.listFile);
-    const response = await fetch(
-      url,
-      {
-        //headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-        body: form,
-      }
-    );
+    const response = await fetch(url, {
+      //headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      body: form,
+    });
     let text = (await response.text()).replace(/\\/g, '\\\\').replace(/'/g, '');
     console.log(text);
     res.send(JSON.parse(text));
@@ -76,22 +74,28 @@ function uploadFileToExpress(req, res) {
     //req.pipe(req.busboy);
     var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
-      let fileName = files.filetoupload.originalFilename
-      if (fileName.substr(fileName.length - 3, 3) == 'zip') {
-        console.log('Uploading: ' +  fileName);
-        let filesDir = './public/files/';
+      let fileName = files.zipFile[0].originalFilename;
+      if (fileName.substring(fileName.length - 3, fileName.length) == 'zip') {
+        console.log('Uploading: ' + fileName);
+        let filesDir =  path.join(__dirname, 'public/files');
+        var oldpath = files.zipFile[0].filepath;
+        var newpath = filesDir + files.zipFile[0].originalFilename;
         if (!fs.existsSync(filesDir)) fs.mkdirSync(filesDir);
-        fstream = fs.createWriteStream(filesDir + fileName);
-        file.pipe(fstream);
-        fstream.on('close', () =>
-          getModifiedDateOfFileInZip(filesDir + fileName, (listFile) =>
-            res.send({
-              success: true,
-              message: fileName + ' was uploaded',
-              listFile: JSON.parse(listFile),
-            })
-          )
-        );
+        try {
+          fs.copyFile(oldpath, newpath, function (err) {
+            //if (err) throw err;
+            getModifiedDateOfFileInZip(filesDir + fileName, (listFile) =>
+              res.send({
+                success: true,
+                message: fileName + ' was uploaded',
+                listFile: JSON.parse(listFile),
+              })
+            );
+          });
+        } catch (error) {
+          console.log(error);
+          res.send({ success: false, message: error.message });
+        }
       } else
         res.send({
           success: false,
@@ -100,9 +104,11 @@ function uploadFileToExpress(req, res) {
         });
     });
   } catch (error) {
+    console.log(error);
     res.send({ success: false, message: error.message });
   }
 }
+
 
 async function uploadFileToIIS(req, res) {
   try {
