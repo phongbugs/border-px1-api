@@ -153,9 +153,10 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['referralFunction'] = record['referralFunction']
             ? 'RF'
             : 'None';
-          record['dynamicFooter'] = (record['dynamicFooter'] || +record['compType'] > 257 )
-            ? 'Activated'
-            : 'None';
+          record['dynamicFooter'] =
+            record['dynamicFooter'] || +record['compType'] > 257
+              ? 'Activated'
+              : 'None';
           // if (record['servers']) {
           //   let servers = record['servers'];
           //   record['specificServer'] =
@@ -178,7 +179,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['isSyncedDomain'] = false;
           record['isSyncedFolder'] = false;
           record['folderPath'] = '';
-          record['backupDate'] = '';       
+          record['backupDate'] = '';
           record['zipUpload'] = '';
           record['checked'] = 0;
           record['batUpload'] = 0;
@@ -196,7 +197,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
               break;
           }
           let isOpenLigaSb = record['isOpenLigaSB'];
-          record['isOpenLigaSB'] = isOpenLigaSb ? 'Open': 'None'
+          record['isOpenLigaSB'] = isOpenLigaSb ? 'Open' : 'None';
           storeWLSyncGrid.push([record['compType'], whitelabelName]);
           data.push(record);
         } catch (error) {
@@ -1304,7 +1305,7 @@ Ext.onReady(function () {
         sortable: false,
         tooltip: 'Check latest deployed and bakup files',
         menuDisabled: true,
-        text: 'Check',
+        text: 'C',
         items: [
           {
             iconCls: 'checkFileCls',
@@ -1325,13 +1326,17 @@ Ext.onReady(function () {
                   iconCls = 'checkKoCls';
                   break;
               }
-              let url = `${htmlFile}?CTId=${record.get('compType')}&WL=${record.get('name')}`;
+              return iconCls;
+              let url = `${htmlFile}?CTId=${record.get(
+                'compType'
+              )}&WL=${record.get('name')}`;
               const windowFeatures = `width=${
                 Ext.getBody().getViewSize().width
               }px,height=${
                 Ext.getBody().getViewSize().height
               }px,top=${0},left=${0},scrollbars=yes,resizable=yes`;
               window.open(url, '_blank', windowFeatures);
+              
             },
             handler: function (grid, rowIndex, colIndex, item, e, record, row) {
               rowIndex = grid.getStore().indexOf(record);
