@@ -140,7 +140,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
           let record = whiteLabels[whitelabelName];
           record['name'] = whitelabelName;
           //if(!record['servers'])  record['servers'] =  ;
-          if (!record['status']) record['status'] = 'live';
+          if (!record['status']) record['status'] = '🙂';
           else {
             record['servers'] = '10.168.109.6';
           }
@@ -960,7 +960,7 @@ Ext.onReady(function () {
         text: 'Status',
         width: 80,
         dataIndex: 'status',
-        hidden: true,
+        hidden: false,
       },
       {
         text: 'Refered WL',

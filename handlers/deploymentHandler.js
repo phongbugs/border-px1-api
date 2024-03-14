@@ -2,6 +2,7 @@ const fs = require('fs'),
   yauzl = require('yauzl'),
   fetch = require('node-fetch'),
   FormData = require('form-data'),
+  formidable = require('formidable')
   getModifiedDateOfFileInZip = (fileName, callback) => {
     var jsonObjs = '';
     var i = 0;
@@ -72,19 +73,21 @@ async function fetchDateModifiedFiles(req, res) {
 function uploadFileToExpress(req, res) {
   try {
     let fstream;
-    req.pipe(req.busboy);
-    req.busboy.on('file', function (fieldName, file, filename) {
-      if (filename.substr(filename.length - 3, 3) == 'zip') {
-        console.log('Uploading: ' + filename);
+    //req.pipe(req.busboy);
+    var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+      let fileName = files.filetoupload.originalFilename
+      if (fileName.substr(fileName.length - 3, 3) == 'zip') {
+        console.log('Uploading: ' +  fileName);
         let filesDir = './public/files/';
         if (!fs.existsSync(filesDir)) fs.mkdirSync(filesDir);
-        fstream = fs.createWriteStream(filesDir + filename);
+        fstream = fs.createWriteStream(filesDir + fileName);
         file.pipe(fstream);
         fstream.on('close', () =>
-          getModifiedDateOfFileInZip(filesDir + filename, (listFile) =>
+          getModifiedDateOfFileInZip(filesDir + fileName, (listFile) =>
             res.send({
               success: true,
-              message: filename + ' was uploaded',
+              message: fileName + ' was uploaded',
               listFile: JSON.parse(listFile),
             })
           )
