@@ -147,7 +147,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                 authenticationData: authenticationData,
                 domainType: getDomainType(),
               },
-              withCredentials: true,
+              //withCredentials: true,
               success: function (form, action) {
                 if (action.result.success) {
                   authForm.setHidden(true);
