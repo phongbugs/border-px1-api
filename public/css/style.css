@@ -34,6 +34,10 @@ html {
     background: url(https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-2/16/FAQ-icon.png) no-repeat center;
 }
 
+.checkFileCls {
+    background: url(https://icons.iconarchive.com/icons/graphicloads/polygon/16/check-2-icon.png) no-repeat center;
+}
+
 .checkOkCls {
     background: url(https://icons.iconarchive.com/icons/hopstarter/sleek-xp-basic/16/Ok-icon.png) no-repeat center;
 }
@@ -141,3 +145,35 @@ html {
     color: #fff !important;
 }
 .headerIcons{ background-color: #ccceee;} 
+
+.zipUploadedCls {
+    background: url(../img/zipUploaded.png) no-repeat center;
+}
+
+.zipUploadCls {
+    background: url(../img/zipUpload.png) no-repeat center;
+}
+
+.zipUploadErrCls {
+    background: url(../img/zipUploadErr.png) no-repeat center;
+}
+
+.zipUploadEmptyCls {
+    background: url(../img/zipUploadEmpty.png) no-repeat center;
+}
+
+.batUploadedCls {
+    background: url(../img/run.png) no-repeat center;
+}
+
+.batUploadCls {
+    background: url(../img/bat.png) no-repeat center;
+}
+
+.expandCls {
+    background: url(https://icons.iconarchive.com/icons/icons8/ios7/16/Editing-Expand-icon.png) no-repeat center
+}
+
+.collapseCls {
+    background: url(https://icons.iconarchive.com/icons/icons8/ios7/16/Editing-Collapse-icon.png) no-repeat center
+}
