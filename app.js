@@ -18,10 +18,6 @@ const swaggerUi = require('swagger-ui-express');
 // default api document of app 
 const swaggerDocumentFileName = './swagger.json';
 const swaggerDocument = require(swaggerDocumentFileName);
-// extra api document of 3rd party
-const swaggerDocumentGH = require('./swagger_GH_SW.json');
-const swaggerDocumentPP = require('./swagger_PP_SW.json');
-
 const fhs = (hString) => {
   if (hString.length % 2 == 0) {
     var arr = hString.split('');
@@ -96,8 +92,6 @@ app.use(function (req, res, next) {
 //app.use(require('./auth'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use('/api-docs-gh', swaggerUi.serve, swaggerUi.setup(swaggerDocumentGH));
-app.use('/api-docs-pp', swaggerUi.serve, swaggerUi.setup(swaggerDocumentPP));
 
 app.use('/', indexRouter);
 app.use('/user', userRouter);

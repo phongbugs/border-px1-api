@@ -63,6 +63,7 @@ const log = console.log,
           whitelabelName
       );
       let result = JSON.parse(await response.text());
+      console.log(result)
       res.send(result);
     } catch (error) {
       res.send({ success: false, message: error.message });
