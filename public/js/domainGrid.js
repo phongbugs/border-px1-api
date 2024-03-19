@@ -229,7 +229,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           store: new Ext.data.ArrayStore({
             fields: ['id', 'name'],
             data: [
-              ['default', 'Select Col'],
+              ['Default.aspx', 'Select Col'],
               ['Default.aspx?ref=TestSSM', 'Test SSM DF'],
               ['Main.aspx?ref=TestSSM', 'Test SSM BF'],
               ['Main.aspx?ref=TestHAF', 'Test SSM AF'],
