@@ -1091,6 +1091,11 @@ Ext.onReady(function () {
       //   hidden: true,
       // },
       {
+        text: 'Account',
+        width: 150,
+        dataIndex: 'account',
+      },
+      {
         xtype: 'actioncolumn',
         width: 30,
         tooltip: 'Sync Folders',
@@ -1530,6 +1535,17 @@ function fetchFolderOneRecord(record, callback) {
     },
   });
 }
+// Safe slowly one by one
+function fetchFolderAllWLs(index, store, callback) {
+  let record = store.getAt(index);
+  record.set('isSyncedFolder', 'spinner');
+  fetchFolderOneRecord(record, (success) => {
+    record.set('isSyncedFolder', success ? 'checkOkCls' : 'checkKoCls');
+    if (++index < store.getCount()) fetchFolderAllWLs(index, store, callback);
+    else callback();
+  });
+}
+
 function checkFilesOneRecord({ record, rowIndex, url }, callback) {
   record.set('checked', 'spinner');
   Ext.Ajax.request({
@@ -1912,7 +1928,7 @@ function isValidDomain(domain, callback) {
 }
 
 function dzFileNameListGen(fileList, folderPath) {
-  //D:\Web\Member\365AGEN\
+  //D:\Web\Member\BANAMA\
   folderPath = folderPath.substring(14, folderPath.length).replace(/\\/g, '/');
   var strFileList = '';
   for (var i = 0; i < fileList.length; i++) {
@@ -1950,7 +1966,7 @@ function deployOneWhitelabel(
       return;
     }
     // default new agent & member site
-    // D:\Web\Member\KOKOBOLA\
+    // D:\Web\Member\BANANA\
     let bkFile = folderPath.substr(0, folderPath.length - 1) + '.zip';
     // handle member site
     // if (folderPath.indexOf('WebUI') > -1)
