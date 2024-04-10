@@ -251,7 +251,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           name: 'cbbColumnPage',
           id: 'cbbColumnPage',
           hidden: false,
-          value: 'default',
+          value: 'Default.aspx',
           editable: true,
         },
         {
@@ -446,7 +446,8 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
                     protocol = Ext.getCmp('cbbProtocol').getValue(),
                     backendId = result.backendId;
                   let url = protocol + '://' + defaultDomain + '/';
-                  url += Ext.getCmp('cbbColumnPage').getValue() + '&bpx-backend-id=' + backendId;
+                  let pageName = Ext.getCmp('cbbColumnPage').getValue() ;
+                  url += pageName + (pageName.indexOf('?') > -1 ? '&' : '?') + 'bpx-backend-id=' + backendId;
                   window.open(url, '_blank');
                 } else {
                   if(result.message.indexOf('Invalid URI "undefined/api/domainEdit/token"') > -1)

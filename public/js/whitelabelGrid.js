@@ -140,7 +140,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
           let record = whiteLabels[whitelabelName];
           record['name'] = whitelabelName;
           //if(!record['servers'])  record['servers'] =  ;
-          if (!record['status']) record['status'] = 'live';
+          if (!record['status']) record['status'] = '🙂';
           else {
             record['servers'] = '10.168.109.6';
           }
@@ -153,9 +153,10 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['referralFunction'] = record['referralFunction']
             ? 'RF'
             : 'None';
-          record['dynamicFooter'] = (record['dynamicFooter'] || +record['compType'] > 257 )
-            ? 'Activated'
-            : 'None';
+          record['dynamicFooter'] =
+            record['dynamicFooter'] || +record['compType'] > 257
+              ? 'Activated'
+              : 'None';
           // if (record['servers']) {
           //   let servers = record['servers'];
           //   record['specificServer'] =
@@ -193,7 +194,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
               break;
           }
           let isOpenLigaSb = record['isOpenLigaSB'];
-          record['isOpenLigaSB'] = isOpenLigaSb ? 'Open': 'None'
+          record['isOpenLigaSB'] = isOpenLigaSb ? 'Open' : 'None';
           storeWLSyncGrid.push([record['compType'], whitelabelName]);
           data.push(record);
         } catch (error) {
@@ -530,7 +531,7 @@ Ext.onReady(function () {
         store: new Ext.data.ArrayStore({
           fields: ['id', 'name'],
           data: [
-            ['default', 'Select Col'],
+            ['Default.aspx', 'Select Col'],
             ['Default.aspx?ref=TestSSM', 'Test SSM DF'],
             ['Main.aspx?ref=TestSSM', 'Test SSM BF'],
             ['Main.aspx?ref=TestHAF', 'Test SSM AF'],
@@ -552,7 +553,7 @@ Ext.onReady(function () {
         name: 'cbbColumn',
         id: 'cbbColumn',
         hidden: true,
-        value: 'default',
+        value: 'Default.aspx',
         editable: true,
       },
       {
@@ -586,38 +587,52 @@ Ext.onReady(function () {
       {
         xtype: 'button',
         id: 'btnOpenSite',
-        hidden: true,
+        hidden: false,
         text: 'Open',
         icon: 'https://icons.iconarchive.com/icons/icons8/windows-8/16/Programming-External-Link-icon.png',
         handler: () => {
           let startIndex = +Ext.getCmp('txtStartIndex').getValue() - 1,
-            endIndex = +Ext.getCmp('txtEndIndex').getValue() - 1;
+            endIndex = +Ext.getCmp('txtEndIndex').getValue() - 1,
+            url = '',
+            stopAtFirst = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
           for (let i = startIndex; i <= endIndex; i++) {
-            let record = storeWLs.getAt(i),
-              defaultDomain = record.get('defaultDomain') || undefined,
-              name = record.get('name'),
-              siteType = Ext.getCmp('cbbSiteType').getValue();
-            if (!defaultDomain) defaultDomain = name + '.com';
-            defaultDomain =
-              siteType === 'member' ? defaultDomain : siteType + defaultDomain;
-            let url =
-                Ext.getCmp('cbbProtocol').getValue() +
-                '://' +
-                defaultDomain +
-                '/',
-              columnName = Ext.getCmp('cbbColumn').getValue();
-
-            switch (columnName) {
-              case 'default':
-              case 'defaultDomain':
-                break;
-              default:
-                url += columnName;
-                break;
+            let record = storeWLs.getAt(i);
+            if (stopAtFirst) {
+              findFirstValidDomain(
+                { index: 0, record: record },
+                ({ domain }) => {
+                  log('valid domain of %s: %s', record.get('name'), domain);
+                  if (domain) {
+                    url = domain + '/' + getSelectedPage();
+                    window.open(url, '_blank');
+                  } else log('-> Cannot find any a valid domain');
+                }
+              );
+            } else {
+              let defaultDomain = record.get('defaultDomain') || undefined,
+                name = record.get('name'),
+                siteType = Ext.getCmp('cbbSiteType').getValue();
+              if (!defaultDomain) defaultDomain = name + '.com';
+              defaultDomain =
+                siteType === 'member'
+                  ? defaultDomain
+                  : siteType + defaultDomain;
+              url =
+                getProtocol() + '://' + defaultDomain + '/' + getSelectedPage();
+              window.open(url, '_blank');
             }
-            window.open(url, '_blank');
           }
         },
+      },
+      {
+        xtype: 'button',
+        text: 'Deployment',
+        icon: 'https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-3/16/web-management-icon.png',
+        id: 'btnDeployment',
+        listeners: {
+          click: () => Ext.getCmp('deploymentForm').show(),
+        },
+         hidden: true
       },
       {
         xtype: 'button',
@@ -685,6 +700,7 @@ Ext.onReady(function () {
         id: 'btnSPDocs',
         text: 'SP Member docs ',
         iconCls: 'helpCls',
+
         scope: {
           getData: function () {
             return {
@@ -714,7 +730,7 @@ Ext.onReady(function () {
         id: 'btnExport',
         text: '🡇 Excel',
         iconCls: 'exportExcelCls',
-        hidden: true,
+        hidden: !(getQueryParam('tm') == 1),
         handler: (button, event) => {
           function exportToCsv(filename, rows) {
             var processRow = function (row) {
@@ -764,25 +780,6 @@ Ext.onReady(function () {
           }
           exportToCsv('WLs.csv', rows);
         },
-      },
-      {
-        xtype: 'combo',
-        width: 130,
-        store: new Ext.data.ArrayStore({
-          fields: ['id', 'name'],
-          data: [
-            ['allgames', 'All Games'],
-            ['headergames', 'Header Games'],
-            ['lobbygames', 'Lobby Games'],
-          ],
-        }),
-        displayField: 'name',
-        valueField: 'id',
-        name: 'cbbGameType',
-        id: 'cbbGameType',
-        value: 'allgames',
-        editable: false,
-        hidden: true,
       },
       '->',
       {
@@ -886,7 +883,7 @@ Ext.onReady(function () {
           let securityQuestion = record.get('securityQuestion') ? '🔒' : '',
             machineKey = record.get('machineKey') === 'Machine Key' ? '🔑' : '',
             status = record.get('status'),
-            protocol = Ext.getCmp('cbbProtocol').getValue(),
+            protocol = getProtocol(),
             siteType = Ext.getCmp('cbbSiteType').getValue();
           if (!defaultDomain) defaultDomain = val + '.com';
           defaultDomain =
@@ -937,7 +934,7 @@ Ext.onReady(function () {
         text: 'Status',
         width: 80,
         dataIndex: 'status',
-        hidden: true,
+        hidden: false,
       },
       {
         text: 'Refered WL',
@@ -1176,7 +1173,7 @@ function syncDomainsAllWLs(index, store, callback) {
 function genUrl(record) {
   let defaultDomain = record.get('defaultDomain'),
     status = record.get('status'),
-    protocol = Ext.getCmp('cbbProtocol').getValue(),
+    protocol = getProtocol(),
     siteType = Ext.getCmp('cbbSiteType').getValue(),
     whiteLabelName = record.get('name');
   if (!defaultDomain) defaultDomain = whiteLabelName + '.com';
@@ -1187,7 +1184,7 @@ function genUrl(record) {
       whiteLabelName +
       (siteType === 'member' ? 'main.' : siteType) +
       'playliga.com';
-    protocol = 'http';
+    //protocol = 'http';
   }
   let url = protocol + '://' + defaultDomain.toLowerCase();
   return url;
@@ -1228,6 +1225,54 @@ function fetchFolderAllWLs(index, store, callback) {
     record.set('isSyncedFolder', success ? 'checkOkCls' : 'checkKoCls');
     if (++index < store.getCount()) fetchFolderAllWLs(index, store, callback);
     else callback();
+  });
+}
+
+function checkFilesOneRecord({ record, rowIndex, url }, callback) {
+  record.set('checked', 'spinner');
+  Ext.Ajax.request({
+    method: 'POST',
+    url: borderPx1ApiHost + '/deployment/date-modified-files',
+    params: {
+      listFile: listFileFromLocal.map((file) => file.fileName).toString(),
+      whitelabelUrl: url ? url : genUrl(record),
+    },
+    success: function (response) {
+      var data = response.responseText.replace(/\\/g, '\\\\');
+      data = JSON.parse(data);
+      if (!data.success) {
+        if (!data.files && data.msg) {
+          record.set('backupDate', data.msg);
+          record.set('folderPath', data.msg);
+        }
+        record.set('checked', 'error');
+        if (callback) callback();
+        return;
+      }
+      let listFileFromServer = data.files;
+      var result = compare2Json(listFileFromServer, listFileFromLocal);
+      if (result.success) {
+        record.set('checked', 'ok');
+        if (data.path.indexOf('Could not find file') != -1)
+          record.set('backupDate', data.path.replace(/\//g, '\\'));
+        else record.set('folderPath', data.path.replace(/\//g, '\\'));
+      } else {
+        record.set('checked', 'error');
+        record.set('folderPath', data.path.replace(/\//g, '\\'));
+        listFailedFile[rowIndex] = result;
+      }
+      if (data.modifiedDateOfBKFile) {
+        var fileInfo = data.modifiedDateOfBKFile.split('-');
+        var sizeOfFile = new Intl.NumberFormat().format(~~(fileInfo[1] / 1024));
+        record.set('backupDate', fileInfo[0] + ' - ' + sizeOfFile + ' KB');
+      }
+      if (callback) callback();
+    },
+    failure: function (response) {
+      log('server-side failure with status code ' + response.status);
+      record.set('checked', 'error');
+      if (callback) callback();
+    },
   });
 }
 
@@ -1422,3 +1467,248 @@ const h2a = (h) => {
   }
   return str;
 };
+
+function showUploadedFileInfo() {
+  Ext.Msg.alert('Information', 'Zip file has not been uploaded yet');
+}
+function find1stValidDomain(record, callback) {
+  return handleDomainStoreAndGrid({ record }, (domainStore) => {
+    return checkDomainAllGridSlow(0, domainStore, true, (domain) =>
+      callback(domain)
+    );
+  });
+}
+function findFirstValidDomain({ index, record, domains }, callback) {
+  if (!domains)
+    fetchDomainsBySiteName(record, (domains) => {
+      isValidDomain(domains[index], ({ isValid, path }) => {
+        if (isValid)
+          callback({
+            domain: getProtocol() + '://' + domains[index],
+            folderPath: path.replace(/\//g, '\\'),
+          });
+        else if (++index > domains.length) callback({ domain: null });
+        else findFirstValidDomain({ index, record, domains }, callback);
+      });
+    });
+  else {
+    // don't fetch domain again
+    isValidDomain(domains[index], ({ isValid, path }) => {
+      if (isValid)
+        callback({
+          domain: getProtocol() + '://' + domains[index],
+          folderPath: path.replace(/\//g, '\\'),
+        });
+      else if (++index > domains.length) callback({ domain: null });
+      else findFirstValidDomain({ index, record, domains }, callback);
+    });
+  }
+}
+function findFirstValidDomainGlobal(
+  { whitelabelName, client, domainType },
+  callback
+) {
+  fetchGlobalValidDomainByWhitelabelName(
+    { whitelabelName, client, domainType },
+    (domain) => {
+      isValidDomain(domain, ({ isValid, path }) => {
+        if (isValid)
+          callback({
+            domain: getProtocol() + '://' + domain,
+            folderPath: path.replace(/\//g, '\\'),
+          });
+        else
+          callback({
+            domain: null,
+            folderPath: null,
+          });
+      });
+    }
+  );
+}
+function fetchGlobalValidDomainByWhitelabelName(
+  { whitelabelName, client, domainType },
+  callback
+) {
+  Ext.Ajax.request({
+    method: 'GET',
+    url:
+      borderPx1ApiHost +
+      '/info/valid-domain-3rdp/' +
+      client +
+      '/' +
+      domainType +
+      '/' +
+      whitelabelName,
+    success: function (response) {
+      let result = JSON.parse(response.responseText);
+      log(result);
+      if (result.success) callback(result.domain);
+      else callback(null);
+    },
+    failure: function (response) {
+      log(
+        'fetchGlobalValidDomainByWhitelabelName failure with status code ' +
+          response.status
+      );
+      callback(null);
+    },
+  });
+}
+
+function fetchDomainsBySiteName(record, callback) {
+  let siteTypeValue = getSiteTypeValue(),
+    whiteLabelName = record.get('name'),
+    domainType = getDomainType(),
+    siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
+  Ext.Ajax.request({
+    method: 'GET',
+    //withCredentials: true,
+    headers: {
+      Authorization: 'Basic ' + localStorage.getItem('border-px1-cookie'),
+    },
+    url: borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
+    success: function (response) {
+      let result = JSON.parse(response.responseText);
+      if (result.success) {
+        let domains = JSON.parse(
+          CryptoJS.AES.decrypt(result.domains, 'The domain data').toString(
+            CryptoJS.enc.Utf8
+          )
+        ).map((e) => e.Domain);
+        log(domains);
+        callback(domains);
+      } else callback([]);
+    },
+    failure: function (response) {
+      log('server-side failure with status code ' + response.status);
+      callback([]);
+    },
+  });
+}
+
+function isValidDomain(domain, callback) {
+  let siteType = getSiteTypeName();
+  domain = encodeURIComponent(getProtocol() + '://' + domain);
+  let url =
+    borderPx1ApiHost +
+    '/info/' +
+    (siteType === 'mobile' ? 'mobile' : 'folder') +
+    '?' +
+    new URLSearchParams({ url: domain });
+  Ext.Ajax.request({
+    url: url,
+    success: (response) => {
+      let result = JSON.parse(response.responseText);
+      callback({ isValid: result.success, path: result.path });
+    },
+    failure: function (response) {
+      log('isValidDomain: %s', response);
+      callback(false);
+    },
+  });
+}
+
+function dzFileNameListGen(fileList, folderPath) {
+  //D:\Web\Member\BANAMA\
+  folderPath = folderPath.substring(14, folderPath.length).replace(/\\/g, '/');
+  var strFileList = '';
+  for (var i = 0; i < fileList.length; i++) {
+    strFileList += folderPath + fileList[i].fileName + '\r\n';
+  }
+  strFileList += folderPath + 'Web.config\r\n';
+  return strFileList;
+}
+
+function getSelectedPage() {
+  let columnName = Ext.getCmp('cbbColumn').getValue();
+  switch (columnName) {
+    case 'default':
+    case 'defaultDomain':
+      return '';
+    default:
+      return columnName;
+  }
+}
+
+function getProtocol() {
+  return Ext.getCmp('cbbProtocol').getValue();
+}
+function getStopAtFirst() {
+  return Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
+}
+
+function deployOneWhitelabel(
+  { record, rowIndex, domain, folderPath },
+  callback
+) {
+  fetchBackendId(record, (backendId) => {
+    if (!backendId) {
+      if (callback) callback();
+      return;
+    }
+    // default new agent & member site
+    // D:\Web\Member\BANANA\
+    let bkFile = folderPath.substr(0, folderPath.length - 1) + '.zip';
+    // handle member site
+    // if (folderPath.indexOf('WebUI') > -1)
+    //   bkFile = folderPath.substr(0, folderPath.length - 7) + '.zip';
+    let nameBatFile =
+      record.get('name') +
+      '_' +
+      getSiteTypeName() +
+      '_' +
+      Ext.getCmp('rbBatMode').getValue().rb +
+      '.bat';
+    let url = domain || genUrl(record);
+    var params = {
+      whitelabelUrl: url,
+      backendId: backendId,
+      dzFileName: Ext.getCmp('txtUploadedFileName').getValue(),
+      dzFileNameList: dzFileNameListGen(listFileFromLocal, folderPath),
+      bkFile: bkFile,
+      pathFolder: folderPath,
+      nameBatFile: nameBatFile,
+      batMode: Ext.getCmp('rbBatMode').getValue().rb,
+      isBKFull: Ext.getCmp('cbBackupFull').getValue(),
+      isStart: Ext.getCmp('cbIsStart').getValue(),
+    };
+    Ext.Ajax.request({
+      method: 'POST',
+      url: borderPx1ApiHost + '/deployment/run',
+      params: params,
+      withCredentials: true,
+      success: function (response) {
+        var result = JSON.parse(response.responseText);
+        if (result.success) {
+          record.set('batUpload', 'ok');
+          // automatic checking after runbat
+          if (Ext.getCmp('cbAutoCheck').getValue()) {
+            var seconds = Ext.getCmp('txtCheckingTime').getValue() * 1000;
+            if (isNaN(seconds)) return;
+            // start check auto
+            record.set('checked', 'spinner');
+            setTimeout(
+              () =>
+                checkFilesOneRecord({
+                  record,
+                  rowIndex,
+                  url,
+                }),
+              seconds
+            );
+          }
+        } else {
+          log(result.msg);
+          record.set('batUpload', 'error');
+        }
+        if (callback) callback();
+      },
+      failure: function (response) {
+        log('failure with status code ' + response.status);
+        record.set('batUpload', 'error');
+        if (callback) callback();
+      },
+    });
+  });
+}
