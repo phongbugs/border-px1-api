@@ -2,7 +2,10 @@ let borderPx1ApiHost =
     localStorage.getItem('borderPx1ApiHost') ||
     (location.host.indexOf('localhost') > -1
       ? 'http://localhost:8888'
-      : 'https://border-px1-api.herokuapp.com'),
+      : 
+      //'https://border-px1-api.herokuapp.com'
+      'https://bpx-api.icu'
+      ),
   log = console.log,
   loadScript = (pathScript) => {
     const script = document.createElement('script');
