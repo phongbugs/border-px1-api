@@ -626,16 +626,6 @@ Ext.onReady(function () {
       },
       {
         xtype: 'button',
-        text: 'Deployment',
-        icon: 'https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-3/16/web-management-icon.png',
-        id: 'btnDeployment',
-        listeners: {
-          click: () => Ext.getCmp('deploymentForm').show(),
-        },
-         hidden: true
-      },
-      {
-        xtype: 'button',
         id: 'btnOpenAuthForm',
         text: 'BORDER PX1',
         dock: 'right',
@@ -1468,9 +1458,6 @@ const h2a = (h) => {
   return str;
 };
 
-function showUploadedFileInfo() {
-  Ext.Msg.alert('Information', 'Zip file has not been uploaded yet');
-}
 function find1stValidDomain(record, callback) {
   return handleDomainStoreAndGrid({ record }, (domainStore) => {
     return checkDomainAllGridSlow(0, domainStore, true, (domain) =>
@@ -1609,17 +1596,6 @@ function isValidDomain(domain, callback) {
   });
 }
 
-function dzFileNameListGen(fileList, folderPath) {
-  //D:\Web\Member\BANAMA\
-  folderPath = folderPath.substring(14, folderPath.length).replace(/\\/g, '/');
-  var strFileList = '';
-  for (var i = 0; i < fileList.length; i++) {
-    strFileList += folderPath + fileList[i].fileName + '\r\n';
-  }
-  strFileList += folderPath + 'Web.config\r\n';
-  return strFileList;
-}
-
 function getSelectedPage() {
   let columnName = Ext.getCmp('cbbColumn').getValue();
   switch (columnName) {
@@ -1636,79 +1612,4 @@ function getProtocol() {
 }
 function getStopAtFirst() {
   return Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
-}
-
-function deployOneWhitelabel(
-  { record, rowIndex, domain, folderPath },
-  callback
-) {
-  fetchBackendId(record, (backendId) => {
-    if (!backendId) {
-      if (callback) callback();
-      return;
-    }
-    // default new agent & member site
-    // D:\Web\Member\BANANA\
-    let bkFile = folderPath.substr(0, folderPath.length - 1) + '.zip';
-    // handle member site
-    // if (folderPath.indexOf('WebUI') > -1)
-    //   bkFile = folderPath.substr(0, folderPath.length - 7) + '.zip';
-    let nameBatFile =
-      record.get('name') +
-      '_' +
-      getSiteTypeName() +
-      '_' +
-      Ext.getCmp('rbBatMode').getValue().rb +
-      '.bat';
-    let url = domain || genUrl(record);
-    var params = {
-      whitelabelUrl: url,
-      backendId: backendId,
-      dzFileName: Ext.getCmp('txtUploadedFileName').getValue(),
-      dzFileNameList: dzFileNameListGen(listFileFromLocal, folderPath),
-      bkFile: bkFile,
-      pathFolder: folderPath,
-      nameBatFile: nameBatFile,
-      batMode: Ext.getCmp('rbBatMode').getValue().rb,
-      isBKFull: Ext.getCmp('cbBackupFull').getValue(),
-      isStart: Ext.getCmp('cbIsStart').getValue(),
-    };
-    Ext.Ajax.request({
-      method: 'POST',
-      url: borderPx1ApiHost + '/deployment/run',
-      params: params,
-      withCredentials: true,
-      success: function (response) {
-        var result = JSON.parse(response.responseText);
-        if (result.success) {
-          record.set('batUpload', 'ok');
-          // automatic checking after runbat
-          if (Ext.getCmp('cbAutoCheck').getValue()) {
-            var seconds = Ext.getCmp('txtCheckingTime').getValue() * 1000;
-            if (isNaN(seconds)) return;
-            // start check auto
-            record.set('checked', 'spinner');
-            setTimeout(
-              () =>
-                checkFilesOneRecord({
-                  record,
-                  rowIndex,
-                  url,
-                }),
-              seconds
-            );
-          }
-        } else {
-          log(result.msg);
-          record.set('batUpload', 'error');
-        }
-        if (callback) callback();
-      },
-      failure: function (response) {
-        log('failure with status code ' + response.status);
-        record.set('batUpload', 'error');
-        if (callback) callback();
-      },
-    });
-  });
 }
