@@ -193,8 +193,14 @@ let storeWLs = Ext.create('Ext.data.Store', {
               record['versionSW'] = 'Activated(SSM)';
               break;
           }
-          let isOpenLigaSb = record['isOpenLigaSB'];
-          record['isOpenLigaSB'] = isOpenLigaSb ? 'Open' : 'None';
+          switch(record['isOpenLigaSB']){
+            case undefined :  record['isOpenLigaSB'] = 'None'; break;
+            case true: record['isOpenLigaSB'] = 'Open'; break;
+            case '1':
+            case 1 : 
+              record['isOpenLigaSB'] = 'Auto Launch After Login'; break;
+          }
+          //record['isOpenLigaSB'] = isOpenLigaSb === true ? 'Open' : 'None';
           storeWLSyncGrid.push([record['compType'], whitelabelName]);
           data.push(record);
         } catch (error) {
@@ -1066,6 +1072,15 @@ Ext.onReady(function () {
         width: 100,
         dataIndex: 'isOpenLigaSB',
         tooltip: 'Open LigaSB record',
+        renderer: (val, _, record) => {
+          let html = ''
+          switch(val){
+            case 'Open': html = 'Open'; break;
+            case 'Auto Launch After Login': html = 'Open (<img src="https://icons.iconarchive.com/icons/icojam/blue-bits/16/user-arrow-right-icon.png"/>)'; break;
+            default: html = 'None'; break;
+          }
+          return html;
+        },
       },
       {
         xtype: 'actioncolumn',
