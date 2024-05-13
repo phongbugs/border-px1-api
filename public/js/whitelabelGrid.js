@@ -47,50 +47,31 @@ let Groups,
     startCollapsed: true,
     showSummaryRow: false,
     groupHeaderTpl: [
-      '<div style="color:#d14836; font-weight: bold">{name:this.formatName}<span style="color:green; font-weight: normal"> ({rows.length} {[values.rows.length > 1 ? "White Labels" : "White Label"]})</span></div>',
-      {
-        formatName: (name) => {
-          for (let i = 0; i < Groups.items.length; i++) {
-            //log('%s - %s', name, Groups.items[i]._groupKey.toString())
-            if (name.toString() === Groups.items[i]._groupKey.toString()) {
-              switch (name) {
-                case '177-178-179':
-                  name = name + ' [Meta Service]';
-                  break;
-                case '109-109-109':
-                  name = name + ' [Cache Service]';
-                  break;
-                case '10.168.109.6':
-                  name = name + ' [Test Server]';
-                  break;
-                //case "77-78-79":
-                case '110-114-115':
-                  name = name + ' [FC-D]';
-                  break;
-                case '116-117-118':
-                  name = name + ' [FT]';
-                  break;
-                case '119-120-121':
-                case '173-174-175':
-                  name = name + ' [FC & FT]';
-                  break;
-                case '67-68-69':
-                case '92-96-104':
-                  name = name + ' [FC-B]';
-                  break;
-                case '183-184-185':
-                  name = name + ' [FC]';
-                  break;
-              }
-              return (
-                '<span style="color:green">[' + (i + 1) + ']</span> ' + name
-              );
+        '<div style="color:#d14836; font-weight: bold">{name:this.formatName}<span style="color:green; font-weight: normal"> ({rows.length} {[values.rows.length > 1 ? "White Labels" : "White Label"]})</span></div>',
+        {
+            formatName: function(name) {
+                // Create a temporary DOM element to parse the HTML
+                var tempElement = document.createElement('div');
+                tempElement.innerHTML = name;
+
+                // Extract the text content from the temporary element
+                var textContent = tempElement.textContent || tempElement.innerText || '';
+
+                // Perform your formatting logic here
+                for (let i = 0; i < Groups.items.length; i++) {
+                    if (textContent.toString() === Groups.items[i]._groupKey.toString()) {
+                        return (
+                            '<span style="color:green">[' + (i + 1) + ']</span> ' + name
+                        );
+                    }
+                }
+                // Return the original name if not found in Groups
+                return name
             }
-          }
-        },
-      },
-    ],
-  });
+        }
+    ]
+});
+
 Ext.define('WL', {
   extend: 'Ext.data.Model',
   fields: [
@@ -113,6 +94,7 @@ Ext.define('WL', {
     'hasPopup',
     'machineKey',
     'serverPoolIPs',
+    'isOpenLigaSB'
   ],
 });
 let storeWLs = Ext.create('Ext.data.Store', {
@@ -194,10 +176,11 @@ let storeWLs = Ext.create('Ext.data.Store', {
               break;
           }
           switch(record['isOpenLigaSB']){
-            case undefined :  record['isOpenLigaSB'] = 'None'; break;
-            case true: record['isOpenLigaSB'] = 'Open'; break;
-            case '1':
-            case 1 : 
+            case undefined :  
+              record['isOpenLigaSB'] = 'None'; break;
+            case true: 
+              record['isOpenLigaSB'] = 'Open'; break;
+            case 1 :
               record['isOpenLigaSB'] = 'Auto Launch After Login'; break;
           }
           //record['isOpenLigaSB'] = isOpenLigaSb === true ? 'Open' : 'None';
@@ -1076,7 +1059,7 @@ Ext.onReady(function () {
           let html = ''
           switch(val){
             case 'Open': html = 'Open'; break;
-            case 'Auto Launch After Login': html = 'Open (<img src="https://icons.iconarchive.com/icons/icojam/blue-bits/16/user-arrow-right-icon.png"/>)'; break;
+            case 'Auto Launch After Login': html = 'Open (<img title="Auto Launch After Login" src="https://icons.iconarchive.com/icons/icojam/blue-bits/16/user-arrow-right-icon.png"/>)'; break;
             default: html = 'None'; break;
           }
           return html;
