@@ -77,7 +77,7 @@ function uploadFileToExpress(req, res) {
       let fileName = files.zipFile[0].originalFilename;
       if (fileName.substring(fileName.length - 3, fileName.length) == 'zip') {
         console.log('Uploading: ' + fileName);
-        let filesDir =  path.join(__dirname, 'public/files/');
+        let filesDir =  path.join('./public/files/');
         var oldpath = files.zipFile[0].filepath;
         var newpath = filesDir + files.zipFile[0].originalFilename;
         if (!fs.existsSync(filesDir)) fs.mkdirSync(filesDir);
