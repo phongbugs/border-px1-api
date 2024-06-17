@@ -626,12 +626,13 @@ Ext.onReady(function () {
             if (stopAtFirst) {
               findFirstValidDomain(
                 { index: 0, record: record },
-                ({ domain }) => {
-                  log('valid domain of %s: %s', record.get('name'), domain);
+                ({ domain, index }) => {
+                  let nameWL = record.get('name')
+                  //log('[RowIndex: %s][DomainIndex: %s] ✓ %s: %s',i, index, nameWL, domain);
                   if (domain) {
                     url = domain + '/' + getSelectedPage();
                     window.open(url, '_blank');
-                  } else log('-> Cannot find any a valid domain');
+                  } else log('x [%s] %s: Cannot find any a valid domain',i, nameWL);
                 }
               );
             } else {
@@ -741,7 +742,7 @@ Ext.onReady(function () {
         id: 'btnExport',
         text: '🡇 Excel',
         iconCls: 'exportExcelCls',
-        hidden: true,
+        hidden: false,
         handler: (button, event) => {
           function exportToCsv(filename, rows) {
             var processRow = function (row) {
@@ -1797,13 +1798,15 @@ function find1stValidDomain(record, callback) {
   });
 }
 function findFirstValidDomain({ index, record, domains }, callback) {
+  let nameWL = record.get('name')
   if (!domains)
     fetchDomainsBySiteName(record, (domains) => {
-      isValidDomain(domains[index], ({ isValid, path }) => {
+      isValidDomain({domain:domains[index], nameWL, index}, ({ isValid, path }) => {
         if (isValid)
           callback({
             domain: getProtocol() + '://' + domains[index],
             folderPath: path.replace(/\//g, '\\'),
+            index: index
           });
         else if (++index > domains.length) callback({ domain: null });
         else findFirstValidDomain({ index, record, domains }, callback);
@@ -1811,11 +1814,12 @@ function findFirstValidDomain({ index, record, domains }, callback) {
     });
   else {
     // don't fetch domain again
-    isValidDomain(domains[index], ({ isValid, path }) => {
+    isValidDomain({domain:domains[index], nameWL, index}, ({ isValid, path }) => {
       if (isValid)
         callback({
           domain: getProtocol() + '://' + domains[index],
           folderPath: path.replace(/\//g, '\\'),
+          index: index
         });
       else if (++index > domains.length) callback({ domain: null });
       else findFirstValidDomain({ index, record, domains }, callback);
@@ -1829,7 +1833,7 @@ function findFirstValidDomainGlobal(
   fetchGlobalValidDomainByWhitelabelName(
     { whitelabelName, client, domainType },
     (domain) => {
-      isValidDomain(domain, ({ isValid, path }) => {
+      isValidDomain({domain, nameWL: whitelabelName}, ({ isValid, path }) => {
         if (isValid)
           callback({
             domain: getProtocol() + '://' + domain,
@@ -1905,7 +1909,7 @@ function fetchDomainsBySiteName(record, callback) {
   });
 }
 
-function isValidDomain(domain, callback) {
+function isValidDomain({domain, nameWL, index}, callback) {
   let siteType = getSiteTypeName();
   domain = encodeURIComponent(getProtocol() + '://' + domain);
   let url =
@@ -1921,7 +1925,8 @@ function isValidDomain(domain, callback) {
       callback({ isValid: result.success, path: result.path });
     },
     failure: function (response) {
-      log('isValidDomain: %s', response);
+      //log('[%s] %s isValidDomain: ajax request failed', index, nameWL);
+      //log(response)
       callback(false);
     },
   });
