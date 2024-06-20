@@ -68,6 +68,10 @@ app.use(function (req, res, next) {
       fhs('68747470733a2f2f6d61696e74656e616e6365322e6c6967613336352e636f6d')
     ),
     'https://ata-push-api.xyz',
+    'http://localhost:8888',
+    'http://192.168.2.185:8888',
+    'https://border-px1-api.herokuapp.com',
+    'https://noichu.com',
   ];
   var origin = req.headers.origin;
   if (allowedDomains.indexOf(origin) > -1) {
@@ -80,7 +84,7 @@ app.use(function (req, res, next) {
   );
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'X-Requested-With,content-type, Accept'
+    'X-Requested-With, content-type, accept, authorization'
   );
   res.setHeader('Access-Control-Allow-Credentials', true);
   //res.removeHeader('x-frame-options');

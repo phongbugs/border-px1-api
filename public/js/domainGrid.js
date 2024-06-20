@@ -62,7 +62,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
   renderTo: 'app',
   id: 'domainGrid',
   store: storeDomain,
-  width: 500,
+  width: 560,
   height: 368,
   title: 'Domains',
   style: {
@@ -97,39 +97,180 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
     show: (grid) => {},
     hide: () => Ext.getCmp('gridWLs').setDisabled(false),
   },
-  tbar: [
+  //tbar: [],
+  dockedItems: [
     {
-      xtype: 'button',
-      id: 'btnCheckDomain',
-      iconCls: 'checkCls',
-      text: 'Check All Domains',
-      dock: 'right',
-      hidden: true,
-      listeners: {
-        click: () => {
-          let store = Ext.getCmp('domainGrid').getStore(),
-            stopAtFirst = Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
-          if (stopAtFirst)
-            checkDomainAllGridSlow(0, store, stopAtFirst, (domain) => {});
-          else checkDomainAllGrid();
+      xtype: 'toolbar',
+      dock: 'top',
+      items: [
+        {
+          xtype: 'button',
+          id: 'btnCheckDomain',
+          iconCls: 'checkCls',
+          text: 'Check All',
+          dock: 'right',
+          hidden: false,
+          listeners: {
+            click: () => {
+              let store = Ext.getCmp('domainGrid').getStore(),
+                stopAtFirst = Ext.getCmp(
+                  'ckbStopCheckAt1stValidDomain'
+                ).getValue();
+              if (stopAtFirst)
+                checkDomainAllGridSlow(0, store, stopAtFirst, (domain) => {});
+              else checkDomainAllGrid();
+            },
+          },
         },
-      },
+        {
+          xtype: 'checkbox',
+          id: 'ckbStopCheckAt1stValidDomain',
+          iconCls: 'checkCls',
+          boxLabel: 'Stop checking at 1th valid domain',
+          value: true,
+        },
+        // Note : swap two fields will error at getDomainType() whitlabel grid ???
+        {
+          xtype: 'checkbox',
+          id: 'ckbLoadFromCache',
+          iconCls: 'checkCls',
+          boxLabel: 'Load From Cache',
+          value: true,
+        },
+        
+      ],
     },
     {
-      xtype: 'checkbox',
-      id: 'ckbLoadFromCache',
-      iconCls: 'checkCls',
-      boxLabel: 'Load From Cache',
-      value: false,
-    },
-    {
-      xtype: 'checkbox',
-      id: 'ckbStopCheckAt1stValidDomain',
-      iconCls: 'checkCls',
-      boxLabel: 'Stop checking when 1st domain is valid',
-      value: true,
+      xtype: 'toolbar',
+      dock: 'top',
+      items: [
+        {
+          xtype: 'combo',
+          width: 85,
+          store: new Ext.data.ArrayStore({
+            fields: ['id', 'name'],
+            data: [
+              ['mobile.', 'Mobile'],
+              ['member', 'Member'],
+              ['ag.', 'Agent'],
+            ],
+          }),
+          displayField: 'name',
+          valueField: 'id',
+          name: 'cbbSiteTypeDomain',
+          id: 'cbbSiteTypeDomain',
+          value: 'member',
+          editable: false,
+          listeners: {
+            change: (_, newValue) => {
+              Ext.getCmp('cbbSiteType').setValue(newValue)
+              Ext.getCmp('btnFindDomain').fireEvent('click');
+            },
+          },
+        },
+        {
+          xtype: 'combo',
+          width: 85,
+          store: new Ext.data.ArrayStore({
+            fields: ['id', 'name'],
+            data: [
+              ['ip.', 'IP'],
+              ['name', 'NAME'],
+            ],
+          }),
+          displayField: 'name',
+          valueField: 'id',
+          name: 'cbbDomainType',
+          id: 'cbbDomainType',
+          value: 'name',
+          editable: false,
+          submitValue: false,
+          disabled: false,
+          listeners: {
+            change: function (cb, e) {
+              Ext.getCmp('btnFindDomain').fireEvent('click');
+            },
+          },
+        },
+        {
+          xtype: 'combo',
+          width: 150,
+          store: new Ext.data.ArrayStore({
+            fields: ['id', 'name'],
+            data: JSON.parse(localStorage.getItem('storeWLDomainGrid')),
+          }),
+          displayField: 'name',
+          valueField: 'id',
+          queryMode: 'local',
+          value: '',
+          id: 'txtNameWLsDomain',
+          itemId: 'txtNameWLsDomain',
+          //multiSelect: true,
+          enableKeyEvents: true,
+          doQuery: function (queryString, forceAll) {
+            this.expand();
+            this.store.clearFilter(!forceAll);
+            if (!forceAll) {
+              this.store.filter(
+                this.displayField,
+                new RegExp(Ext.String.escapeRegex(queryString), 'i')
+              );
+            }
+          },
+          listeners: {
+            change: function (cb, e) {
+              Ext.getCmp('btnFindDomain').fireEvent('click');
+            },
+          },
+        },
+        {
+          xtype: 'combo',
+          width: 115,
+          store: new Ext.data.ArrayStore({
+            fields: ['id', 'name'],
+            data: [
+              ['Default.aspx', 'Select Col'],
+              ['Default.aspx?ref=TestSSM', 'Test SSM DF'],
+              ['Main.aspx?ref=TestSSM', 'Test SSM BF'],
+              ['Main.aspx?ref=TestHAF', 'Test SSM AF'],
+              ['Robots.txt', 'Robots.txt'],
+              ['defaultDomain', 'Default.aspx'],
+              ['Main.aspx', 'Main.aspx'],
+              ['_Bet/Panel.aspx', 'Panel.aspx'],
+              ['Google.html', 'Google.html'],
+              ['Sitemap.xml', 'Sitemap.xml'],
+              ['Header.aspx', 'Header.aspx'],
+              ['_View/Register.aspx?ref=12AVF', 'Register.aspx'],
+              ['_View/Odds4.aspx', 'Odd4.aspx'],
+              ['_View/Odds10.aspx', 'Odd10.aspx'],
+              ['public/temp.aspx', 'temp.aspx'],
+            ],
+          }),
+          displayField: 'name',
+          valueField: 'id',
+          name: 'cbbColumnPage',
+          id: 'cbbColumnPage',
+          hidden: false,
+          value: 'Default.aspx',
+          editable: true,
+        },
+        {
+          xtype: 'button',
+          text: '',
+          id: 'btnFindDomain',
+          icon: 'https://icons.iconarchive.com/icons/zerode/plump/16/Search-icon.png',
+          listeners: {
+            click: () => {
+              let whiteLabelName = Ext.getCmp('txtNameWLsDomain').getRawValue(),
+                domainType = Ext.getCmp('cbbDomainType').getRawValue().toLowerCase();
+              showDomainGridDataByWhitelabel({ whiteLabelName, domainType });
+            },
+          },
+        },
+      ],
     },
   ],
+  
   columns: [
     new Ext.grid.RowNumberer({ dataIndex: 'no', text: 'No.', width: 60 }),
     {
@@ -256,11 +397,11 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
     },
     {
       text: 'Specific Server',
-      width: 140,
+      width: 155,
       dataIndex: 'specificServer',
       editor: {
         xtype: 'combo',
-        store: selectedServerGroupStore,
+        store:  selectedServerGroupStore,
         displayField: 'name',
         valueField: 'name',
         queryMode: 'local',
@@ -268,7 +409,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
     },
     {
       xtype: 'actioncolumn',
-      width: 30,
+      width: 35,
       tooltip: 'Open link by specific server',
       text: 'O',
       items: [
@@ -282,13 +423,20 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
             rowIndex = grid.getStore().indexOf(record);
             record = grid.getStore().getAt(rowIndex);
             let domainType = getDomainType();
+            let cookieKey =
+              domainType === 'ip'
+                ? 'border-px1-cookie-ip'
+                : 'border-px1-cookie';
             var ip = record.get('specificServer');
             record.set('specificServerSpinner', true);
             Ext.Ajax.request({
               method: 'POST',
               url:
                 borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
-              withCredentials: true,
+              headers: {
+                Authorization: 'Basic ' + localStorage.getItem(cookieKey),
+              },
+              //withCredentials: true,
               success: function (response) {
                 //log(response);
                 record.set('specificServerSpinner', false);
@@ -298,11 +446,72 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
                     protocol = Ext.getCmp('cbbProtocol').getValue(),
                     backendId = result.backendId;
                   let url = protocol + '://' + defaultDomain + '/';
-                  url += '?bpx-backend-id=' + backendId;
+                  let pageName = Ext.getCmp('cbbColumnPage').getValue() ;
+                  url += pageName + (pageName.indexOf('?') > -1 ? '&' : '?') + 'bpx-backend-id=' + backendId;
                   window.open(url, '_blank');
-                } else alert(result.message);
+                } else {
+                  if(result.message.indexOf('Invalid URI "undefined/api/domainEdit/token"') > -1)
+                    authForm.setHidden(false)
+                  else alert(result.message);
+                }
               },
               failure: function (response) {
+                alert(JSON.stringify(response));
+              },
+            });
+          },
+        },
+      ],
+    },
+    {
+      xtype: 'actioncolumn',
+      width: 35,
+      tooltip: 'Refresh Session Cache Image Game Version',
+      text: 'R',
+      items: [
+        {
+          iconCls: 'syncCls',
+          getClass: function (value, meta, record, rowIndex, colIndex) {
+            var isSpinning = record.get('refreshSessionSpinner');
+            return isSpinning ? 'spinner' : 'syncCls';
+          },
+          handler: function (grid, rowIndex, colIndex, item, e, record) {
+            rowIndex = grid.getStore().indexOf(record);
+            record = grid.getStore().getAt(rowIndex);
+            let domainType = getDomainType();
+            let cookieKey =
+              domainType === 'ip'
+                ? 'border-px1-cookie-ip'
+                : 'border-px1-cookie';
+            var ip = record.get('specificServer');
+            //record.set('refreshSessionSpinner', true);
+            Ext.Ajax.request({
+              method: 'POST',
+              url:
+                borderPx1ApiHost + '/info/backendId/' + domainType + '/' + ip,
+              headers: {
+                Authorization: 'Basic ' + localStorage.getItem(cookieKey),
+              },
+              //withCredentials: true,
+              success: function (response) {
+                //log(response);
+                //record.set('specificServerSpinner', false);
+                let result = JSON.parse(response.responseText);
+                if (result.success) {
+                  let defaultDomain = record.get('Domain'),
+                    protocol = Ext.getCmp('cbbProtocol').getValue(),
+                    backendId = result.backendId;
+                  let url = protocol + '://' + defaultDomain + '/';
+                  url += '/pgajax.axd?T=SetCacheGameImageVersion&bpx-backend-id=' + backendId;
+                  window.open(url, '_blank');
+                } else {
+                  if(result.message.indexOf('Invalid URI "undefined/api/domainEdit/token"') > -1)
+                    authForm.setHidden(false)
+                  else alert(result.message);
+                }
+              },
+              failure: function (response) {
+                //record.set('specificServerSpinner', false);
                 alert(JSON.stringify(response));
               },
             });
@@ -376,22 +585,26 @@ function checkDomainAllGridSlow(index, store, stopAtFirstVailDomain, callback) {
         checkDomainAllGridSlow(index, store, stopAtFirstVailDomain, callback);
       else callback(record.get('Domain'));
     });
-  }
-  else callback()
+  } else callback();
 }
 function fetchWhitelabelServers(store) {
   let siteTypeValue = getSiteTypeValue(),
-    siteName = siteTypeValue + selectedWhiteLabelName.toLowerCase() + '.bpx';
-  domainType = getDomainType();
+    siteName = siteTypeValue + selectedWhiteLabelName.toLowerCase() + '.bpx',
+    domainType = getDomainType(),
+    cookieKey =
+      getDomainType() === 'ip' ? 'border-px1-cookie-ip' : 'border-px1-cookie';
   Ext.Ajax.request({
     url: borderPx1ApiHost + '/info/server/' + domainType + '/' + siteName,
-    withCredentials: true,
+    headers: {
+      Authorization: 'Basic ' + localStorage.getItem(cookieKey),
+    },
+    //withCredentials: true,
     success: function (response) {
       let result = JSON.parse(response.responseText);
       let success = result.success;
       if (success) {
         let servers = result.servers.map((server) => [server.Name]);
-        selectedServerGroupStore.loadData(servers);
+        if(selectedServerGroupStore) selectedServerGroupStore.loadData(servers);
         if (domainType === 'ip')
           store.getAt(0).set('specificServer', servers[0][0]);
       }

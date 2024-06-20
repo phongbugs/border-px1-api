@@ -28,7 +28,7 @@ let authForm = Ext.create('Ext.form.Panel', {
       //     if (result.success) {}
       //   }
       // })
-      
+
       // auto login border px1 when refresh page or 1st login to summary
       setTimeout(() => {
         autoLogin();
@@ -116,7 +116,7 @@ let authForm = Ext.create('Ext.form.Panel', {
       handler: () => this.up('form').getForm().reset(),
     },
     {
-      text: 'Authenticate',
+      text: 'Login',
       id: 'btnAuthenticate',
       iconCls: 'authenticationCls',
 
@@ -147,17 +147,21 @@ let authForm = Ext.create('Ext.form.Panel', {
                 authenticationData: authenticationData,
                 domainType: getDomainType(),
               },
-              withCredentials: true,
+              //withCredentials: true,
               success: function (form, action) {
                 if (action.result.success) {
                   authForm.setHidden(true);
                   let cookie = action.result.cookie;
                   //=> use localstorage
-                  // localStorage.setItem('border-px1-cookie', cookie);
+                  localStorage.setItem(
+                    'border-px1-cookie' +
+                      (getDomainType() === 'ip' ? '-ip' : ''),
+                    cookie
+                  );
                   //=> use for cookie same domain
                   // document.cookie = 'border-px1=' + cookie + ';Domain=border-px1-api.xyz; Path=/; SameSite=None; Secure';
                   //=> use for cookie cross domain
-                  saveBorderPx1Cookie(cookie);
+                  //saveBorderPx1Cookie(cookie);
                   if (Ext.getCmp('ckbRememberMe').getValue()) {
                     localStorage.setItem('authUsername', encrypt(username));
                     localStorage.setItem('authPassword', encrypt(password));
@@ -181,7 +185,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                     },
                   });
                   myCounter.start();
-                  setTimeout(() => console.clear(), 4000);
+                  //setTimeout(() => console.clear(), 4000);
                 } else Ext.Msg.alert('Failure', action.result.message);
               },
               failure: function (form, action) {
@@ -205,7 +209,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                 }
               },
             });
-          } else Ext.Msg.alert('Info', 'Please fill username/password');
+          } else console.log('Please fill PX1 account info') //Ext.Msg.alert('Info', 'Please fill PX1 account info');
         },
       },
     },
@@ -257,7 +261,7 @@ function saveBorderPx1Cookie(cookie) {
     borderPx1ApiHost + '/authentication/' + domainType + '?cookie=' + cookie
   );
   document.body.appendChild(ifrm);
-  setTimeout(() => console.clear(), 3000);
+  //setTimeout(() => console.clear(), 3000);
 }
 let decrypt = (str) =>
     str

@@ -1,12 +1,39 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
+	<title>CLG's WLs Management</title>
+	<link rel="stylesheet" href="extjs/6.2/classic/theme-neptune/resources/theme-neptune-all.css" />
+	<link rel="stylesheet" href="extjs/6.2/packages/ux/classic/neptune/resources/ux-all.css" />
+	<link rel="stylesheet" href="css/grid.css" />
+	<link rel="stylesheet" href="css/form.css" />
+	<script src="extjs/6.2/ext-all.js"></script>
+	<script src="js/jsencrypt.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+	<link rel="shortcut icon"
+        href="https://lh3.googleusercontent.com/a-/AOh14GjgiQ5JKAQrLioFlouEN-wAXCv_hU6jKIFU099p9w=s88-c-k-c0x00ffffff-no-rj-mo">
+	<style>
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 4px #ddd solid;
+            border-top: 4px #2e93e6 solid;
+            border-radius: 50%;
+            animation: sp-anime 0.8s infinite linear;
+        }
+	</style>
 </head>
 
 <body>
-    <script> 
-        location.href = '7.html'
-    </script>
+	<div id="app">
+		<div id="center" class="center">
+			<div id="loading" class="spinner"></div>
+		</div>
+	</div>
+	<script>
+        let startScriptSource = 'js/index.js'
+	</script>
+    <script src="js/startup.js"></script>
 </body>
 
 </html>

@@ -9,8 +9,9 @@ const log = console.log,
     try {
       let serverIp = req.params.serverIp,
         domainType = req.params.domainType,
-        cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
-        cookie = req.cookies[cookieName];
+        // cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
+        // cookie = req.cookies[cookieName];
+        cookie = req.headers.authorization.split(' ')[1];
       //log('serverId: %s', serverId);
       //log('domainType: %s', domainType);
       if (cookie) {
@@ -68,11 +69,12 @@ const log = console.log,
       if (sites) {
         let siteName = req.params.siteName,
           siteId = sites.find((site) => site.name === siteName).id,
-          cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
-          cookie = req.cookies[cookieName];
+          // cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
+          // cookie = req.cookies[cookieName];
+          cookie = req.headers.authorization.split(' ')[1];
         // log(siteName);
         // log(siteId);
-        // log(cookie);
+        log(cookie);
         if (cookie) {
           //log('%s:%s', cookieName, cookie);
           let result = await crawler.fetchDomainsBySiteId(
@@ -105,7 +107,17 @@ const log = console.log,
           message: 'Global sites data has not had data yet !',
         });
     } catch (error) {
-      res.send({ success: false, message: error.message });
+      log(error);
+      let message = '';
+      if (
+        error.message.indexOf("Cannot read property 'id' of undefined") > -1 ||
+        error.message.indexOf('Cannot read properties of undefined') > -1
+      )
+        message = 'White label not found';
+      res.send({
+        success: false,
+        message: message !== '' ? message : error.message,
+      });
     }
   },
   fetchFolderPath = async (req, res) => {
@@ -150,8 +162,9 @@ const log = console.log,
           domainType = req.params.domainType,
           sites = domainType === 'ip' ? global.sitesIp : global.sites,
           siteId = sites.find((site) => site.name === siteName).id,
-          cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
-          cookie = req.cookies[cookieName];
+          //cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
+          //cookie = req.cookies[cookieName];
+          cookie = req.headers.authorization.split(' ')[1];
         if (cookie) {
           let result = await crawler.fetchServerBySiteId(
             siteId,
