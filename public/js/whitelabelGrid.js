@@ -94,7 +94,8 @@ Ext.define('WL', {
     'hasPopup',
     'machineKey',
     'serverPoolIPs',
-    'isOpenLigaSB'
+    'isOpenLigaSB',
+    'isConvertedSW'
   ],
 });
 let storeWLs = Ext.create('Ext.data.Store', {
@@ -169,12 +170,16 @@ let storeWLs = Ext.create('Ext.data.Store', {
               record['versionSW'] = 'None';
               break;
             case 0:
-              record['versionSW'] = 'Activated';
+              record['versionSW'] = 'SW';
               break;
             case 1:
-              record['versionSW'] = 'Activated(SSM)';
+              record['versionSW'] = 'SW SSM';
               break;
           }
+
+          let convertedSW = record['isConvertedSW'] ? 'Converted' : 'None';
+          record['isConvertedSW'] = convertedSW
+
           switch(record['isOpenLigaSB']){
             case undefined :  
               record['isOpenLigaSB'] = 'None'; break;
@@ -206,6 +211,7 @@ let isFEAccount = () => localStorage.getItem('username') === 'feadmin';
 let groupingMenuItems = [
   ['default', 'Select Group'],
   ['versionSW', 'Version SW'],
+  ['isConvertedSW', 'Converted SW'],
   ['isOpenLigaSB', 'Liga SB'],
   ['machineKey', 'Machine Key'],
   ['status', 'Status'],
@@ -270,7 +276,7 @@ Ext.onReady(function () {
           }
         } else if (
           cellIndex > 1 &&
-          cellIndex < 13 &&
+          cellIndex < 7 &&
           whitelabelName !== 'BPXURLS' &&
           whitelabelName !== 'BPXIP' &&
           whitelabelName !== 'SHARECACHE' &&
@@ -937,6 +943,40 @@ Ext.onReady(function () {
         menuDisabled: true,
       },
       {
+        xtype: 'actioncolumn',
+        width: 30,
+        tooltip: 'Get Current Server Pool',
+        text: 'GP',
+        hidden: !isFEAccount(),
+        hideable: false,
+        menuDisabled: true,
+        items: [
+          {
+            iconCls: 'serverInfo',
+            getClass: function (value, meta, record, rowIndex, colIndex) {
+              var isSpinning = record.get('specificServerSpinner');
+              return isSpinning ? 'spinner' : 'serverInfo';
+            },
+            handler: function (grid, rowIndex, colIndex, item, e, record) {
+              rowIndex = grid.getStore().indexOf(record);
+              record = grid.getStore().getAt(rowIndex);
+              record.set('specificServerSpinner', true);
+              findFirstValidDomain(
+                { index: 0, record: record },
+                ({ domain }) => {
+                  log('valid domain of %s: %s', record.get('name'), domain);
+                  record.set('specificServerSpinner', false);
+                  if (domain)
+                    fetchHtmlContentOfTempPage(domain)
+                  else 
+                    log('-> Cannot find any a valid domain');
+                }
+              );
+            },
+          },
+        ],
+      },
+      {
         text: 'H/D Number',
         width: 140,
         dataIndex: 'headerNumber',
@@ -970,30 +1010,30 @@ Ext.onReady(function () {
       {
         xtype: 'actioncolumn',
         width: 30,
-        tooltip: 'Open link by specific server',
+        tooltip: 'Open site by valid domain',
         text: 'O',
-        hidden: true,
+        hidden: false,
         items: [
           {
             iconCls: 'openLink',
             getClass: function (value, meta, record, rowIndex, colIndex) {
-              var isSpinning = record.get('specificServerSpinner');
+              var isSpinning = record.get('specificServerSpinner1');
               return isSpinning ? 'spinner' : 'openLink';
             },
             handler: function (grid, rowIndex, colIndex, item, e, record) {
               rowIndex = grid.getStore().indexOf(record);
               record = grid.getStore().getAt(rowIndex);
-              fetchBackendId(record, (backendId) =>
-                backendId
-                  ? window.open(
-                      genUrl(record) +
-                        '/' +
-                        getSelectedPage() +
-                        '?bpx-backend-id' +
-                        backendId,
-                      '_blank'
-                    )
-                  : null
+              findFirstValidDomain(
+                { index: 0, record: record },
+                ({ domain }) => {
+                  log('valid domain of %s: %s', record.get('name'), domain);
+                  if (domain) {
+                    url = domain + '/' + getSelectedPage();
+                    window.open(url, '_blank');
+                  } 
+                  else 
+                    log('-> Cannot find any a valid domain');
+                }
               );
             },
           },
@@ -1046,9 +1086,16 @@ Ext.onReady(function () {
       },
       {
         text: 'SW Version',
-        width: 150,
+        width: 110,
         dataIndex: 'versionSW',
-        tooltip: 'SW Version.<br/> SSM: SPORT SubMenu',
+        tooltip: 'SW Version.<br/> Includes : SW and SW SSM(Sport Sub Menu)',
+      },
+      {
+        text: 'Converted SW',
+        width: 110,
+        dataIndex: 'isConvertedSW',
+        tooltip: 'Fully Converted SW (DB and FE).<br/> def@1 is SW account for testing SW WLs'
+        //renderer: (val) => val? 'Converted': 'None'
       },
       {
         text: 'Liga SB',
@@ -1610,4 +1657,35 @@ function getProtocol() {
 }
 function getStopAtFirst() {
   return Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
+}
+
+function fetchHtmlContentOfTempPage(domain){
+  $.ajax({
+    url: domain + '/public/temp.aspx',
+    type: 'GET',
+    xhrFields: {
+        withCredentials: true // This allows the request to include cookies and other credentials
+    },
+    success: function(response) {
+        console.log('Response:', response);
+        // To get the cookies, you can check document.cookie if they are accessible
+        console.log('Cookies:', document.cookie);
+        alert(response)
+    },
+    error: function(xhr, status, error) {
+       // Check for CORS error
+       if (xhr.status === 0 && xhr.statusText === 'error' && !xhr.responseText) {
+        console.log('CORS error: Access to XMLHttpRequest has been blocked by CORS policy');
+        alert('CORS error: Access to the requested resource has been blocked due to CORS policy.');
+    } else {
+        console.log('Status:', status);
+        console.log('Error:', error);
+        console.log('Response Text:', xhr.responseText);
+
+        // Create a more detailed error message
+        var errorMessage = 'Error: ' + status + ' - ' + error + '\n' + 'Response Text: ' + xhr.responseText;
+        alert(errorMessage);
+    }
+    }
+});
 }

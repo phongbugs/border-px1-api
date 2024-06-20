@@ -141,3 +141,8 @@ html {
     color: #fff !important;
 }
 .headerIcons{ background-color: #ccceee;} 
+
+.serverInfo {
+    background: url(https://www.iconarchive.com/download/i11459/fasticon/servers/download-server.16.png)
+      no-repeat center;
+  }
