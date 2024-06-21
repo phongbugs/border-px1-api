@@ -95,7 +95,7 @@ Ext.define('WL', {
     'machineKey',
     'serverPoolIPs',
     'isOpenLigaSB',
-    'isConvertedSW'
+    'isSW'
   ],
 });
 let storeWLs = Ext.create('Ext.data.Store', {
@@ -165,6 +165,17 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['backupDate'] = '';
           record['account'] = h2a(fhs('6465664031202f203030303030303030'));
           let versionSW = record['versionSW'];
+          let isSW = record['isSW'];
+          if(isSW === undefined){
+            if(versionSW === undefined)
+              record['isSW'] = 'Normal WL';
+            else 
+              record['isSW'] = 'New WL SW';
+          }
+          else if(isSW === 2) {
+            record['isSW'] = 'Converted SW'
+          }
+
           switch (versionSW) {
             case undefined:
               record['versionSW'] = 'None';
@@ -176,9 +187,6 @@ let storeWLs = Ext.create('Ext.data.Store', {
               record['versionSW'] = 'SW SSM';
               break;
           }
-
-          let convertedSW = record['isConvertedSW'] ? 'Converted' : 'None';
-          record['isConvertedSW'] = convertedSW
 
           switch(record['isOpenLigaSB']){
             case undefined :  
@@ -211,7 +219,7 @@ let isFEAccount = () => localStorage.getItem('username') === 'feadmin';
 let groupingMenuItems = [
   ['default', 'Select Group'],
   ['versionSW', 'Version SW'],
-  ['isConvertedSW', 'Converted SW'],
+  ['isSW', 'Converted SW'],
   ['isOpenLigaSB', 'Liga SB'],
   ['machineKey', 'Machine Key'],
   ['status', 'Status'],
@@ -1093,8 +1101,8 @@ Ext.onReady(function () {
       {
         text: 'Converted SW',
         width: 110,
-        dataIndex: 'isConvertedSW',
-        tooltip: 'Fully Converted SW (DB and FE).<br/> def@1 is SW account for testing SW WLs'
+        dataIndex: 'isSW',
+        tooltip: 'New WL SW: Only converted FE(def@1 is SW account for testing)<br/> Converted SW : Converted FE & DB.<br/>'
         //renderer: (val) => val? 'Converted': 'None'
       },
       {
