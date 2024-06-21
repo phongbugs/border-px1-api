@@ -165,17 +165,6 @@ let storeWLs = Ext.create('Ext.data.Store', {
           record['backupDate'] = '';
           record['account'] = h2a(fhs('6465664031202f203030303030303030'));
           let versionSW = record['versionSW'];
-          let isSW = record['isSW'];
-          if(isSW === undefined){
-            if(versionSW === undefined)
-              record['isSW'] = 'Normal WL';
-            else 
-              record['isSW'] = 'New WL SW';
-          }
-          else if(isSW === 2) {
-            record['isSW'] = 'Converted SW'
-          }
-
           switch (versionSW) {
             case undefined:
               record['versionSW'] = 'None';
@@ -185,6 +174,19 @@ let storeWLs = Ext.create('Ext.data.Store', {
               break;
             case 1:
               record['versionSW'] = 'SW SSM';
+              break;
+          }
+
+          let isSW = record['isSW'];
+          switch (isSW) {
+            case undefined:
+              record['isSW'] = 'Normal WL';
+              break;
+            case 1:
+              record['isSW'] = 'New WL SW';
+              break;
+            case 2:
+              record['isSW'] = 'Converted SW';
               break;
           }
 
@@ -1099,10 +1101,13 @@ Ext.onReady(function () {
         tooltip: 'SW Version.<br/> Includes : SW and SW SSM(Sport Sub Menu)',
       },
       {
-        text: 'Converted SW',
+        text: 'IsSW',
         width: 110,
         dataIndex: 'isSW',
-        tooltip: 'New WL SW: Only converted FE(def@1 is SW account for testing)<br/> Converted SW : Converted FE & DB.<br/>'
+        tooltip: `IsSW (based on SP _cmGetCompTypeDetails) <br/>
+         0 : Normal WL (the rest of WLs is normal WLs = non SW WL)<br/>
+         1 : New WL SW<br/>
+         2 : Existing WL converted to SW User`
         //renderer: (val) => val? 'Converted': 'None'
       },
       {
