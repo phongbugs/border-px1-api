@@ -1,6 +1,12 @@
 ﻿Ext.onReady(() => {
   let tokenPublicKey =
     '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCrRxLdvg03/1KX9xJAW0USP3pSqJTSkwEY3aQ2tphPkKmGAZxVPUgiNjyGxhplR6Q+YKKybmveL/TbhKEWCXRXcRkZVEQo3vG2SFozWcgJIFaCw7g6aU73hG3kYxb+uJsUPR7AUls/YECKeouCKEYgg+aqmJm0zgT+p3vBd/lNzwIDAQAB-----END PUBLIC KEY-----';
+  let cdnImageHost =
+    localStorage.getItem('cdnImageHost') ||
+    (location.host.indexOf('localhost') > -1
+      ? 'http://localhost/ShareImgAPI'
+      : 'https://imgtest.playliga.com');
+
   Ext.create('Ext.Panel', {
     id: 'loginForm',
     layout: 'center',
@@ -15,7 +21,7 @@
         title: 'Login Form',
         bodyPadding: 15,
         width: 290,
-        url: borderPx1ApiHost + '/user/login',
+        url: cdnImageHost + '/user/login',
         layout: 'anchor',
         frame: true,
         defaults: {
@@ -70,8 +76,8 @@
             icon: 'https://icons.iconarchive.com/icons/double-j-design/ravenna-3d/16/Reload-icon.png',
             handler: function () {
               let form = this.up('form').getForm();
-              form.findField('username').setValue('')
-              form.findField('password').setValue('')
+              form.findField('username').setValue('');
+              form.findField('password').setValue('');
             },
           },
           {
@@ -84,25 +90,19 @@
               click: () => {
                 let loginButton = Ext.getCmp('btnLogin'),
                   form = loginButton.up('form').getForm(),
-                  crypt = new JSEncrypt(),
-                  cdnImageHost =
-                    localStorage.getItem('cdnImageHost') ||
-                    (location.host.indexOf('localhost') > -1
-                      ? 'http://localhost/cdn'
-                      : 'https://imgtest.playliga.com'),
                   loginData = {
                     username: form.findField('username').getValue(),
                     password: form.findField('password').getValue(),
-                    cdnImageHost: cdnImageHost,
+                    days: 1,
                   };
-
-                crypt.setKey(tokenPublicKey);
-                loginData = crypt.encrypt(JSON.stringify(loginData));
+                // let crypt = new JSEncrypt();
+                // crypt.setKey(tokenPublicKey);
+                // loginData = crypt.encrypt(JSON.stringify(loginData));
                 loginButton.setIconCls('spinner');
                 loginButton.disable();
                 if (form.isValid()) {
                   form.submit({
-                    params: { loginData },
+                    params: loginData,
                     success: function (form, action) {
                       if (!action.result.success)
                         Ext.Msg.alert('Login Failed', action.result.message);
@@ -114,18 +114,13 @@
                         loginButton.setIconCls('login-btn');
                         loginButton.enable();
                         loadScript('js/index.js?v=' + currentVersion());
-                        // localStorage.setItem(
-                        //   'token-sync-image-cdn',
-                        //   action.result.responseApiImageCDN.token
-                        // );
-                        // login to cdn service
                         Ext.Ajax.request({
                           method: 'POST',
                           url: cdnImageHost + '/token/create',
                           params: {
                             username: form.findField('username').getValue(),
                             password: form.findField('password').getValue(),
-                            days: 7,
+                            days: 1,
                           },
                           success: function (response) {
                             let rs = JSON.parse(response.responseText);
