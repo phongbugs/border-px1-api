@@ -194,9 +194,9 @@ let storeWLs = Ext.create('Ext.data.Store', {
             case undefined :  
               record['isOpenLigaSB'] = 'None'; break;
             case true: 
-              record['isOpenLigaSB'] = 'Open'; break;
+              record['isOpenLigaSB'] = 'Open (No Redirect)'; break;
             case 1 :
-              record['isOpenLigaSB'] = 'Auto Launch After Login'; break;
+              record['isOpenLigaSB'] = 'Open (Redirect)'; break;
           }
           //record['isOpenLigaSB'] = isOpenLigaSb === true ? 'Open' : 'None';
           storeWLSyncGrid.push([record['compType'], whitelabelName]);
@@ -1114,16 +1114,16 @@ Ext.onReady(function () {
         text: 'Liga SB',
         width: 100,
         dataIndex: 'isOpenLigaSB',
-        tooltip: 'Open LigaSB record',
-        renderer: (val, _, record) => {
-          let html = ''
-          switch(val){
-            case 'Open': html = 'Open'; break;
-            case 'Auto Launch After Login': html = 'Open (<img title="Auto Launch After Login" src="https://icons.iconarchive.com/icons/icojam/blue-bits/16/user-arrow-right-icon.png"/>)'; break;
-            default: html = 'None'; break;
-          }
-          return html;
-        },
+        tooltip: 'Open LigaSB record'
+        // renderer: (val, _, record) => {
+        //   let html = ''
+        //   switch(val){
+        //     case 'Open': html = 'Open(🚫no redirect) '; break;
+        //     case 'Auto Launch After Login': html = 'Open (<img title="Auto Launch After Login" src="https://icons.iconarchive.com/icons/icojam/blue-bits/16/user-arrow-right-icon.png"/>)'; break;
+        //     default: html = 'zNone'; break;
+        //   }
+        //   return html;
+        // },
       },
       {
         xtype: 'actioncolumn',
