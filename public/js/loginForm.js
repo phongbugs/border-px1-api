@@ -21,7 +21,7 @@
         title: 'Login Form',
         bodyPadding: 15,
         width: 290,
-        url: cdnImageHost + '/user/login',
+        url: borderPx1ApiHost + '/user/login',
         layout: 'anchor',
         frame: true,
         defaults: {
@@ -95,14 +95,16 @@
                     password: form.findField('password').getValue(),
                     days: 1,
                   };
-                // let crypt = new JSEncrypt();
-                // crypt.setKey(tokenPublicKey);
-                // loginData = crypt.encrypt(JSON.stringify(loginData));
+                if (form.url.indexOf(cdnImageHost) === -1) {
+                  let crypt = new JSEncrypt();
+                  crypt.setKey(tokenPublicKey);
+                  loginData = crypt.encrypt(JSON.stringify(loginData));
+                }
                 loginButton.setIconCls('spinner');
                 loginButton.disable();
                 if (form.isValid()) {
                   form.submit({
-                    params: loginData,
+                    params: form.url.indexOf(cdnImageHost) === -1 ? {loginData} : loginData,
                     success: function (form, action) {
                       if (!action.result.success)
                         Ext.Msg.alert('Login Failed', action.result.message);
