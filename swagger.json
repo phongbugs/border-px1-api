@@ -32,9 +32,7 @@
   "paths": {
     "/user/login": {
       "post": {
-        "tags": [
-          "BORDER PX1 API"
-        ],
+        "tags": ["BORDER PX1 API"],
         "summary": "Login to White Labels Management site",
         "description": "Login white label management site",
         "requestBody": {
@@ -49,9 +47,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "password"
-                ]
+                "required": ["password"]
               }
             }
           }
@@ -72,9 +68,7 @@
     },
     "/user/login/status": {
       "get": {
-        "tags": [
-          "BORDER PX1 API"
-        ],
+        "tags": ["BORDER PX1 API"],
         "summary": "Check has the user logged in yet",
         "parameters": [
           {
@@ -95,7 +89,6 @@
                 "schema": {
                   "$ref": "#/components/schemas/loginStatusResponse"
                 }
-                
               }
             }
           }
@@ -104,9 +97,7 @@
     },
     "/authentication/": {
       "post": {
-        "tags": [
-          "BORDER PX1 API"
-        ],
+        "tags": ["BORDER PX1 API"],
         "summary": "Authenticate to BORDER-PX1 site",
         "description": "Login BORDER PX1 site by its account",
         "requestBody": {
@@ -121,9 +112,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "authenticationData"
-                ]
+                "required": ["authenticationData"]
               }
             }
           }
@@ -154,9 +143,7 @@
     },
     "/authentication/status": {
       "get": {
-        "tags": [
-          "BORDER PX1 API"
-        ],
+        "tags": ["BORDER PX1 API"],
         "summary": "Check whether has cookie been expired yet",
         "description": "Check whether has cookie been expired yet",
         "parameters": [
@@ -186,9 +173,7 @@
     },
     "/info/backendId/{serverIp}": {
       "post": {
-        "tags": [
-          "BORDER PX1 API"
-        ],
+        "tags": ["BORDER PX1 API"],
         "summary": "Create a backendId for browsing page to specific server",
         "parameters": [
           {
@@ -226,9 +211,7 @@
     },
     "/info/domain/{domainType}/{siteName}": {
       "get": {
-        "tags": [
-          "BORDER PX1 API"
-        ],
+        "tags": ["BORDER PX1 API"],
         "summary": "Get all domains name of site name",
         "parameters": [
           {
@@ -273,9 +256,7 @@
     },
     "/info/valid-domain/{client}/{domainType}/{whitelabelName}": {
       "get": {
-        "tags": [
-          "BORDER PX1 API"
-        ],
+        "tags": ["BORDER PX1 API"],
         "summary": "Get valid domain ip/name of whitelabel name",
         "parameters": [
           {
@@ -319,9 +300,7 @@
     },
     "/info/valid-domain/{client}/{domainType}": {
       "post": {
-        "tags": [
-          "BORDER PX1 API"
-        ],
+        "tags": ["BORDER PX1 API"],
         "summary": "Update valid domains",
         "description": "Update valid domains for each client and domain type",
         "requestBody": {
@@ -336,9 +315,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "domains"
-                ]
+                "required": ["domains"]
               }
             }
           }
@@ -377,9 +354,7 @@
     },
     "/info/folder/": {
       "get": {
-        "tags": [
-          "BORDER PX1 API"
-        ],
+        "tags": ["BORDER PX1 API"],
         "summary": "Get folder by doman",
         "parameters": [
           {
@@ -407,12 +382,39 @@
       }
     }
   },
+  "/info/temppage/": {
+    "get": {
+      "tags": ["BORDER PX1 API"],
+      "summary": "Get tenmp page by domain",
+      "parameters": [
+        {
+          "name": "domain",
+          "in": "query",
+          "required": true,
+          "description": "url of white label",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Get temppage successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/validDomainResponse"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "components": {
     "schemas": {
       "FolderResponse": {
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "properties": {
           "success": {
             "type": "boolean"
@@ -429,9 +431,7 @@
         }
       },
       "backendIdResponse": {
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "properties": {
           "success": {
             "type": "boolean"
@@ -445,9 +445,7 @@
         }
       },
       "authenticationResponse": {
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "properties": {
           "success": {
             "type": "boolean"
@@ -461,9 +459,7 @@
         }
       },
       "authenticationStatusResponse": {
-        "required": [
-          "status"
-        ],
+        "required": ["status"],
         "properties": {
           "success": {
             "type": "boolean"
@@ -471,9 +467,7 @@
         }
       },
       "authenticatedCookieResponse": {
-        "required": [
-          "border-px1"
-        ],
+        "required": ["border-px1"],
         "properties": {
           "border-px1": {
             "type": "string"
@@ -481,9 +475,7 @@
         }
       },
       "loginResponse": {
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "properties": {
           "success": {
             "type": "boolean"
@@ -497,9 +489,7 @@
         }
       },
       "loginStatusResponse": {
-        "required": [
-          "success"
-        ],
+        "required": ["success"],
         "properties": {
           "success": {
             "type": "boolean"
@@ -510,11 +500,7 @@
         }
       },
       "domainResponse": {
-        "required": [
-          "ID",
-          "Domain",
-          "LastUpdate"
-        ],
+        "required": ["ID", "Domain", "LastUpdate"],
         "properties": {
           "ID": {
             "type": "number",
@@ -543,10 +529,8 @@
           }
         }
       },
-      "validDomainResponse":{
-        "required": [
-          "status"
-        ],
+      "validDomainResponse": {
+        "required": ["status"],
         "properties": {
           "status": {
             "type": "boolean"

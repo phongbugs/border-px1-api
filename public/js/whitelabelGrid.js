@@ -47,30 +47,33 @@ let Groups,
     startCollapsed: true,
     showSummaryRow: false,
     groupHeaderTpl: [
-        '<div style="color:#d14836; font-weight: bold">{name:this.formatName}<span style="color:green; font-weight: normal"> ({rows.length} {[values.rows.length > 1 ? "White Labels" : "White Label"]})</span></div>',
-        {
-            formatName: function(name) {
-                // Create a temporary DOM element to parse the HTML
-                var tempElement = document.createElement('div');
-                tempElement.innerHTML = name;
+      '<div style="color:#d14836; font-weight: bold">{name:this.formatName}<span style="color:green; font-weight: normal"> ({rows.length} {[values.rows.length > 1 ? "White Labels" : "White Label"]})</span></div>',
+      {
+        formatName: function (name) {
+          // Create a temporary DOM element to parse the HTML
+          var tempElement = document.createElement('div');
+          tempElement.innerHTML = name;
 
-                // Extract the text content from the temporary element
-                var textContent = tempElement.textContent || tempElement.innerText || '';
+          // Extract the text content from the temporary element
+          var textContent =
+            tempElement.textContent || tempElement.innerText || '';
 
-                // Perform your formatting logic here
-                for (let i = 0; i < Groups.items.length; i++) {
-                    if (textContent.toString() === Groups.items[i]._groupKey.toString()) {
-                        return (
-                            '<span style="color:green">[' + (i + 1) + ']</span> ' + name
-                        );
-                    }
-                }
-                // Return the original name if not found in Groups
-                return name
+          // Perform your formatting logic here
+          for (let i = 0; i < Groups.items.length; i++) {
+            if (
+              textContent.toString() === Groups.items[i]._groupKey.toString()
+            ) {
+              return (
+                '<span style="color:green">[' + (i + 1) + ']</span> ' + name
+              );
             }
-        }
-    ]
-});
+          }
+          // Return the original name if not found in Groups
+          return name;
+        },
+      },
+    ],
+  });
 
 Ext.define('WL', {
   extend: 'Ext.data.Model',
@@ -95,7 +98,7 @@ Ext.define('WL', {
     'machineKey',
     'serverPoolIPs',
     'isOpenLigaSB',
-    'isSW'
+    'isSW',
   ],
 });
 let storeWLs = Ext.create('Ext.data.Store', {
@@ -190,13 +193,16 @@ let storeWLs = Ext.create('Ext.data.Store', {
               break;
           }
 
-          switch(record['isOpenLigaSB']){
-            case undefined :  
-              record['isOpenLigaSB'] = 'None'; break;
-            case true: 
-              record['isOpenLigaSB'] = 'Open (No Redirect)'; break;
-            case 1 :
-              record['isOpenLigaSB'] = 'Open (Redirect)'; break;
+          switch (record['isOpenLigaSB']) {
+            case undefined:
+              record['isOpenLigaSB'] = 'None';
+              break;
+            case true:
+              record['isOpenLigaSB'] = 'Open (No Redirect)';
+              break;
+            case 1:
+              record['isOpenLigaSB'] = 'Open (Redirect)';
+              break;
           }
           //record['isOpenLigaSB'] = isOpenLigaSb === true ? 'Open' : 'None';
           storeWLSyncGrid.push([record['compType'], whitelabelName]);
@@ -976,10 +982,8 @@ Ext.onReady(function () {
                 ({ domain }) => {
                   log('valid domain of %s: %s', record.get('name'), domain);
                   record.set('specificServerSpinner', false);
-                  if (domain)
-                    fetchHtmlContentOfTempPage(domain)
-                  else 
-                    log('-> Cannot find any a valid domain');
+                  if (domain) fetchHtmlContentOfTempPage(domain);
+                  else log('-> Cannot find any a valid domain');
                 }
               );
             },
@@ -1040,9 +1044,7 @@ Ext.onReady(function () {
                   if (domain) {
                     url = domain + '/' + getSelectedPage();
                     window.open(url, '_blank');
-                  } 
-                  else 
-                    log('-> Cannot find any a valid domain');
+                  } else log('-> Cannot find any a valid domain');
                 }
               );
             },
@@ -1107,14 +1109,14 @@ Ext.onReady(function () {
         tooltip: `IsSW (based on SP _cmGetCompTypeDetails) <br/>
          0 : Normal WL (the rest of WLs is normal WLs = non SW WL)<br/>
          1 : New WL SW<br/>
-         2 : Existing WL converted to SW User`
+         2 : Existing WL converted to SW User`,
         //renderer: (val) => val? 'Converted': 'None'
       },
       {
         text: 'Liga SB',
         width: 100,
         dataIndex: 'isOpenLigaSB',
-        tooltip: 'Open LigaSB record'
+        tooltip: 'Open LigaSB record',
         // renderer: (val, _, record) => {
         //   let html = ''
         //   switch(val){
@@ -1157,9 +1159,10 @@ Ext.onReady(function () {
                   defaultDomain.toLowerCase() +
                   '/pgajax.axd?T=SetCacheGameImageVersion';
                 window.open(url, '_blank');
-              }
-              else
-                alert('This WL gone live, this button only available for test site')
+              } else
+                alert(
+                  'This WL gone live, this button only available for test site'
+                );
             },
           },
         ],
@@ -1672,33 +1675,56 @@ function getStopAtFirst() {
   return Ext.getCmp('ckbStopCheckAt1stValidDomain').getValue();
 }
 
-function fetchHtmlContentOfTempPage(domain){
+function fetchHtmlContentOfTempPage(domain) {
+  domain = btoa(domain);
   $.ajax({
-    url: domain + '/public/temp.aspx',
+    url: borderPx1ApiHost + '/info/temppage?domain=' + domain,
     type: 'GET',
-    xhrFields: {
-        withCredentials: true // This allows the request to include cookies and other credentials
+    timeout: 30000,
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('border-px1-api-cookie'),
     },
-    success: function(response) {
-        console.log('Response:', response);
-        // To get the cookies, you can check document.cookie if they are accessible
-        console.log('Cookies:', document.cookie);
-        alert(response)
+    success: function (response) {
+      //console.log('Response:', response.message);
+      //alert(response.success);
+      if (response.success) {
+        // Open a new blank page
+        var newWindow = window.open('', 'newWindow', 'width=800,height=600,resizable,scrollbars');
+        // Write the HTML content to the new page
+        if (newWindow) {
+          newWindow.document.open();
+          newWindow.document.write(response.message);
+          newWindow.document.close();
+        } else {
+          alert('Popup blocked. Please allow popups for this website.');
+        }
+      } else alert('fetchHtmlContentOfTempPage() Failed');
     },
-    error: function(xhr, status, error) {
-       // Check for CORS error
-       if (xhr.status === 0 && xhr.statusText === 'error' && !xhr.responseText) {
-        console.log('CORS error: Access to XMLHttpRequest has been blocked by CORS policy');
-        alert('CORS error: Access to the requested resource has been blocked due to CORS policy.');
-    } else {
+    error: function (xhr, status, error) {
+      // Check for CORS error
+      if (xhr.status === 0 && xhr.statusText === 'error' && !xhr.responseText) {
+        console.log(
+          'CORS error: Access to XMLHttpRequest has been blocked by CORS policy'
+        );
+        alert(
+          'CORS error: Access to the requested resource has been blocked due to CORS policy.'
+        );
+      } else {
         console.log('Status:', status);
         console.log('Error:', error);
         console.log('Response Text:', xhr.responseText);
 
         // Create a more detailed error message
-        var errorMessage = 'Error: ' + status + ' - ' + error + '\n' + 'Response Text: ' + xhr.responseText;
+        var errorMessage =
+          'Error: ' +
+          status +
+          ' - ' +
+          error +
+          '\n' +
+          'Response Text: ' +
+          xhr.responseText;
         alert(errorMessage);
-    }
-    }
-});
+      }
+    },
+  });
 }

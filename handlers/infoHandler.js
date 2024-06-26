@@ -1,6 +1,7 @@
 const log = console.log,
   CryptoJS = require('crypto-js'),
   crawler = require('../crawler'),
+  crawlerFe = require('../crawler.fe'),
   allServers = require('./servers'),
   fetch = require('node-fetch'),
   findServerIdByIp = (ip, domainType) =>
@@ -212,7 +213,24 @@ const log = console.log,
     } catch (error) {
       res.send({ success: false, message: error.message });
     }
+  },
+  decodeBase64 = (encodedStr) => {
+    return Buffer.from(encodedStr, 'base64').toString('ascii');
+  },
+  fetchTempPage = async (req, res) => {
+    if (res.headersSent) {
+      return;
+    }
+    //res.setHeader('Content-Type', 'application/json');
+    try {
+      let url = `${decodeBase64(req.query.domain)}/public/temp.aspx`;
+      let tempPageInfo = await crawlerFe.fetchTempPage(url);
+      res.send({ success: true, message: tempPageInfo });
+    } catch (error) {
+      res.send({ success: false, message: error.message });
+    }
   };
+
 module.exports = {
   fetchBackendId,
   fetchDomains,
@@ -222,4 +240,5 @@ module.exports = {
   fetchMobileJson,
   getServerInfo,
   fetchServers,
+  fetchTempPage,
 };

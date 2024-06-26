@@ -12,6 +12,7 @@ const JSEncrypt = require('node-jsencrypt'),
 let accounts = [
   { username:'feadmin', password:'4196e4326eea0f8875b058f42fa9b0bd'},
   { username:'dbadmin', password:'9e689cb0bbae63db72fc99bdd7392266'},
+  { username:'spadmin', password:'9e689cb0bbae63db72fc99bdd7392266'},
 ]
 function validateCredentials(inputUsername, inputPassword, accounts) {
   const crypto = require('crypto');
