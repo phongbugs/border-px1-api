@@ -63,7 +63,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
   id: 'domainGrid',
   store: storeDomain,
   width: 560,
-  height: 368,
+  height: 600,
   title: 'Domains',
   style: {
     marginBottom: '20px',
@@ -524,18 +524,21 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
 
 function checkDomainOneRecord(record, callback) {
   // prevent click after done
-  if (record.get('folderPath') !== '') return;
+  //if (record.get('folderPath') !== '') return;
 
   // create request to express server
   record.set('folderPath', ' '); // start checking
   // check url
   var url = encodeURIComponent(
-    Ext.getCmp('cbbProtocol').getValue() + '://' + record.get('Domain')
+    btoa(Ext.getCmp('cbbProtocol').getValue() + '://' + record.get('Domain'))
   );
 
   let siteType = getSiteTypeName();
   if (siteType === 'mobile') {
     Ext.Ajax.request({
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('border-px1-api-cookie'),
+      },
       url: borderPx1ApiHost + '/info/mobile/?' + new URLSearchParams({ url }),
       success: function (response) {
         // parse jsonString from server
@@ -553,6 +556,9 @@ function checkDomainOneRecord(record, callback) {
   } else {
     Ext.Ajax.request({
       url: borderPx1ApiHost + '/info/folder?' + new URLSearchParams({ url }),
+      headers: {
+        Authorization: 'Bearer ' + localStorage.getItem('border-px1-api-cookie'),
+      },
       success: function (response) {
         var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
         if (result.success)
@@ -589,7 +595,7 @@ function checkDomainAllGridSlow(index, store, stopAtFirstVailDomain, callback) {
 }
 function fetchWhitelabelServers(store) {
   let siteTypeValue = getSiteTypeValue(),
-    siteName = siteTypeValue + selectedWhiteLabelName.toLowerCase() + '.bpx',
+    siteName = btoa(siteTypeValue + selectedWhiteLabelName.toLowerCase() + '.bpx'),
     domainType = getDomainType(),
     cookieKey =
       getDomainType() === 'ip' ? 'border-px1-cookie-ip' : 'border-px1-cookie';

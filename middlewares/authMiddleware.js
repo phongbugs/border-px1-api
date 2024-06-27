@@ -10,7 +10,7 @@ module.exports = function (req, res, next) {
   if (!token) {
     return res.send('Bearer token is missing');
   }
-  console.log(token);
+  //console.log(token);
   var key = CryptoJS.enc.Utf8.parse(tokenSecretKey);
   var iv = CryptoJS.enc.Utf8.parse(tokenSecretKey);
   let decyptedData = CryptoJS.AES.decrypt(decodeURIComponent(token), key, {
@@ -19,7 +19,7 @@ module.exports = function (req, res, next) {
     mode: CryptoJS.mode.CBC,
     padding: CryptoJS.pad.Pkcs7,
   }).toString(CryptoJS.enc.Utf8);
-  console.log(decyptedData);
+  //console.log(decyptedData);
   if (decyptedData) {
     let d1 = new Date().getTime(),
       d2 = new Date(JSON.parse(decyptedData).expiredDate).getTime();

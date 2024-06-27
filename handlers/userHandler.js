@@ -58,7 +58,7 @@ async function login(req, res) {
         //   secretKey: loginData.password,
         // }),
       };
-      console.log(responseValues);
+      //console.log(responseValues);
       res.send(responseValues);
     } else res.send({ success: false, message: 'Password is wrong' });
   } catch (error) {
@@ -67,11 +67,11 @@ async function login(req, res) {
 }
 function getLoginStatus(req, res) {
   try {
-    console.log(req.headers);
+    //console.log(req.headers);
     //let token = req.cookies['border-px1-api'],
     let token = req.headers.authorization.split(' ')[1],
       status = false;
-    console.log(token);
+    //console.log(token);
     if (!token) {
       res.send({ success: false, message: 'cookie does not exist' });
       return;

@@ -292,7 +292,7 @@ Ext.onReady(function () {
           }
         } else if (
           cellIndex > 1 &&
-          cellIndex < 7 &&
+          cellIndex < 8 &&
           whitelabelName !== 'BPXURLS' &&
           whitelabelName !== 'BPXIP' &&
           whitelabelName !== 'SHARECACHE' &&
@@ -1193,7 +1193,7 @@ function syncDomainsOneWhiteLabel(whiteLabelName, record, callback) {
     siteTypeValue = getSiteTypeValue(),
     domainType = getDomainType(),
     cacheName = whiteLabelName + '_' + domainType + '_' + siteTypeName,
-    siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
+    siteName = btoa(siteTypeValue + whiteLabelName.toLowerCase() + '.bpx');
   record.set('isSyncedDomain', 'spinner');
   Ext.Ajax.request({
     method: 'GET',
@@ -1243,8 +1243,11 @@ function genUrl(record) {
 function fetchFolderOneRecord(record, callback) {
   if (record.get('folderPath') !== '') return;
   record.set('folderPath', ' ');
-  var url = genUrl(record);
+  var url = btoa(genUrl(record));
   Ext.Ajax.request({
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('border-px1-api-cookie'),
+    },
     url: borderPx1ApiHost + '/info/folder?' + new URLSearchParams({ url }),
     success: function (response) {
       var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
@@ -1438,7 +1441,7 @@ function loadDomainStoreFromUrl({
       : 'name'
     : domainType;
   proxy.setConfig('url', [
-    borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
+    borderPx1ApiHost + '/info/domain/' + domainType + '/' + btoa(siteName),
   ]);
   //proxy.setConfig('withCredentials', [true]);
   let cookieKey =
@@ -1608,7 +1611,7 @@ function fetchDomainsBySiteName(record, callback) {
   let siteTypeValue = getSiteTypeValue(),
     whiteLabelName = record.get('name'),
     domainType = getDomainType(),
-    siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
+    siteName =btoa(siteTypeValue + whiteLabelName.toLowerCase() + '.bpx');
   Ext.Ajax.request({
     method: 'GET',
     //withCredentials: true,
@@ -1637,7 +1640,7 @@ function fetchDomainsBySiteName(record, callback) {
 
 function isValidDomain(domain, callback) {
   let siteType = getSiteTypeName();
-  domain = encodeURIComponent(getProtocol() + '://' + domain);
+  domain = encodeURIComponent(btoa(getProtocol() + '://' + domain));
   let url =
     borderPx1ApiHost +
     '/info/' +
@@ -1646,6 +1649,9 @@ function isValidDomain(domain, callback) {
     new URLSearchParams({ url: domain });
   Ext.Ajax.request({
     url: url,
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('border-px1-api-cookie'),
+    },
     success: (response) => {
       let result = JSON.parse(response.responseText);
       callback({ isValid: result.success, path: result.path });

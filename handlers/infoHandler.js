@@ -68,7 +68,7 @@ const log = console.log,
       let domainType = req.params.domainType,
         sites = domainType === 'ip' ? global.sitesIp : global.sites;
       if (sites) {
-        let siteName = req.params.siteName,
+        let siteName = decodeBase64(req.params.siteName),
           siteId = sites.find((site) => site.name === siteName).id,
           // cookieName = domainType === 'ip' ? 'border-px1-ip' : 'border-px1',
           // cookie = req.cookies[cookieName];
@@ -124,7 +124,7 @@ const log = console.log,
   fetchFolderPath = async (req, res) => {
     try {
       let url =
-        decodeURIComponent(req.query['url']) +
+      decodeBase64(decodeURIComponent(req.query['url'])) +
         '/Public/GetDateModifiedOfFiles.aspx?';
       const response = await fetch(
         url +
@@ -144,7 +144,7 @@ const log = console.log,
   },
   fetchMobileJson = async (req, res) => {
     try {
-      let url = decodeURIComponent(req.query['url']);
+      let url = decodeBase64(decodeURIComponent(req.query['url']));
       log('url:%s', url);
       const response = await fetch(url);
       //log(response.headers.raw()['bpx-id']);
@@ -159,7 +159,7 @@ const log = console.log,
       let domainType = req.params.domainType,
         sites = domainType === 'ip' ? global.sitesIp : global.sites;
       if (sites) {
-        let siteName = req.params.siteName,
+        let siteName = decodeBase64(req.params.siteName),
           domainType = req.params.domainType,
           sites = domainType === 'ip' ? global.sitesIp : global.sites,
           siteId = sites.find((site) => site.name === siteName).id,
