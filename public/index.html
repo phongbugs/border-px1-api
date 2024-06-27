@@ -1,39 +1,38 @@
 ﻿<!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-	<title>CLG's WLs Management</title>
-	<link rel="stylesheet" href="extjs/6.2/classic/theme-neptune/resources/theme-neptune-all.css" />
-	<link rel="stylesheet" href="extjs/6.2/packages/ux/classic/neptune/resources/ux-all.css" />
-	<link rel="stylesheet" href="css/grid.css" />
-	<link rel="stylesheet" href="css/form.css" />
-	<script src="extjs/6.2/ext-all.js"></script>
-	<script src="js/jsencrypt.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
-	<link rel="shortcut icon"
-        href="https://lh3.googleusercontent.com/a-/AOh14GjgiQ5JKAQrLioFlouEN-wAXCv_hU6jKIFU099p9w=s88-c-k-c0x00ffffff-no-rj-mo">
-	<style>
-        .spinner {
-            width: 16px;
-            height: 16px;
-            border: 4px #ddd solid;
-            border-top: 4px #2e93e6 solid;
-            border-radius: 50%;
-            animation: sp-anime 0.8s infinite linear;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to CLG's Summary API</title>
+    <style>
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-	</style>
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 1024px;
+            height: 100%;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
 </head>
-
 <body>
-	<div id="app">
-		<div id="center" class="center">
-			<div id="loading" class="spinner"></div>
-		</div>
-	</div>
-	<script>
-        let startScriptSource = 'js/index.js'
-	</script>
-    <script src="js/startup.js"></script>
+    <div style="display:flex;justify-content:center"><h1>Welcome to CLG's Summary API</h1></div>
+    <div class="wrapper">
+        <div class="container">
+            <img src="img/solid-colour-slide-puzzle-style-loading-animation.gif" alt="Loading Animation">
+        </div>
+    </div>
 </body>
-
 </html>
