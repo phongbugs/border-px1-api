@@ -1,0 +1,210 @@
+﻿.genBalance {
+    height: 58px;
+    border-top: 1px solid #252d31;
+    border-bottom: 1px solid #242d33;
+    background: #252d31;
+}
+
+    .genBalance a {
+        /*background: url(/Sources/Styles/images/backgrounds/genBalance.png) repeat-x;*/
+        display: block;
+        border-top: 1px solid #4a535c;
+        color: #e0e0e0;
+        border-bottom: 1px solid #3c444c;
+    }
+
+        .genBalance a span {
+            font-size: 11px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+            .genBalance a span.balanceAmount {
+                font-size: 22px;
+                font-weight: bold;
+                margin: 0;
+            }
+
+    .genBalance .amount {
+        width: 124px;
+        float: left;
+        margin-right: 1px;
+        border-right: 1px solid #3b4751;
+        padding: 5px 14px;
+        border-left: 1px solid #3b4751;
+    }
+
+    .genBalance .amChanges {
+        width: 39px;
+        float: left;
+        border-left: 1px solid #3b4751;
+        border-right: 1px solid #3b4751;
+        padding: 4px 10px;
+    }
+
+/* Side bar balance */
+.genBalance {
+    height: 110px;
+    margin-bottom: 25px;
+}
+
+    .genBalance .amount {
+        box-sizing: initial;
+        -webkit-box-sizing: initial;
+        -moz-box-sizing: initial;
+        width: calc(100% - 1px);
+        padding-left: 0;
+        padding-right: 0;
+        padding-bottom: 5px;
+        border-right: none;
+        border-left: none;
+    }
+
+        .genBalance .amount .wallet-icon {
+            /*height: 30px;
+                    width: 30px;                    
+                    vertical-align: initial;*/
+            margin-right: 5px;
+        }
+
+        .genBalance .amount .topup-icon {
+            height: 12px;
+            width: 12px;
+        }
+
+        .genBalance .amount > div:first-child {
+            display: flex;
+            padding: 0px 15px 0px 15px;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .genBalance .amount .top-up {
+            padding: 0px 15px 0px 15px;
+            line-height: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+            .genBalance .amount .top-up.nexuspay {
+                padding: 0;
+            }
+
+    .genBalance a span,
+    .genBalance .nexuspayCard {
+        font-size: 11px;
+        margin-bottom: 0px;
+        color: #fff;
+        font-weight: bold;
+    }
+
+        .genBalance a span.balanceAmount,
+        .genBalance .nexuspayCard span.balanceNexuspay {
+            font-size: 22px;
+            color: #008a00;
+            font-family: ProximaNova, Roboto, Arial, sans-serif;
+            margin-top: 5px;
+            margin-bottom: 25px;
+            text-align: center;
+            background-color: #ffffff7a;
+            padding: 10px 0px 6px 0px;
+        }
+
+        .genBalance a span.balanceAmountmin,
+        .genBalance .nexuspayCard span.balanceNexuspay {
+            color: #d41717;
+            margin-bottom: 5px;
+        }
+
+        .genBalance .nexuspayCard span.balanceNexuspay {
+            color: #2e2d5d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .genBalance a span.lastModified,
+        .genBalance .nexuspayCard .lastModified {
+            color: #eee;
+            font-size: 9px;
+            font-weight: normal;
+        }
+
+    .genBalance .topup-alert {
+        background: #d41717;
+        border-radius: 5px;
+        text-align: center;
+        padding: 3px 5px 3px 5px;
+        color: #fff;
+        font-weight: bold;
+        font-size: 9px;
+        width: 106px;
+    }
+
+    .genBalance .settlement {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 9px;
+        color: #fff;
+        padding: 3px 3px 3px 3px;
+        border-radius: 5px;
+        align-items: center;
+        text-align: center;
+        width: 102px;
+    }
+
+        .genBalance .settlement.setting {
+            background-color: #2720b0;
+        }
+
+        .genBalance .settlement.topup {
+            background-color: #EDA925;
+        }
+
+    .genBalance .topup-alert i.fa-exclamation:before {
+        background-color: #fff;
+        border-radius: 50%;
+        padding: 3px 6px;
+        margin-right: 5px;
+        color: #ff1717;
+        font-size: 9px;
+    }
+
+    .genBalance .settlement i.fa-gear:before {
+        font-size: 14px;
+    }
+
+/* Side bar balance END */
+
+.genBalance {
+    border-top: none;
+    border-bottom: none;
+    background: none;
+    padding: 10px;
+}
+
+    .genBalance a,
+    .genBalance .nexuspayCard {
+        background-image: url("../images/card-bg.svg"), linear-gradient(#36B997, #2A8175, #1B7E7E, #58C5AA);
+        background-repeat: no-repeat;
+        background-position: center;
+        border-top: none;
+        border-bottom: none;
+        border-radius: 10px;
+        background-blend-mode: color-dodge;
+    }
+
+        .genBalance a.balanceCardMin {
+            background-image: url("../images/card-bg.svg"), linear-gradient(#F9AF00, #F58D15, #F54749, #F65D8B);
+        }
+
+    .genBalance .nexuspayCard {
+        background-image: url("../images/card-bg.svg"), linear-gradient(#55557f, #504ea3, #6a5bb9, #497edc);
+    }
+
+    .genBalance .top-up.nexuspay a {
+        background: none;
+    }

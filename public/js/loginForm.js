@@ -131,7 +131,7 @@
                                 'token-sync-image-cdn',
                                 rs.token
                               );
-                            else alert(rs.message);
+                            else console.log(rs.message);
                           },
                           failure: function (response) {
                             Ext.Msg.alert('Error', 'Sync CDN Images function');

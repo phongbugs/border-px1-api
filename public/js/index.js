@@ -16,7 +16,9 @@ const getCmp = function (query) {
     });
     tabPanel.setActiveTab(tab);
   },
-  isFEAccount = () => localStorage.getItem('username') === 'feadmin';
+  isFEAccount = () => localStorage.getItem('username') === 'feadmin',
+  isSPAccount = () =>
+    localStorage.getItem('username').toLowerCase() === 'spadmin';
 Ext.define('KitchenSink.view.layout.Border', {
   extend: 'Ext.panel.Panel',
   xtype: 'layout-border',
@@ -55,7 +57,7 @@ Ext.define('KitchenSink.view.layout.Border', {
         title: 'CLG WLs Management',
         iconCls: 'users',
         icon: 'https://icons.iconarchive.com/icons/dtafalonso/android-lollipop/16/Docs-icon.png',
-        htmlFile: '/7.html',
+        htmlFile: '/7.html?=v12',
       });
     },
   },
@@ -88,7 +90,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 itemIdTabPanel: '#mainContent',
                 title: cmp.text,
                 icon: cmp.icon,
-                htmlFile: '/7.html',
+                htmlFile: '/7.html?v=12',
               });
             },
             //hidden: !isFEAccount()
@@ -104,7 +106,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/syncAllGame.html',
               });
             },
-            //hidden: !isFEAccount()
+            hidden: isSPAccount(),
           },
           {
             text: 'All Games All WLs Sync',
@@ -117,6 +119,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/syncAllGameAllWLs.html',
               });
             },
+            hidden: isSPAccount(),
           },
           {
             text: 'Header Games Sync',
@@ -129,7 +132,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/syncHeaderGame.html',
               });
             },
-            //hidden: !isFEAccount()
+            hidden: isSPAccount(),
           },
           {
             text: 'Header Menu All WLs Sync',
@@ -142,6 +145,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/syncHeaderGameAllWLs.html',
               });
             },
+            hidden: isSPAccount(),
           },
           {
             text: 'Header SubMenu All WLs Sync',
@@ -154,6 +158,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/syncHeaderGameSubMenuAllWLs.html',
               });
             },
+            hidden: isSPAccount(),
           },
           {
             text: 'Lobby Games All WLs Sync',
@@ -166,6 +171,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/syncLobbyGameAllWLs.html',
               });
             },
+            hidden: isSPAccount(),
           },
           {
             text: 'Lobby Games WL Sync',
@@ -178,7 +184,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 htmlFile: '/syncLobbyGame.html',
               });
             },
-            //hidden: !isFEAccount()
+            hidden: isSPAccount(),
           },
           {
             text: 'SP Member docs',
@@ -194,7 +200,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 ).toString(CryptoJS.enc.Utf8),
               });
             },
-            hidden: isFEAccount()
+            hidden: isFEAccount() || isSPAccount(),
           },
           {
             text: 'SP Agent docs',
@@ -210,7 +216,7 @@ Ext.define('KitchenSink.view.layout.Border', {
                 ).toString(CryptoJS.enc.Utf8),
               });
             },
-            hidden: isFEAccount()
+            hidden: isFEAccount() || isSPAccount(),
           },
           {
             icon: 'https://icons.iconarchive.com/icons/saki/nuoveXT-2/16/Apps-session-logout-icon.png',
