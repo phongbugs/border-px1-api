@@ -302,7 +302,7 @@ Ext.onReady(function () {
           serverPoolIPs !== 'CLG Pool Testing' &&
           record.get('servers') !== '10.168.109.6'
         ) {
-          Ext.getCmp('gridWLs').setDisabled(true);
+          
           // send to grid domain two columns
           selectedWhiteLabelName = record.get('name');
           selectedSpecificServer = record.get('specificServer');
@@ -312,11 +312,17 @@ Ext.onReady(function () {
             domainType = getDomainType().toLowerCase(),
             useDomainTypeFromPX1 = true;
           Ext.getCmp('txtNameWLsDomain').getStore().loadData(listNameWLs);
-          showDomainGridDataByWhitelabel({
-            whiteLabelName,
-            domainType,
-            useDomainTypeFromPX1,
-          });
+         
+          if(isMobileDevice())
+            window.open('domains.html?wl=' + selectedWhiteLabelName, '_blank');
+          else {
+            Ext.getCmp('gridWLs').setDisabled(true);
+            showDomainGridDataByWhitelabel({
+              whiteLabelName,
+              domainType,
+              useDomainTypeFromPX1,
+            });
+          }
         }
       },
       viewready: (grid) => {
@@ -1186,6 +1192,12 @@ Ext.onReady(function () {
       },
     },
   });
+  function resizeGrid() {
+      var iframeWidth =  Ext.getBody().getViewSize().width;
+      var iframeHeight = Ext.getBody().getViewSize().height;
+      girdWLs.setSize(iframeWidth, iframeHeight);
+  }
+  Ext.EventManager.onWindowResize(resizeGrid);
 });
 
 function syncDomainsOneWhiteLabel(whiteLabelName, record, callback) {

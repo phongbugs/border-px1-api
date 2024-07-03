@@ -1,6 +1,6 @@
 let borderPx1ApiHost =
     localStorage.getItem('borderPx1ApiHost') ||
-    (location.host.indexOf('localhost') > -1
+    ((location.host.indexOf('localhost') > -1 || location.host.indexOf('192.168.1') > -1 )
       ? 'http://localhost:8888'
       : 
       //'https://border-px1-api.herokuapp.com'
@@ -36,7 +36,9 @@ window.onload = () => {
   authenticate((isAuthenticated) => {
     if (isAuthenticated)
       loadScript(startScriptSource + '?v=' + currentVersion());
-    else loadScript('js/loginForm.js?v=' + currentVersion());
+    else 
+      //loadScript('js/loginForm.js?v=' + currentVersion());
+    window.open('/login.html', '_top');
     Ext.tip.QuickTipManager.init();
   });
 };

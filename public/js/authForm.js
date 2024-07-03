@@ -167,7 +167,7 @@ let authForm = Ext.create('Ext.form.Panel', {
                     localStorage.setItem('authPassword', encrypt(password));
                   }
                   btnAuth.setIconCls('authenticationCls');
-                  Ext.getCmp('btnSyncAllDomain').setDisabled(false);
+                  if(Ext.getCmp('btnSyncAllDomain')) Ext.getCmp('btnSyncAllDomain').setDisabled(false);
                   // countdonw
                   var myCounter = new Countdown({
                     seconds: 1800,

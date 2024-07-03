@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Welcome</title>
+    <title>CLG's Summary</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!--begin::Fonts(mandatory for all pages)-->
@@ -29,20 +30,21 @@
             cursor: pointer;
         }
 
-            .scrolling-text:hover {
-                animation-play-state: paused;
-            }
+        .scrolling-text:hover {
+            animation-play-state: paused;
+        }
 
         .menu-link.active {
             margin-right: 0rem !important;
         }
     </style>
-    <!--end::Global Stylesheets Bundle-->
-    <script>
-        //if (window.top != window.self) { window.top.location.replace(window.self.location.href); } // Frame-busting to prevent site from being loaded within a frame without permission (click-jacking)
-    </script>
 </head>
-<body id="kt_app_body" data-kt-app-layout="dark-sidebar" data-kt-app-header-fixed="true" data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="false" data-kt-app-sidebar-push-header="true" data-kt-app-sidebar-push-toolbar="true" data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" class="app-default" style="overflow: hidden">
+
+<body id="kt_app_body" data-kt-app-layout="dark-sidebar" data-kt-app-header-fixed="true"
+    data-kt-app-sidebar-enabled="true" data-kt-app-sidebar-fixed="true" data-kt-app-sidebar-hoverable="false"
+    data-kt-app-sidebar-push-header="true" data-kt-app-sidebar-push-toolbar="true"
+    data-kt-app-sidebar-push-footer="true" data-kt-app-toolbar-enabled="true" class="app-default"
+    style="overflow: hidden">
     <!--begin::Theme mode setup on page load-->
     <script>var defaultThemeMode = "light"; var themeMode; if (document.documentElement) { if (document.documentElement.hasAttribute("data-bs-theme-mode")) { themeMode = document.documentElement.getAttribute("data-bs-theme-mode"); } else { if (localStorage.getItem("data-bs-theme") !== null) { themeMode = localStorage.getItem("data-bs-theme"); } else { themeMode = defaultThemeMode; } } if (themeMode === "system") { themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } document.documentElement.setAttribute("data-bs-theme", themeMode); }</script>
     <!--end::Theme mode setup on page load-->
@@ -51,12 +53,16 @@
         <!--begin::Page-->
         <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
             <!--begin::Header-->
-            <div id="kt_app_header" class="app-header" data-kt-sticky="true" data-kt-sticky-activate="{default: true, lg: true}" data-kt-sticky-name="app-header-minimize" data-kt-sticky-offset="{default: '200px', lg: '0'}" data-kt-sticky-animation="false">
+            <div id="kt_app_header" class="app-header" data-kt-sticky="true"
+                data-kt-sticky-activate="{default: true, lg: true}" data-kt-sticky-name="app-header-minimize"
+                data-kt-sticky-offset="{default: '200px', lg: '0'}" data-kt-sticky-animation="false">
                 <!--begin::Header container-->
-                <div class="app-container container-fluid d-flex align-items-stretch justify-content-between" id="kt_app_header_container">
+                <div class="app-container container-fluid d-flex align-items-stretch justify-content-between"
+                    id="kt_app_header_container">
                     <!--begin::Sidebar mobile toggle-->
                     <div class="d-flex align-items-center d-lg-none ms-n3 me-1 me-md-2" title="Show sidebar menu">
-                        <div class="btn btn-icon btn-active-color-primary w-35px h-35px" id="kt_app_sidebar_mobile_toggle">
+                        <div class="btn btn-icon btn-active-color-primary w-35px h-35px"
+                            id="kt_app_sidebar_mobile_toggle">
                             <i class="ki-duotone ki-abstract-14 fs-2 fs-md-1">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
@@ -74,186 +80,20 @@
                     <!--end::Mobile logo-->
                     <!--begin::Header wrapper-->
                     <div class="d-flex align-items-stretch justify-content-end flex-grow-1" id="kt_app_header_wrapper">
-                        <!--begin::Menu wrapper-->
-                        <div class="app-header-menu app-header-mobile-drawer align-items-stretch w-100 ms-6 d-none d-xxl-flex d-xl-flex d-lg-flex d-md-flex" data-kt-drawer="false" data-kt-drawer-name="app-header-menu" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="250px" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_app_header_menu_toggle" data-kt-swapper="false" data-kt-swapper-mode="{default: 'append', lg: 'prepend'}" data-kt-swapper-parent="{default: '#kt_app_body', lg: '#kt_app_header_wrapper'}">
-                            <!--begin::Menu-->
-                            <div class="menu menu-rounded menu-column menu-lg-row my-3 my-lg-0 align-items-stretch fw-semibold px-2 px-lg-0" id="kt_app_header_menu" data-kt-menu="true">
-                                <!--begin:Menu item-->
-                                <div class="menu-item menu-here-bg menu-lg-down-accordion w-100 me-0">
-                                    <!--begin:Menu link-->
-                                    <span class="menu-link card" style="flex-direction: unset">
-                                        <i class="ki-duotone ki-notification fs-2x pe-3">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i>
-                                        <span class="menu-title">
-                                            <marquee class="marquee-message" scrollamount="2" scrolldelay="1" onmouseover="scrollDelay=10000" onmouseout="scrollDelay=1">
-                                                <a href="MsgLog.aspx" target="fraMain" onclick="clickToMenu('<%=Resources.Resource.Home%>','<%=Resources.Resource.Messages%>', 'MsgLog.aspx', this)"></a>
-                                            </marquee>
-                                        </span>
-                                    </span>
-                                    <!--end:Menu link-->
-                                </div>
-                                <!--end:Menu item-->
-                            </div>
-                            <!--end::Menu-->
-                        </div>
-                        <!--end::Menu wrapper-->
                         <!--begin::Navbar-->
                         <div class="app-navbar flex-shrink-0">
                             <!--begin::User menu-->
-                            <div class="app-navbar-item ms-1 ms-md-4 d-none d-xxl-flex d-xl-flex d-lg-flex d-md-flex" id="kt_header_user_menu_toggle">
+                            <div class="app-navbar-item ms-1 ms-md-4 d-xxl-flex d-xl-flex d-lg-flex d-md-flex"
+                                id="kt_header_user_menu_toggle">
                                 Hi, <%=username%>
                             </div>
-                            <div class="app-navbar-item ms-1 ms-md-4 d-flex d-xxl-none d-xl-none d-lg-none d-md-none" id="kt_header_user_menu_toggle2">
-                                <!--begin::Menu wrapper-->
-                                <div class="cursor-pointer btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-                                    <i class="ki-duotone ki-user-square fs-1">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                    </i>
-                                </div>
-                                <!--begin::User account menu-->
-                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px" data-kt-menu="true" style="">
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-3">
-                                        <div class="menu-content d-flex align-items-center px-3">
-                                            <!--begin::Avatar-->
-                                            <div class="symbol symbol-50px me-5">
-                                                <i class="ki-duotone ki-user-square fs-1">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                </i>
-                                            </div>
-                                            <!--end::Avatar-->
-                                            <!--begin::Username-->
-                                            <div class="d-flex flex-column">
-                                                <div class="fw-bold d-flex align-items-center fs-5">
-                                                    Hi, <%=username%>
-                                                    <span class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2"></span>
-                                                </div>
-                                                <a href="#" class="fw-semibold text-muted text-hover-primary fs-7"></a>
-                                            </div>
-                                            <!--end::Username-->
-                                        </div>
-                                    </div>
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu separator-->
-                                    <div class="separator my-2"></div>
-                                    <!--end::Menu separator-->
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-5">
-                                        <span class="menu-link card" style="flex-direction: unset">
-                                            <i class="ki-duotone ki-notification fs-2x pe-3">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                                <span class="path3"></span>
-                                            </i>
-                                            <span class="menu-title overflow-hidden">
-                                                <span class="marquee-message scrolling-text" scrollamount="2" scrolldelay="1" onmouseover="scrollDelay=10000" onmouseout="scrollDelay=1">
-                                                    <a href="MsgLog.aspx" target="fraMain" onclick="clickToMenu('<%=Resources.Resource.Home%>','<%=Resources.Resource.Messages%>', 'MsgLog.aspx', this)"></a>
-                                                </span>
-                                            </span>
-                                        </span>
-                                    </div>
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-5">
-                                        <span class="menu-link card" style="flex-direction: unset">
-                                            <i class="ki-duotone ki-sms fs-1">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                            <a href="#" onclick="openMail('Mail.aspx')">
-                                                <span class="menu-badge">
-                                                    <span id="spanMailNotification-mobile" class="badge badge-light-danger badge-square fw-bold fs-9 w100px">0</span>
-                                                </span>
-                                            </a>
-                                        </span>
-                                    </div>
-                                </div>
-                                <!--end::User account menu-->
-                                <!--end::Menu wrapper-->
-                            </div>
                             <!--end::User menu-->
-                            <!--begin::Mail-->
-                            <div class="app-navbar-item ms-1 ms-md-4 d-none d-xxl-flex d-xl-flex d-lg-flex d-md-flex">
-                                <!--begin::Menu wrapper-->
-                                <div onclick="openMail('Mail.aspx')" class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px position-relative" id="kt_drawer_chat_toggle">
-                                    <i class="ki-duotone ki-sms fs-1" title="Mail" id="iTitleMail">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i>
-                                    <span id="spanMailNotification" class=""></span>
-                                </div>
-                                <!--end::Menu wrapper-->
-                            </div>
-                            <!--end::Mail-->
-                            <!--begin::Language-->
-                            <div class="app-navbar-item ms-1 ms-md-4">
-                                <!--begin::Menu wrapper-->
-                                <div class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px w-md-40px h-md-40px" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-                                    <span class="symbol symbol-20px">
-                                        <img id="img-lang" class="rounded" src="assets/media/flags/united-states.svg" alt="">
-                                    </span>
-                                </div>
-                                <!--begin::User account menu-->
-                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-primary fw-semibold py-4 fs-6 w-175px" data-kt-menu="true">
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-3">
-                                        <a href="Main.aspx?lang=EN-US" class="menu-link d-flex px-5 active">
-                                            <span class="symbol symbol-20px me-4">
-                                                <img class="rounded-1" src="assets/media/flags/united-states.svg" alt="">
-                                            </span>
-                                            English
-                                        </a>
-                                    </div>
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-3">
-                                        <a href="Main.aspx?lang=ZH-CN" class="menu-link d-flex px-5">
-                                            <span class="symbol symbol-20px me-4">
-                                                <img class="rounded-1" src="assets/media/flags/china.svg" alt="">
-                                            </span>
-                                            中文
-                                        </a>
-                                    </div>
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-3">
-                                        <a href="Main.aspx?lang=EN-GB" class="menu-link d-flex px-5">
-                                            <span class="symbol symbol-20px me-4">
-                                                <img class="rounded-1" src="assets/media/flags/thailand.svg" alt="">
-                                            </span>
-                                            ประเทศไทย
-                                        </a>
-                                    </div>
-                                    <!--end::Menu item-->
-                                    <!--begin::Menu item-->
-                                    <div class="menu-item px-3">
-                                        <a href="Main.aspx?lang=EN-TT" class="menu-link d-flex px-5">
-                                            <span class="symbol symbol-20px me-4">
-                                                <img class="rounded-1" src="assets/media/flags/south-korea.svg" alt="">
-                                            </span>
-                                            한국인
-                                        </a>
-                                    </div>
-                                    <!--end::Menu item-->
-                                </div>
-                                <!--end::User account menu-->
-                                <!--end::Menu wrapper-->
-                            </div>
-                            <!--end::Language-->
-                            <!--begin::Theme mode-->
 
-                            <!--end::Theme mode-->
                             <!--begin::Signout-->
                             <div class="app-navbar-item ms-1 ms-md-4">
                                 <!--begin::Menu wrapper-->
-                                <div onclick="window.open('signout.aspx','_parent')" class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px position-relative">
+                                <div onclick=" localStorage.clear();setTimeout(() => location.reload(), 1000);"
+                                    class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px position-relative">
                                     <i class="ki-duotone ki-exit-right fs-1" title="Sign Out">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
@@ -271,27 +111,25 @@
             </div>
             <!--end::Header-->
             <!--begin::Wrapper-->
-            <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
+            <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper" style="margin-top: 0;">
                 <!--begin::Sidebar-->
-                <div id="kt_app_sidebar" class="app-sidebar flex-column" data-kt-drawer="true" data-kt-drawer-name="app-sidebar" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="225px" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
+                <div id="kt_app_sidebar" class="app-sidebar flex-column" data-kt-drawer="true"
+                    data-kt-drawer-name="app-sidebar" data-kt-drawer-activate="{default: true, lg: false}"
+                    data-kt-drawer-overlay="true" data-kt-drawer-width="225px" data-kt-drawer-direction="start"
+                    data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
                     <!--begin::Logo-->
                     <div class="app-sidebar-logo px-5" id="kt_app_sidebar_logo">
                         <!--begin::Logo image-->
                         <a href="#">
                             <img alt="Logo" src="Images/logo.png" class="h-125px w-250px app-sidebar-logo-default" />
-                            <%--<img alt="Logo" src="Images/logo-mobile.png" class="h-20px app-sidebar-logo-minimize" />--%>
                         </a>
                         <!--end::Logo image-->
                         <!--begin::Sidebar toggle-->
-                        <!--begin::Minimized sidebar setup:
-                            if (isset($_COOKIE["sidebar_minimize_state"]) && $_COOKIE["sidebar_minimize_state"] === "on") {
-                                1. "src/js/layout/sidebar.js" adds "sidebar_minimize_state" cookie value to save the sidebar minimize state.
-                                2. Set data-kt-app-sidebar-minimize="on" attribute for body tag.
-                                3. Set data-kt-toggle-state="active" attribute to the toggle element with "kt_app_sidebar_toggle" id.
-                                4. Add "active" class to to sidebar toggle element with "kt_app_sidebar_toggle" id.
-                            }
-                        -->
-                        <div id="kt_app_sidebar_toggle" class="app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-35px w-35px position-absolute start-100 rotate" data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body" data-kt-toggle-name="app-sidebar-collapse">
+                        
+                        <div id="kt_app_sidebar_toggle"
+                            class="app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-35px w-35px position-absolute start-100 rotate"
+                            data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body"
+                            data-kt-toggle-name="app-sidebar-collapse">
                             <i class="ki-duotone ki-black-left-line fs-1 rotate-180">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
@@ -308,10 +146,16 @@
                         <!--begin::Menu wrapper-->
                         <div id="kt_app_sidebar_menu_wrapper" class="app-sidebar-wrapper">
                             <!--begin::Scroll wrapper-->
-                            <div id="kt_app_sidebar_menu_scroll" class="scroll-y my-3 mx-2" data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_app_sidebar_logo, #kt_app_sidebar_Balance, #kt_app_sidebar_footer" data-kt-scroll-wrappers="#kt_app_sidebar_menu" data-kt-scroll-offset="5px" data-kt-scroll-save-state="true">
+                            <div id="kt_app_sidebar_menu_scroll" class="scroll-y my-3 mx-2" data-kt-scroll="true"
+                                data-kt-scroll-activate="true" data-kt-scroll-height="auto"
+                                data-kt-scroll-dependencies="#kt_app_sidebar_logo, #kt_app_sidebar_Balance, #kt_app_sidebar_footer"
+                                data-kt-scroll-wrappers="#kt_app_sidebar_menu" data-kt-scroll-offset="5px"
+                                data-kt-scroll-save-state="true">
                                 <!--begin::Menu-->
-                                <div class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6" id="#kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false">
-                                    <img style="width: 20px; height: 20px; margin: 0 auto" src="Images/spinner.gif" title="spinner" alt="spinner" />
+                                <div class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6"
+                                    id="#kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false">
+                                    <img style="width: 20px; height: 20px; margin: 0 auto" src="Images/spinner.gif"
+                                        title="spinner" alt="spinner" />
                                 </div>
                                 <!--end::Menu-->
                             </div>
@@ -321,14 +165,6 @@
                     </div>
                     <!--end::sidebar menu-->
                     <!--begin::Footer-->
-                    <div class="app-sidebar-footer flex-column-auto pt-2 pb-3 px-3" id="kt_app_sidebar_footer">
-                        <div href="#" class="btn btn-flex flex-center btn-custom btn-primary overflow-hidden text-nowrap px-0 h-275px w-100" data-bs-trigger="hover" data-bs-dismiss-="click" style="background: #00000078">
-                            <span class="btn-label h-100">
-                                <marquee id="marquee-user" scrollamount="2" scrolldelay="1" onmouseover="scrollDelay=10000" onmouseout="scrollDelay=1" direction="up" class="h-100">
-                                </marquee>
-                            </span>
-                        </div>
-                    </div>
                     <!--end::Footer-->
                 </div>
                 <!--end::Sidebar-->
@@ -342,15 +178,20 @@
                             <!--begin::Toolbar container-->
                             <div id="kt_app_toolbar_container" class="app-container d-flex flex-stack">
                                 <!--begin::Page title-->
-                                <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
+                                <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 mx-2 mx-sx-0">
                                     <!--begin::Title-->
-                                    <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0"><%=Resources.Resource.Dashboard.ToUpper()%></h1>
+                                    <h1
+                                        class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
+                                        CLG's Management WLs
+                                    </h1>
                                     <!--end::Title-->
                                     <!--begin::Breadcrumb-->
                                     <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
                                         <!--begin::Item-->
                                         <li class="breadcrumb-item text-muted">
-                                            <a href="#" class="text-muted text-hover-primary"><%=Resources.Resource.Home%></a>
+                                            <a href="#" class="text-muted text-hover-primary">
+                                                CLG's Management WLs
+                                            </a>
                                         </li>
                                         <!--end::Item-->
                                         <!--begin::Item-->
@@ -359,7 +200,9 @@
                                         </li>
                                         <!--end::Item-->
                                         <!--begin::Item-->
-                                        <li class="breadcrumb-item text-muted"><%=Resources.Resource.Dashboard.ToUpper()%></li>
+                                        <li class="breadcrumb-item text-muted">
+                                            CLG's Management WLs
+                                        </li>
                                         <!--end::Item-->
                                     </ul>
                                     <!--end::Breadcrumb-->
@@ -371,7 +214,7 @@
                         <!--end::Toolbar-->
                         <!--begin::Content-->
                         <div id="kt_app_content" class="app-content flex-column-fluid">
-                            <iframe name="fraMain" class="h-100 w-100 scroll-y" src="Dashboard.aspx"></iframe>
+                            <iframe id="fraMain" name="fraMain" class="h-100 w-100 scroll-y" src="7.html"></iframe>
                         </div>
                         <!--end::Content-->
                     </div>
@@ -382,11 +225,12 @@
                 <!--begin::Footer-->
                 <div id="kt_app_footer" class="app-footer">
                     <!--begin::Footer container-->
-                    <div class="app-container container-fluid d-flex flex-column flex-md-row flex-center flex-md-stack py-3">
+                    <div
+                        class="app-container container-fluid d-flex flex-column flex-md-row flex-center flex-md-stack py-3">
                         <!--begin::Copyright-->
                         <div class="text-dark order-2 order-md-1">
-                            <span class="text-muted fw-semibold me-1">2023&copy;</span>
-                            <a href="#" class="text-gray-800 text-hover-primary"><%=wsinetbet.Util.getDisComp()%></a>
+                            <span class="text-muted fw-semibold me-1">2024&copy;</span>
+                            <a href="#" class="text-gray-800 text-hover-primary">CLG Summary</a>
                         </div>
                         <!--end::Copyright-->
                         <!--begin::Menu-->
@@ -424,7 +268,9 @@
                 <!--begin::Modal header-->
                 <div class="modal-header">
                     <!--begin::Modal title-->
-                    <h2 id="titleModal"><%=Resources.Resource.AccountInfo%></h2>
+                    <h2 id="titleModal">
+                        <%=Resources.Resource.AccountInfo%>
+                    </h2>
                     <!--end::Modal title-->
                     <!--begin::Close-->
                     <div class="btn btn-sm btn-icon btn-active-color-primary" data-bs-dismiss="modal">
@@ -439,7 +285,8 @@
                 <!--begin::Modal body-->
                 <div class="modal-body h-400px">
                     <div class="d-flex justify-content-center justify-content-xl-start flex-row-auto w-100">
-                        <iframe class="w-100 scroll-y" style="height: 350px" name="fraModal" src="" frameborder="0" scrolling="auto"></iframe>
+                        <iframe class="w-100 scroll-y" style="height: 350px" name="fraModal" src="" frameborder="0"
+                            scrolling="auto"></iframe>
                     </div>
                     <!--begin::Aside-->
                 </div>
@@ -455,13 +302,9 @@
     <script src="assets/plugins/global/plugins.bundle.js"></script>
     <script src="assets/js/scripts.bundle.js"></script>
     <!--end::Global Javascript Bundle-->
-    <%--<link href="assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
-    <script src="assets/plugins/custom/datatables/datatables.bundle.js"></script>
-    <!--begin::Custom Javascript(used for this page only)-->
-    <script src="assets/js/custom/apps/projects/list/list.js"></script>--%>
     <script>
-        var mainMenuTitle = '<%=Resources.Resource.Home%>';
-        var subMenuTitle = '<%=Resources.Resource.Dashboard.ToUpper()%>';
+        var mainMenuTitle = 'HOME';
+        var subMenuTitle = 'CLG Management WLs';
 
         function getQueryString(name) {
             var urlParams = new URLSearchParams(window.location.search);
@@ -470,23 +313,80 @@
         function openMail(MsgUrl) {
             window.open(MsgUrl, 'mailBox', 'width=630,height=480,top=50,left=100,toolbars=no,scrollbars=no,status=no,resizable=yes');
         }
-        function switchLang(lang) {
-            var flags = {
-                'EN-US': 'united-states.svg',
-                'ZH-CN': 'china.svg',
-                'EN-GB': 'thailand.svg',
-                'EN-TT': 'south-korea.svg'
-            }
-            $('#img-lang').attr('src', 'assets/media/flags/' + flags[lang])
-        }
         function fetchMenuLeftJSON(callback) {
-            try {
-                $.getJSON('Handlers/LeftMenuHandler.ashx', function (resp) {
-                    if (resp) {
-                        localStorage.setItem('menuLeftData', JSON.stringify(resp))
-                        callback(resp)
+            let menuLeftData = {
+                "ALL GAMES": [
+                    {
+                        "text": "WL Sync",
+                        "href": "syncAllGame.html",
+                        "iconClass": "ki-address-book",
+                        "id": "AMenu"
+                    },
+                    {
+                        "text": "All WLs Sync",
+                        "href": "syncAllGameAllWLs.html",
+                        "iconClass": "ki-address-book",
+                        "id": "AMenu"
+                    },
+                ],
+                "HEADER GAMES": [
+                    {
+                        "text": "Menu WL Sync",
+                        "href": "syncHeaderGame.html",
+                        "iconClass": "ki-duotone ki-chart-line-star",
+                        "id": "SMenu"
+                    },
+                    {
+                        "text": "Menu All WLs Sync",
+                        "href": "syncHeaderGameAllWLs.html",
+                        "iconClass": "ki-duotone ki-chart-line-star",
+                        "id": "SMenu"
+                    },
+                    {
+                        "text": "Submenu All WLs Sync",
+                        "href": "syncHeaderGameSubMenuAllWLs.html",
+                        "iconClass": "ki-duotone ki-chart-line-star",
+                        "id": "SMenu"
                     }
-                })
+                ],
+                "LOBBY GAMES": [
+                    {
+                        "text": "WL Sync",
+                        "href": "syncLobbyGame.html",
+                        "iconClass": "ki-duotone ki-user-square",
+                        "id": "MMenu"
+                    },
+                    {
+                        "text": "All WLs Sync",
+                        "href": "syncLobbyGameAllWLs.html",
+                        "iconClass": "ki-duotone ki-user-square",
+                        "id": "MMenu"
+                    }
+                ],
+                "SP DOCS": [
+                    {
+                        "text": "Member site",
+                        "href":`CryptoJS.AES.decrypt(
+                                'U2FsdGVkX1+a3TY2Zu0/de1UczozmFhcFOIEWplCLQZK5aUhXkjz9byTbbcNyRLwfua4m6pM0z0dSa8SZ9GU3OfuhktX/f71qqjSJSD/q4jXMGwD/8PRL0jh4UYH9rKH0b0kpUvTY37G4ZMGan+7ZVLITd2JdqVMePax5JynQLY4KSyqq2qljqZeW2LzeyrN',
+                                location.hostname
+                                ).toString(CryptoJS.enc.Utf8)`,
+                        "iconClass": "ki-duotone ki-user-square",
+                        "id": "MMenu"
+                    },
+                    {
+                        "text": "Agent site",
+                        "href": `CryptoJS.AES.decrypt(
+                                'U2FsdGVkX19qOAsLt5+SfyPMtkBhO3XTs7QSOhb5078R/glbOgg9TZYFmiR9IHIYmHKvzI+XZv+M5ebEuwSE5dgKMDODztOd5WOGn7/QaifVg8Bg530blvBJowlGfpzWkhXCT0TzgUMygQtLoPPw+vKLXYv3tqEuocf0G11XpxmciG89gUvWQxCzU4unvpg8',
+                                location.hostname
+                                ).toString(CryptoJS.enc.Utf8)`,
+                        "iconClass": "ki-duotone ki-user-square",
+                        "id": "MMenu"
+                    },
+                ]
+            }
+            try {
+                localStorage.setItem('menuLeftData', JSON.stringify(menuLeftData))
+                callback(menuLeftData)
             }
             catch (e) {
                 console.log('error at fetchMenuLeftJSON():' + e.message)
@@ -499,10 +399,9 @@
         $().ready(function () {
             try {
                 //drawMenuLeft(JSON.parse(localStorage.getItem('menuLeftData')))
+                $('#kt_header_user_menu_toggle').text('Hi, ' + localStorage.getItem('username'))
                 fetchMenuLeftJSON((menuLeftData => drawMenuLeft(menuLeftData)))
-                switchLang(getQueryString('lang'))
                 $("iframe[name='fraMain']").on('load', function () {
-                    appendMetronicAssets();
                     if ($('iframe[name=fraMain').attr('src') != 'about:blank') {
                         $('#kt_app_toolbar_container').find('h1').text(subMenuTitle)
                         $('#kt_app_toolbar_container ul li:eq(0)').text(mainMenuTitle)
@@ -521,83 +420,6 @@
             }
         })
 
-        function isWrappedAppContainer(pageName) {
-            if (
-                pageName === 'MemberIP.aspx' ||
-                pageName == 'Dashboard.aspx' ||
-                pageName == 'chgPwd.aspx' ||
-                pageName.indexOf('memberlist.aspx') > -1 ||
-                pageName.indexOf('agentlist.aspx') > -1 ||
-                pageName.indexOf('SubAccsWinLose2.aspx') > -1 ||
-                pageName.indexOf('subuserlist.aspx') > -1 ||
-                pageName.indexOf('Payment.aspx') > -1 ||
-                pageName.indexOf('accbal.aspx') > -1 ||
-                pageName.indexOf('BankSet.aspx') > -1 ||
-                pageName.indexOf('BankList.aspx') > -1 ||
-                pageName.indexOf('HasilTogelSet.aspx') > -1 ||
-                pageName.indexOf('History') > -1 ||
-                pageName.indexOf('Transfer') > -1 ||
-                pageName.indexOf('ActivePromotion') > -1 ||
-                pageName.indexOf('WashCredit') > -1 ||
-                pageName.indexOf('HasilTogelList.aspx') > -1 ||
-                pageName.indexOf('RPT_BnsCashbackDetails.aspx') > -1 ||
-                pageName.indexOf('RPT_BnsCashback.aspx') > -1 ||
-                pageName.indexOf('AddCreditRequest2.aspx') > -1 ||
-
-                pageName.indexOf('DepositConfirm2.aspx') > -1 ||
-                pageName.indexOf('WithdrawManual.aspx') > -1 ||
-                pageName.indexOf('MemberOutTrans.aspx') > -1 ||
-                pageName.indexOf('MemberOuts.aspx') > -1 ||
-
-                //SubAccsWLTrans
-                pageName.indexOf('SubAccsWLTrans.aspx') > -1 ||
-                pageName.indexOf('SubAccsWinLose.aspx') > -1 ||
-                pageName.indexOf('NewMember.aspx') > -1 ||
-                pageName.indexOf('MemberBet.aspx') > -1 ||
-
-                pageName.indexOf('Logins.aspx'.toLowerCase()) > -1
-            )
-                return true
-            return false
-        }
-        function appendMetronicAssets() {
-            var iframeDocument = $("iframe[name='fraMain']").contents();
-            let srcIframe = $("iframe[name='fraMain']").attr('src');
-            if (!isWrappedAppContainer(srcIframe)) {
-                //iframeDocument.find('form').wrap('<div class="app-container"></div>');
-                //if (
-                //    srcIframe.indexOf('memberouts.aspx') > -1 || 
-                //    srcIframe.indexOf('AccHistory3.aspx') > -1
-                //)
-                //    iframeDocument.find('head').append(`
-                //        <style>
-                //            #form1{padding:30px}
-                //        </style>
-                //    `)
-            }
-
-
-            iframeDocument.find('head').append(`
-                <style>
-                    ::-webkit-scrollbar {
-                        height: 5px;
-                        width: 5px;
-                    }
-                    ::-webkit-scrollbar-track {
-                        background: transparent;
-                    }
-                    ::-webkit-scrollbar-thumb {
-                        background:  #b5b5c3;
-                    }
-                    ::-webkit-scrollbar-thumb:hover {
-                        background: #7d7d7d;
-                    }
-                </style>
-            `)
-            setTimeout(function () {
-                iframeDocument.find('body').css('display', 'inline')
-            }, 100)
-        }
         function getHref(href) {
             let levelAccount = $('#txtLevelAccount').val()
             if (href.indexOf('..') == -1)
@@ -607,9 +429,6 @@
             return href
         }
         function clickToMenu(mainMenuText, subMenuText, href, e) {
-            if (href !== 'Dashboard.aspx' && href !== 'MsgLog.aspx')
-                href = getHref(href);
-            
             mainMenuTitle = mainMenuText;
             subMenuTitle = subMenuText;
             $('#kt_app_toolbar_container').find('h1').text('')
@@ -622,56 +441,15 @@
             }, 30);
             $('a.menu-link').removeClass('active')
             $(e).addClass('active')
-
-            //$('#kt_app_body').attr('data-kt-app-sidebar-fixed', 'false').attr('data-kt-app-sidebar-enabled', 'false')
-            //$('#kt_app_sidebar').removeClass('app-sidebar');
-            //$('#kt_app_sidebar_toggle').click()
             KTDrawer.getInstance($("#kt_app_sidebar")[0]).hide();
         }
         function openMenuPageToNewTab(href, e) {
-            if (href !== 'Dashboard.aspx' && href !== 'MsgLog.aspx')
-                href = getHref(href);
             window.open(href, '_blank')
-        }
-        function openMemberPage(e) {
-            let href = $(e).attr('href');            
-            
-            if (href.indexOf("DepositConfirm") != -1) {
-                mainMenuTitle = '<%=Resources.Resource.Deposit%>';
-                subMenuTitle = '<%=Resources.Resource.Menu_DepositConfirm%>';
-            }
-            else if (href.indexOf("WashCreditConfirm") != -1) {
-                mainMenuTitle = '<%=Resources.Resource.Deposit%>';
-                subMenuTitle = '<%=Resources.Resource.Menu_WashCreditConfirm%>';
-            }
-            else if (href.indexOf("MemberConfirm") != -1) {
-                 mainMenuTitle = '<%=Resources.Resource.Deposit%>';
-                 subMenuTitle = '<%=Resources.Resource.Menu_MemberConfirm%>';
-            }
-            else if (href.indexOf("MemberSet") != -1) {
-                let levelAccount = $('#txtLevelAccount').val()
-                mainMenuTitle = '<%=Resources.Resource.Menu_MEMBERMANAGEMENT%>';
-                if (levelAccount.indexOf('_SubAg') > -1) 
-                    subMenuTitle = '<%=Resources.Resource.Member%>';
-                else if (levelAccount.indexOf('_Ag') > -1)
-                    subMenuTitle = '<%=Resources.Resource.Agent%>';
-            }
-            $('#kt_app_toolbar_container').find('h1').text('')
-            $('#kt_app_toolbar_container ul li:eq(0)').text('')
-            $('#kt_app_toolbar_container ul li:eq(1)').hide()
-            $('#kt_app_toolbar_container ul li:eq(2)').text('')
-            $('iframe[name=fraMain').contents().find("body").html('');
-            $('iframe[name=fraMain').attr('src', href);
-        }
-        function drawNotificationInfo(strHtml) {
-            strHtml = strHtml.replaceAll("../", "")
-            $('#marquee-user').html(strHtml)
-            $('#marquee-user a').attr("target", "fraMain");
         }
         function drawMenuLeft(menuLeftData) {
             let mainMenuItems = ``;
             let menuItemDashboard = `
-                    <div data-kt-menu-trigger="click" class="menu-item here menu-accordion" onclick="clickToMenu('<%=Resources.Resource.Home%>','<%=Resources.Resource.Dashboard.ToUpper()%>', 'Dashboard.aspx', this)">
+                    <div data-kt-menu-trigger="click" class="menu-item here menu-accordion" onclick="clickToMenu('HOME','CLG MANAGEMENT WLs', '7.html', this)">
                         <span class="menu-link">
                             <span class="menu-icon">
                                 <i class="ki-duotone ki-element-11 fs-2">
@@ -681,7 +459,7 @@
                                     <span class="path4"></span>
                                 </i>
                             </span>
-                            <span class="menu-title"><%=Resources.Resource.Dashboard.ToUpper()%></span>
+                            <span class="menu-title">CLG MANAGEMENT WLs</span>
                         </span>
                     </div>`
             mainMenuItems += menuItemDashboard
@@ -743,50 +521,7 @@
             var modal = new bootstrap.Modal(modalEl);
             modal.show();
         }
-
-        function periodUpdateHeaderInfo(url, freq) {
-            $.ajax({
-                url: url,
-                cache: false,
-                success: function (data) {
-                    drawMMessage(data.message);
-                    if (data.hasMail) {
-                        $('#spanMailNotification').addClass('bullet bullet-dot bg-success h-6px w-6px position-absolute translate-middle top-0 start-50 animation-blink')
-                        $('#spanMailNotification-mobile').html(data.display + '99')
-                    }
-                    $('#iTitleMail').attr('title', data.display)
-                },
-                complete: function (data) {
-                    setTimeout(function () {
-                        periodUpdateHeaderInfo(url, freq);
-                    }, freq * 1000);
-                }
-            });
-        }
-
-        function periodUpdateNotification(url, freq) {
-            $.ajax({
-                url: url,
-                cache: false,
-                complete: function (data) {
-                    drawNotificationInfo(data.responseText);
-                    if (data.responseText.indexOf("newDataUpdated") != -1)
-                        playNotificationSound();
-
-                    setTimeout(function () {
-                        periodUpdateNotification(url, freq);
-                    }, freq * 1000);
-                }
-            });
-        }
-
-        function playNotificationSound() {
-            var pausingAudio = document.createElement('audio');
-            pausingAudio.setAttribute('src', 'images/notify.mp3');
-            pausingAudio.play();
-        }
     </script>
-    <!--end::Custom Javascript-->
-    <%=initScripts%>
 </body>
+
 </html>
