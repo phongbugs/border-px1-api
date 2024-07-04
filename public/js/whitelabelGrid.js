@@ -311,10 +311,11 @@ Ext.onReady(function () {
           let whiteLabelName = record.get('name'),
             domainType = getDomainType().toLowerCase(),
             useDomainTypeFromPX1 = true;
-          Ext.getCmp('txtNameWLsDomain').getStore().loadData(listNameWLs);
+          if(!isMobileDevice())  Ext.getCmp('txtNameWLsDomain').getStore().loadData(listNameWLs);
          
           if(isMobileDevice())
-            window.open('domains.html?wl=' + selectedWhiteLabelName, '_blank');
+            //window.open('domains.html?wl=' + selectedWhiteLabelName, '_blank');
+          parent.openModal(selectedWhiteLabelName +'\'s Domains','domains.html?wl=' + selectedWhiteLabelName);
           else {
             Ext.getCmp('gridWLs').setDisabled(true);
             showDomainGridDataByWhitelabel({
@@ -336,7 +337,7 @@ Ext.onReady(function () {
             Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
               ? 'ip'
               : 'name';
-          loadScript('js/domainGrid.js?v=' + currentVersion());
+          if(!isMobileDevice()) loadScript('js/domainGrid.js?v=' + currentVersion());
         }, 1000);
         if (getQueryParam('tm') == 1) {
           // enable test mode

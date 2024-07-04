@@ -20,7 +20,7 @@ let storeDomain = Ext.create('Ext.data.Store', {
   model: 'Domain',
   proxy: {
     type: 'ajax',
-    url: borderPx1ApiHost + '/info/domain/' + domainType + '/banana.bpx',
+    url: borderPx1ApiHost + '/info/domain/' + domainType + '/' + 'obama.bpx',
     withCredentials: true,
     reader: {
       type: 'json',
@@ -65,9 +65,9 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
   width:
   Ext.getBody().getViewSize().width,
   height: Ext.getBody().getViewSize().height,
-  title: 'Domains',
+  //title: 'Domains',
   hidden: false,
-  frame: true,
+  //frame: true,
   draggable: true,
   resizable: true,
   plugins: ['cellediting'],
@@ -128,6 +128,7 @@ let domainGrid = Ext.create('Ext.grid.Panel', {
           iconCls: 'checkCls',
           boxLabel: 'Load From Cache',
           value: true,
+          hidden: true,
         },
         
       ],
@@ -631,8 +632,8 @@ function showDomainGridDataByWhitelabel({
     cacheName = whiteLabelName + '_' + domainType + '_' + siteTypeName,
     siteName = siteTypeValue + whiteLabelName.toLowerCase() + '.bpx';
 
-  domainGrid.show();
-  domainGrid.setTitle('🌍 ' + whiteLabelName + "'s Domains");
+  //domainGrid.show();
+  //domainGrid.setTitle('🌍 ' + whiteLabelName + "'s Domains");
   Ext.getCmp('txtNameWLsDomain').setRawValue(whiteLabelName);
   //Ext.getCmp('cbbDomainType').setValue(domainType.toLowerCase());
   Ext.getCmp('cbbSiteType').setValue(

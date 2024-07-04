@@ -30,7 +30,7 @@ let borderPx1ApiHost =
       },
     });
   };
-let currentVersion = () => 20230728;
+let currentVersion = () => 20230704;
 window.onload = () => {
   loadScript('js/utils.js?v=' + currentVersion());
   authenticate((isAuthenticated) => {

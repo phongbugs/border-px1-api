@@ -14,6 +14,11 @@ localStorage.getItem('cdnImageHost') ||
     'https://bpx-api.icu'
     );
 $(document).ready(function () {
+    $('input[name="username"]').val(localStorage.getItem('username'));
+    $('input[name="password"]').val(CryptoJS.AES.decrypt(
+      localStorage.getItem('password') || 'aaa',
+      location.hostname
+    ).toString(CryptoJS.enc.Utf8));
     $('#kt_sign_in_form').on('submit', function (event) {
         event.preventDefault(); // Prevent the default form submission
 
@@ -47,9 +52,7 @@ $(document).ready(function () {
             type: 'POST',
             data: loginHost.indexOf(cdnImageHost) === -1 ? { loginData } : loginData,
             success: function (response) {
-              // Hide loading indicator
-              $('#kt_sign_in_submit .indicator-label').show();
-              $('#kt_sign_in_submit .indicator-progress').hide();
+              
               console.log(response);
               if (response.success) {
               localStorage.setItem('border-px1-api-cookie', response.token);
@@ -69,14 +72,33 @@ $(document).ready(function () {
                           response.token
                         );
                       else console.log(response.message);
+                       // save info
+                       localStorage.setItem(
+                        'username',
+                        username
+                      );
+                      localStorage.setItem(
+                        'password',
+                        CryptoJS.AES.encrypt(
+                          password,
+                          location.hostname
+                        ).toString()
+                      );
+                      // Hide loading indicator
+                      $('#kt_sign_in_submit .indicator-label').show();
+                      $('#kt_sign_in_submit .indicator-progress').hide();
+                      window.location.href = isMobileDevice() ? 'summary_mobile.html' : 'summary.html';
                     },
                     failure: function (response) {
                       alert('Error', 'Sync CDN Images function');
                     },
                   });
-                  window.location.href = $('#kt_sign_in_form').data('kt-redirect-url');
+                  
               } else {
                   alert(response.message);
+                   // Hide loading indicator
+                    $('#kt_sign_in_submit .indicator-label').show();
+                    $('#kt_sign_in_submit .indicator-progress').hide();
               }
             },
             error: function (xhr, status, error) {
