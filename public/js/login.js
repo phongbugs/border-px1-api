@@ -87,7 +87,7 @@ $(document).ready(function () {
                       // Hide loading indicator
                       $('#kt_sign_in_submit .indicator-label').show();
                       $('#kt_sign_in_submit .indicator-progress').hide();
-                      window.location.href = isMobileDevice() ? 'summary_mobile.html' : 'summary.html';
+                      window.location.href = 'summary.html';
                     },
                     failure: function (response) {
                       alert('Error', 'Sync CDN Images function');
