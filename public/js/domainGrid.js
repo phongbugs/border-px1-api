@@ -21,7 +21,7 @@ let storeDomain = Ext.create('Ext.data.Store', {
   proxy: {
     type: 'ajax',
     url: borderPx1ApiHost + '/info/domain/' + domainType + '/banana.bpx',
-    withCredentials: true,
+    //withCredentials: true,
     reader: {
       type: 'json',
       rootProperty: 'domains',
@@ -560,11 +560,15 @@ function checkDomainOneRecord(record, callback) {
         Authorization: 'Bearer ' + localStorage.getItem('border-px1-api-cookie'),
       },
       success: function (response) {
-        var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
-        if (result.success)
-          record.set('folderPath', result.path.replace(/\//g, '\\'));
-        else record.set('folderPath', 'checkKoCls');
-        callback(result.success);
+        try {
+          var result = JSON.parse(response.responseText.replace(/\\/g, '\\\\'));
+          if (result.success)
+            record.set('folderPath', result.path.replace(/\//g, '\\'));
+          else record.set('folderPath', 'checkKoCls');
+          callback(result.success);
+        } catch (error) {
+          console.log(error);
+        }
       },
       failure: function (response) {
         log('server-side failure with status code ' + response.status);

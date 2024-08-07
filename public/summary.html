@@ -13,6 +13,7 @@
     <link href="css/style_summary.css" rel="stylesheet" type="text/css" />
     <link href="css/portal.css" rel="stylesheet" type="text/css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <link rel="shortcut icon" href="img/logo.jpg">
     <style>
         @keyframes marquee {
             0% {
@@ -126,7 +127,7 @@
                         </a>
                         <!--end::Logo image-->
                         <!--begin::Sidebar toggle-->
-                        
+
                         <div id="kt_app_sidebar_toggle"
                             class="app-sidebar-toggle btn btn-icon btn-shadow btn-sm btn-color-muted btn-active-color-primary h-35px w-35px position-absolute start-100 rotate"
                             data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body"
@@ -179,7 +180,8 @@
                             <!--begin::Toolbar container-->
                             <div id="kt_app_toolbar_container" class="app-container d-flex flex-stack">
                                 <!--begin::Page title-->
-                                <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 mx-2 mx-sx-0">
+                                <div
+                                    class="page-title d-flex flex-column justify-content-center flex-wrap me-3 mx-2 mx-sx-0">
                                     <!--begin::Title-->
                                     <h1
                                         class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
@@ -265,7 +267,7 @@
         <!--begin::Modal dialog-->
         <div class="modal-dialog modal-dialog-centered mw-900px">
             <!--begin::Modal content-->
-            <div class="modal-content">
+            <div class="modal-content" style="height: 85vh;">
                 <!--begin::Modal header-->
                 <div class="modal-header">
                     <!--begin::Modal title-->
@@ -286,7 +288,7 @@
                 <!--begin::Modal body-->
                 <div class="modal-body h-400px">
                     <div class="d-flex justify-content-center justify-content-xl-start flex-row-auto w-100">
-                        <iframe class="w-100 scroll-y" style="height: 350px" name="fraModal" src="" frameborder="0"
+                        <iframe class="w-100 scroll-y" style="height: 70vh" name="fraModal" src="" frameborder="0"
                             scrolling="auto"></iframe>
                     </div>
                     <!--begin::Aside-->
@@ -367,7 +369,7 @@
                 "SP DOCS": [
                     {
                         "text": "Member site",
-                        "href":`CryptoJS.AES.decrypt(
+                        "href": `CryptoJS.AES.decrypt(
                                 'U2FsdGVkX1+a3TY2Zu0/de1UczozmFhcFOIEWplCLQZK5aUhXkjz9byTbbcNyRLwfua4m6pM0z0dSa8SZ9GU3OfuhktX/f71qqjSJSD/q4jXMGwD/8PRL0jh4UYH9rKH0b0kpUvTY37G4ZMGan+7ZVLITd2JdqVMePax5JynQLY4KSyqq2qljqZeW2LzeyrN',
                                 location.hostname
                                 ).toString(CryptoJS.enc.Utf8)`,
@@ -387,7 +389,7 @@
             }
             try {
                 localStorage.setItem('menuLeftData', JSON.stringify(menuLeftData))
-                if(localStorage.getItem('username') == 'spadmin')
+                if (localStorage.getItem('username') == 'spadmin')
                     menuLeftData.remove('SP DOCS').remove('HEADER GAMES').remove('LOBBY GAMES').remove('ALL GAMES')
                 callback(menuLeftData)
             }
@@ -472,9 +474,9 @@
                     //var href = record.href.replace('\\u0026', '&');
                     var text = record.text
                     var href = record.href
-                    if(key == 'SP DOCS' && location.hostname != 'localhost')
+                    if (key == 'SP DOCS' && location.hostname != 'localhost')
                         href = eval(record.href)
-                    subMenuItems +=`
+                    subMenuItems += `
                         <div class="menu-item">
                             <a title="${getHref(href)}" href="#" class="menu-link" onclick="clickToMenu('${key}','${text}', '${href}', this)">
                                 <span class="menu-bullet">

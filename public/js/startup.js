@@ -9,7 +9,8 @@ let borderPx1ApiHost =
   log = console.log,
   loadScript = (pathScript) => {
     const script = document.createElement('script');
-    script.src = borderPx1ApiHost + '/' + pathScript;
+    //script.src = borderPx1ApiHost + '/' + pathScript;
+    script.src = pathScript;
     document.getElementsByTagName('head')[0].appendChild(script);
   },
   authenticate = (callback) => {

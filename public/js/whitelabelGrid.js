@@ -1024,9 +1024,9 @@ Ext.onReady(function () {
         text: 'Referral',
         width: 100,
         dataIndex: 'referralFunction',
-        hidden: isFEAccount(),
+        //hidden: isFEAccount(),
         hideable: false,
-        menuDisabled: true,
+        //menuDisabled: true,
       },
       {
         xtype: 'actioncolumn',
@@ -1210,7 +1210,7 @@ function syncDomainsOneWhiteLabel(whiteLabelName, record, callback) {
   record.set('isSyncedDomain', 'spinner');
   Ext.Ajax.request({
     method: 'GET',
-    withCredentials: true,
+    //withCredentials: true,
     url: borderPx1ApiHost + '/info/domain/' + domainType + '/' + siteName,
     success: function (response) {
       let result = JSON.parse(response.responseText);

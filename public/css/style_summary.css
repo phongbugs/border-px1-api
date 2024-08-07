@@ -51856,9 +51856,12 @@ body {
   }
 }
 [data-kt-app-layout="dark-sidebar"] .app-sidebar {
-  /*background-color: #131313;*/
-  background: linear-gradient(#029fd2, #03263c, #003d64, #003d64, #029fd2, #003d64);
+  background-color: #2c3e50;
+  /*background: linear-gradient(#029fd2, #03263c, #003d64, #003d64, #029fd2, #003d64);
   border-right: 0;
+  background: url(../assets/media/auth/bg12-dark.jpg);
+  background-position: center;
+  background-size: cover;*/
 }
 [data-kt-app-layout="dark-sidebar"] .app-sidebar .hover-scroll-overlay-y,
 [data-kt-app-layout="dark-sidebar"] .app-sidebar .scroll-y {
