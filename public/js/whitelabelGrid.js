@@ -273,9 +273,8 @@ Ext.onReady(function () {
     ],
     listeners: {
       beforeedit: function (editor, context) {
-        selectedServerGroupStore.loadData(
-          serverStores[context.record.get('servers')]
-        );
+        if(!isMobileDevice()) 
+          selectedServerGroupStore.loadData(serverStores[context.record.get('servers')]);
         //log(context.value);
         //log(selectedServerGroupStore.getData());
       },
@@ -950,6 +949,7 @@ Ext.onReady(function () {
         dataIndex: 'referredWL',
         tooltip: 'Refered WL(css, header layout...)',
         hidden: true,
+        hideable: false,
       },
       {
         text: 'Main Color',
@@ -964,6 +964,7 @@ Ext.onReady(function () {
         hidden: !isFEAccount(),
         hideable: false,
         menuDisabled: true,
+        hidden: true,
       },
       {
         xtype: 'actioncolumn',
@@ -998,10 +999,10 @@ Ext.onReady(function () {
         ],
       },
       {
-        text: 'H/D Number',
-        width: 140,
+        text: 'H/D Num',
+        width: 90,
         dataIndex: 'headerNumber',
-        tooltip: 'Header/Default number',
+        tooltip: 'Header/Default Number',
         renderer: (val, _, record) => val + '/' + record.get('defaultNumber'),
         hidden: !isFEAccount(),
       },
@@ -1024,8 +1025,8 @@ Ext.onReady(function () {
         text: 'Referral',
         width: 100,
         dataIndex: 'referralFunction',
-        //hidden: isFEAccount(),
-        hideable: false,
+        hidden: true,
+        //hideable: false,
         //menuDisabled: true,
       },
       {
@@ -1100,12 +1101,12 @@ Ext.onReady(function () {
       // },
       {
         text: 'Account',
-        width: 150,
+        width: 140,
         dataIndex: 'account',
       },
       {
         text: 'SW Version',
-        width: 110,
+        width: 100,
         dataIndex: 'versionSW',
         tooltip: 'SW Version.<br/> Includes : SW and SW SSM(Sport Sub Menu)',
       },
@@ -1121,7 +1122,7 @@ Ext.onReady(function () {
       },
       {
         text: 'Liga SB',
-        width: 100,
+        width: 150,
         dataIndex: 'isOpenLigaSB',
         tooltip: 'Open LigaSB record',
         // renderer: (val, _, record) => {

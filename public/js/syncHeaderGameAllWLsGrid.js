@@ -21,10 +21,7 @@
 });
 var tokenSync = '';
 var cdnImageHost =
-  localStorage.getItem('cdnImageHost') ||
-  (location.host.indexOf('localhost') > -1
-    ? 'http://localhost/cdn'
-    : 'https://imgtest.playliga.com');
+  localStorage.getItem('cdnImageHost') || 'https://imgtest.playliga.com';
 var pathSyncGame = '/sync/headergamesallwls';
 var renderBase64StrToImg = (imageType, strBase64) => {
   if (strBase64 !== '') {

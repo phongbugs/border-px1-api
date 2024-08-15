@@ -17,10 +17,7 @@
 });
 var tokenSync = '';
 var cdnImageHost =
-  localStorage.getItem('cdnImageHost') ||
-  (location.host.indexOf('localhost') > -1
-    ? 'http://localhost/cdn'
-    : 'https://imgtest.playliga.com');
+  localStorage.getItem('cdnImageHost') || 'https://imgtest.playliga.com';
 var pathSyncGame = '/sync/lobbygamesallwls';
 let storeLobbyGame = Ext.create('Ext.data.Store', {
   model: 'LobbyGame',
@@ -100,7 +97,7 @@ Ext.onReady(function () {
             store: new Ext.data.ArrayStore({
               fields: ['id', 'name'],
               data: [
-                ['http://localhost/cdn', 'http://localhost/cdn'],
+                //['http://localhost/cdn', 'http://localhost/cdn'],
                 [
                   'https://imgtest.playliga.com',
                   'https://imgtest.playliga.com',

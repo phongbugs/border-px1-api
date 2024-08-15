@@ -12,10 +12,7 @@
 });
 var tokenSync = '';
 var cdnImageHost =
-  localStorage.getItem('cdnImageHost') ||
-  (location.host.indexOf('localhost') > -1
-    ? 'http://localhost/cdn'
-    : 'https://imgtest.playliga.com');
+  localStorage.getItem('cdnImageHost') || 'https://imgtest.playliga.com';
 var pathSyncGame = '/sync/headergamessubmenuallwls';
 let storeHeaderGame = Ext.create('Ext.data.Store', {
   model: 'HeaderGame',
@@ -90,7 +87,7 @@ Ext.onReady(function () {
             store: new Ext.data.ArrayStore({
               fields: ['id', 'name'],
               data: [
-                ['http://localhost/cdn', 'http://localhost/cdn'],
+                //['http://localhost/cdn', 'http://localhost/cdn'],
                 [
                   'https://imgtest.playliga.com',
                   'https://imgtest.playliga.com',
@@ -161,6 +158,13 @@ Ext.onReady(function () {
         text: 'Game Name',
         width: 100,
         dataIndex: 'GameName',
+      },
+      {
+        text: 'Hot',
+        width: 50,
+        dataIndex: 'IsHotGame',
+        tooltip: 'Is Hot Game',
+        renderer: (v, _, r) => v ? '<img src="images/hot-icon.gif" style="width: 36px;height: 36px">' : 'false'
       },
       {
         text: 'Image Base64',

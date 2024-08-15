@@ -21,10 +21,7 @@
 });
 var tokenSync = '';
 var cdnImageHost =
-  localStorage.getItem('cdnImageHost') ||
-  (location.host.indexOf('localhost') > -1
-    ? 'http://localhost/cdn'
-    : 'https://imgtest.playliga.com');
+  localStorage.getItem('cdnImageHost') || 'https://imgtest.playliga.com';
 var pathSyncGame = '/sync/headergames';
 var CTId = getQueryParam('CTId');
 var renderBase64StrToImg = (imageType, strBase64) => {
@@ -126,7 +123,7 @@ Ext.onReady(function () {
             store: new Ext.data.ArrayStore({
               fields: ['id', 'name'],
               data: [
-                ['http://localhost/cdn', 'http://localhost/cdn'],
+                //['http://localhost/cdn', 'http://localhost/cdn'],
                 [
                   'https://imgtest.playliga.com',
                   'https://imgtest.playliga.com',
@@ -289,6 +286,13 @@ Ext.onReady(function () {
         width: 30,
         dataIndex: 'OrderId',
         tooltip: 'OrderId',
+      },
+      {
+        text: 'Hot',
+        width: 50,
+        dataIndex: 'IsHotGame',
+        tooltip: 'Is Hot Game',
+        renderer: (v, _, r) => v ? '<img src="images/hot-icon.gif" style="width: 36px;height: 36px">' : 'false'
       },
       {
         text: 'MenuBase64',
