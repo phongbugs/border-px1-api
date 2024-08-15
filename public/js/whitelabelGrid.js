@@ -390,6 +390,7 @@ Ext.onReady(function () {
         // listeners: {
         //   change: (_, val) => Ext.getCmp('btnRefresh').fireEvent('click'),
         // },
+        hidden: true,
       },
       {
         xtype: 'combo',
@@ -496,7 +497,7 @@ Ext.onReady(function () {
       },
       {
         xtype: 'combo',
-        width: 150,
+        width: 200,
         store: new Ext.data.ArrayStore({
           fields: ['id', 'name'],
           data: listNameWLs,
@@ -731,6 +732,7 @@ Ext.onReady(function () {
             )
           );
         },
+        hidden: true,
       },
       {
         xtype: 'button',
@@ -803,22 +805,23 @@ Ext.onReady(function () {
             )
           );
         },
+        hidden: true,
       },
-      {
-        xtype: 'button',
-        id: 'btnHelp',
-        text: 'Help',
-        iconCls: 'helpCls',
-        handler: () => {
-          let encryptedLink =
-            'U2FsdGVkX1+bpGWuQ3YhYFNhhllVIzDLoO/u3BLYh9Dtv8oQ5pgq9Q5HCubPDdILXNmj+FAfnkt6HelkG50ouFF0mpEyR5gkZb4ryZvdn33T75UJefl5t74+EySU6ORA/x6E+7IgoTfHIlO5QPDCMQtDgO2BtHUJp0VmdCtcEDQ=';
-          window.open(
-            CryptoJS.AES.decrypt(encryptedLink, location.hostname).toString(
-              CryptoJS.enc.Utf8
-            )
-          );
-        },
-      },
+      // {
+      //   xtype: 'button',
+      //   id: 'btnHelp',
+      //   text: 'Help',
+      //   iconCls: 'helpCls',
+      //   handler: () => {
+      //     let encryptedLink =
+      //       'U2FsdGVkX1+bpGWuQ3YhYFNhhllVIzDLoO/u3BLYh9Dtv8oQ5pgq9Q5HCubPDdILXNmj+FAfnkt6HelkG50ouFF0mpEyR5gkZb4ryZvdn33T75UJefl5t74+EySU6ORA/x6E+7IgoTfHIlO5QPDCMQtDgO2BtHUJp0VmdCtcEDQ=';
+      //     window.open(
+      //       CryptoJS.AES.decrypt(encryptedLink, location.hostname).toString(
+      //         CryptoJS.enc.Utf8
+      //       )
+      //     );
+      //   },
+      // },
       {
         xtype: 'button',
         id: 'btnSwitchExtjsVesion',
