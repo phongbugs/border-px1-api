@@ -161,7 +161,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
             record['referredIconMenu'] = '__TEXT-MENU__';
           // icon spniner cols
           record['specificServerSpinner'] = false;
-          record['remoteDesktopSpinner'] = false;
+          record['openSiteSpinner'] = false;
           record['isSyncedDomain'] = false;
           record['isSyncedFolder'] = false;
           record['folderPath'] = '';
@@ -866,7 +866,7 @@ Ext.onReady(function () {
             allowBlank: false,
           },
         },
-        renderer: (val, _, record) => {
+        renderer: (val, metaData, record, rowIndex, colIndex, store, view) => {
           let defaultDomain = record.get('defaultDomain'),
             dynamicFooter = record.get('dynamicFooter') !== 'None' ? '🦶' : '';
           let mobileRedirect = '';
@@ -912,10 +912,12 @@ Ext.onReady(function () {
               '<del style="color:#fb4848; font-style:italic">' +
               name +
               '</del><br/>';
-          //log('defaultDomain: %s', defaultDomain);
+          rowIndex = store.indexOf(record);
+          let onclickStr = `openSite2(${rowIndex})`
           return (
             Ext.String.format(
-              '<a target="_blank" href="{0}://{1}">{2}</a> {3} {4} {5} {6} {7}<br />',
+              //'<a target="_blank" href="{0}://{1}">{2}</a> {3} {4} {5} {6} {7}<br />',
+              `<a href="#" onclick="${onclickStr}">{2}</a> {3} {4} {5} {6} {7}<br />`,
               protocol,
               defaultDomain.toLowerCase(),
               val,
@@ -985,18 +987,8 @@ Ext.onReady(function () {
               return isSpinning ? 'spinner' : 'serverInfo';
             },
             handler: function (grid, rowIndex, colIndex, item, e, record) {
-              rowIndex = grid.getStore().indexOf(record);
-              record = grid.getStore().getAt(rowIndex);
-              record.set('specificServerSpinner', true);
-              findFirstValidDomain(
-                { index: 0, record: record },
-                ({ domain }) => {
-                  log('valid domain of %s: %s', record.get('name'), domain);
-                  record.set('specificServerSpinner', false);
-                  if (domain) fetchHtmlContentOfTempPage(domain);
-                  else log('-> Cannot find any a valid domain');
-                }
-              );
+              handlefindFirstValidDomain({grid, rowIndex, record, spinnerField:'specificServerSpinner'},
+                 (domain) => fetchHtmlContentOfTempPage(domain))  
             },
           },
         ],
@@ -1037,27 +1029,16 @@ Ext.onReady(function () {
         width: 30,
         tooltip: 'Open site by valid domain',
         text: 'O',
-        hidden: false,
+        hidden: true,
         items: [
           {
             iconCls: 'openLink',
             getClass: function (value, meta, record, rowIndex, colIndex) {
-              var isSpinning = record.get('specificServerSpinner1');
+              var isSpinning = record.get('openSiteSpinner');
               return isSpinning ? 'spinner' : 'openLink';
             },
             handler: function (grid, rowIndex, colIndex, item, e, record) {
-              rowIndex = grid.getStore().indexOf(record);
-              record = grid.getStore().getAt(rowIndex);
-              findFirstValidDomain(
-                { index: 0, record: record },
-                ({ domain }) => {
-                  log('valid domain of %s: %s', record.get('name'), domain);
-                  if (domain) {
-                    url = domain + '/' + getSelectedPage();
-                    window.open(url, '_blank');
-                  } else log('-> Cannot find any a valid domain');
-                }
-              );
+              handlefindFirstValidDomain({grid, rowIndex, record, spinnerField:'openSiteSpinner'}, openSite)
             },
           },
         ],
@@ -1169,11 +1150,12 @@ Ext.onReady(function () {
                   '://' +
                   defaultDomain.toLowerCase() +
                   '/pgajax.axd?T=SetCacheGameImageVersion';
-                window.open(url, '_blank');
+                  window.open(url, '_blank');
+               
               } else
-                alert(
-                  'This WL gone live, this button only available for test site'
-                );
+                handlefindFirstValidDomain({grid, rowIndex, record, spinnerField:'refreshImgCacheSpinner'}, (domain) => {
+                  refreshImgCacheVersion(`${domain}/pgajax.axd?T=SetCacheGameImageVersion`);
+                })
             },
           },
         ],
@@ -1748,6 +1730,55 @@ function fetchHtmlContentOfTempPage(domain) {
           xhr.responseText;
         alert(errorMessage);
       }
+    },
+  });
+}
+
+function openSite(domain) {
+  let url = domain + '/' + getSelectedPage();
+  window.open(url, '_blank');
+}
+function handlefindFirstValidDomain({grid, rowIndex, record, spinnerField}, callback){
+  rowIndex = grid.getStore().indexOf(record);
+  record = grid.getStore().getAt(rowIndex);
+  record.set(spinnerField, true);
+  findFirstValidDomain(
+    { index: 0, record: record },
+    ({ domain }) => {
+      log('valid domain of %s: %s', record.get('name'), domain);
+      if (domain) {
+        callback(domain);
+      } else log('-> Cannot find any a valid domain');
+      record.set(spinnerField, false);
+    }
+  );
+}
+
+function openSite2(rowIndex, spinnerField = 'openSiteSpinner') {
+  let grid = Ext.getCmp('gridWLs')
+  let record = grid.getStore().getAt(rowIndex);
+  record.set(spinnerField, true);
+  findFirstValidDomain(
+    { index: 0, record: record },
+    ({ domain }) => {
+      log('valid domain of %s: %s', record.get('name'), domain);
+      if (domain) {
+        openSite(domain);
+      } else log('-> Cannot find any a valid domain');
+      record.set(spinnerField, false);
+    }
+  );
+}
+
+
+function refreshImgCacheVersion(url){
+  Ext.Ajax.request({
+    url: url,
+    success: (response) => {
+        alert(response.responseText)
+    },
+    failure: function (response) {
+        alert(response.responseText)
     },
   });
 }

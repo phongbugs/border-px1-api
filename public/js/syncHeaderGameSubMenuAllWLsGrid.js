@@ -167,7 +167,7 @@ Ext.onReady(function () {
         renderer: (v, _, r) => v ? '<img src="images/hot-icon.gif" style="width: 36px;height: 36px">' : 'false'
       },
       {
-        text: 'Image Base64',
+        text: 'Icon Base64',
         width: 130,
         dataIndex: 'GameIcon',
         tdCls: 'headerIcons',
@@ -185,7 +185,7 @@ Ext.onReady(function () {
         },
       },
       {
-        text: 'Image CDN',
+        text: 'Icon File',
         tooltip: '',
         dataIndex: 'GameIcon',
         tdCls: 'headerIcons',
@@ -211,7 +211,7 @@ Ext.onReady(function () {
         text: 'ImageType',
         width: 100,
         dataIndex: 'ImageType',
-        hidden: true,
+        hidden: false,
       },
       {
         xtype: 'actioncolumn',

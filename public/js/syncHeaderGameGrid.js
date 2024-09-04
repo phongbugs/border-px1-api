@@ -295,7 +295,7 @@ Ext.onReady(function () {
         renderer: (v, _, r) => v ? '<img src="images/hot-icon.gif" style="width: 36px;height: 36px">' : 'false'
       },
       {
-        text: 'MenuBase64',
+        text: 'IconBase64',
         width: 120,
         dataIndex: 'GameTypeMenuIcon',
         tooltip: 'Menu Icon (Base64)',

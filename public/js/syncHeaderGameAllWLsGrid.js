@@ -207,7 +207,7 @@ Ext.onReady(function () {
         tooltip: 'OrderId',
       },
       {
-        text: 'MenuBase64',
+        text: 'IconBase64',
         width: 120,
         dataIndex: 'GameTypeMenuIcon',
         tooltip: 'Menu Icon (Base64)',
@@ -215,15 +215,17 @@ Ext.onReady(function () {
         renderer: (v, _, r) => renderBase64StrToImg(r.get('ImageType'), v),
       },
       {
-        text: 'MenuCDN',
+        text: 'IconFile',
         tooltip: '',
         dataIndex: 'GameTypeMenuIcon',
         tdCls: 'headerIcons',
         tooltip: 'Menu Icon (File)',
         width: 160,
         renderer: (v, _, r) => {
-          if (v !== '')
-            return `<img src="${
+          if (v !== '') {
+            let style = '';
+            if(r.get('ImageType') === 'svg') style = 'width:50%; height:50%';
+            return `<img style="${style}" src="${
               cdnImageHost +
               '/headergames/' +
               r.get('CTId') +
@@ -232,6 +234,7 @@ Ext.onReady(function () {
               '.' +
               r.get('ImageType')
             }?v=${Date.now()}" />`;
+          }
           return 'NULL';
         },
       },
@@ -245,7 +248,7 @@ Ext.onReady(function () {
         text: 'IType',
         width: 70,
         dataIndex: 'ImageType',
-        hidden: true,
+        hidden: false,
       },
       {
         xtype: 'actioncolumn',
