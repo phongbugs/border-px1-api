@@ -463,8 +463,8 @@ Ext.onReady(function () {
                   let whiteLabelName = group.getAt(j).getData().name;
                   list.push(whiteLabelName);
                 }
-                //log(list.toString());
-                list.forEach((r, index) => log('%s.%s', index + 1, r));
+                log(list.toString().replace(/,/g, ' '));
+                //list.forEach((r, index) => log('%s.%s', index + 1, r));
               }
               storeWLs.loadData(data);
               featureGrouping.collapseAll();
