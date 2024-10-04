@@ -197,13 +197,13 @@ let storeWLs = Ext.create('Ext.data.Store', {
 
           switch (record['isOpenLigaSB']) {
             case undefined:
-              record['isOpenLigaSB'] = 'None';
+              record['isOpenLigaSB'] = 'No Redirect';
               break;
             case true:
-              record['isOpenLigaSB'] = 'Open (No Redirect)';
+              record['isOpenLigaSB'] = 'No Redirect';
               break;
             case 1:
-              record['isOpenLigaSB'] = 'Open (Redirect)';
+              record['isOpenLigaSB'] = 'Redirect';
               break;
           }
           //record['isOpenLigaSB'] = isOpenLigaSb === true ? 'Open' : 'None';
@@ -367,6 +367,7 @@ Ext.onReady(function () {
         xtype: 'button',
         id: 'btnRefresh',
         iconCls: 'refreshCls',
+        tooltip: 'Load WL list again',
         listeners: {
           click: () => {
             storeWLs.clearFilter();
@@ -435,6 +436,7 @@ Ext.onReady(function () {
             Ext.getCmp('btnRefresh').fireEvent('click');
           },
         },
+        tooltip: 'Choose type of site',
       },
       {
         xtype: 'combo',
@@ -836,6 +838,7 @@ Ext.onReady(function () {
           if (location.href.indexOf('7.html') === -1) location.href = '7.html';
           else location.href = '/6.html';
         },
+        hidden: true,
       },
       {
         xtype: 'button',
@@ -1015,7 +1018,7 @@ Ext.onReady(function () {
           valueField: 'name',
           queryMode: 'local',
         },
-        hidden: false,
+        hidden: true,
         hideable: false,
         menuDisabled: true,
       },
@@ -1108,7 +1111,7 @@ Ext.onReady(function () {
         //renderer: (val) => val? 'Converted': 'None'
       },
       {
-        text: 'Liga SB',
+        text: 'Liga SB Redirect',
         width: 150,
         dataIndex: 'isOpenLigaSB',
         tooltip: 'Open LigaSB record',
@@ -1128,6 +1131,7 @@ Ext.onReady(function () {
         tooltip:
           'Force refresh session timestamp to get new header menu image latest from CDN',
         text: 'R',
+        hidden: !isTestMode(),
         items: [
           {
             iconCls: 'syncCls',
@@ -1157,7 +1161,8 @@ Ext.onReady(function () {
 
               } else
                 handlefindFirstValidDomain({ grid, rowIndex, record, spinnerField: 'refreshImgCacheSpinner' }, (domain) => {
-                  refreshImgCacheVersion(`${domain}/pgajax.axd?T=SetCacheGameImageVersion`);
+                  window.open(`${domain}/pgajax.axd?T=SetCacheGameImageVersion`, '_blank');
+                  //refreshImgCacheVersion(`${domain}/pgajax.axd?T=SetCacheGameImageVersion`);
                 })
             },
           },
@@ -1167,6 +1172,7 @@ Ext.onReady(function () {
         text: 'Workable url',
         width: 200,
         dataIndex: 'workableUrl',
+        hidden: !isTestMode(),
         editor: {
           field: {
             xtype: 'textfield',
@@ -1770,9 +1776,6 @@ function fetchHtmlContentOfTempPage(domain) {
 function openSite(domain) {
   let url = domain + '/' + getSelectedPage();
   window.open(url, '_blank');
-}
-function fillValidUrl(domain) {
-  alert(domain);
 }
 function handlefindFirstValidDomain({ grid, rowIndex, record, spinnerField }, callback) {
   rowIndex = grid.getStore().indexOf(record);
