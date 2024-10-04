@@ -1,26 +1,26 @@
 ﻿// Global Data
 let serverStores = {
-    'CLG Pool 01': [
-      ['CLG-P01-CTG-130'],
-      ['CLG-P01-GGB-4'],
-      ['CLG-P01-SUN-2'],
-      ['CLG-P01-CT2-34'],
-    ],
-    'CLG Pool 02': [
-      ['CLG-P02-CTG-131'],
-      ['CLG-P02-SUN-3'],
-      ['CLG-P02-GGB-5'],
-      ['CLG-P02-CT2-5'],
-    ],
-    'CLG Pool 03': [
-      ['CLG-P03-SUN-4'],
-      ['CLG-P03-GGB-6'],
-      ['CLG-P03-CTG-132'],
-      ['CLG-P03-CT2-36'],
-    ],
-    'CLG Pool Service': [['0.0.0.0'], ['0.0.0.0'], ['0.0.0.0']],
-    'CLG Pool Testing': [['192.168.9.6'], ['192.168.9.6'], ['192.168.9.6']],
-  },
+  'CLG Pool 01': [
+    ['CLG-P01-CTG-130'],
+    ['CLG-P01-GGB-4'],
+    ['CLG-P01-SUN-2'],
+    ['CLG-P01-CT2-34'],
+  ],
+  'CLG Pool 02': [
+    ['CLG-P02-CTG-131'],
+    ['CLG-P02-SUN-3'],
+    ['CLG-P02-GGB-5'],
+    ['CLG-P02-CT2-5'],
+  ],
+  'CLG Pool 03': [
+    ['CLG-P03-SUN-4'],
+    ['CLG-P03-GGB-6'],
+    ['CLG-P03-CTG-132'],
+    ['CLG-P03-CT2-36'],
+  ],
+  'CLG Pool Service': [['0.0.0.0'], ['0.0.0.0'], ['0.0.0.0']],
+  'CLG Pool Testing': [['192.168.9.6'], ['192.168.9.6'], ['192.168.9.6']],
+},
   selectedServerGroupStore = Ext.create('Ext.data.ArrayStore', {
     fields: ['name'],
     data: [[]],
@@ -36,7 +36,8 @@ let serverStores = {
       .toString();
     console.log(strWLs);
     return strWLs.split(',').map((e) => [e, e]);
-  };
+  },
+  isTestMode = () => getQueryParam('tm') == 1;
 
 // Global Variables
 let Groups,
@@ -99,6 +100,7 @@ Ext.define('WL', {
     'serverPoolIPs',
     'isOpenLigaSB',
     'isSW',
+    'workableUrl'
   ],
 });
 let storeWLs = Ext.create('Ext.data.Store', {
@@ -205,6 +207,7 @@ let storeWLs = Ext.create('Ext.data.Store', {
               break;
           }
           //record['isOpenLigaSB'] = isOpenLigaSb === true ? 'Open' : 'None';
+          record['workableUrl'] = '';
           storeWLSyncGrid.push([record['compType'], whitelabelName]);
           data.push(record);
         } catch (error) {
@@ -273,7 +276,7 @@ Ext.onReady(function () {
     ],
     listeners: {
       beforeedit: function (editor, context) {
-        if(!isMobileDevice()) 
+        if (!isMobileDevice() && context.colIdx > 1 && context.colIdx < 8)
           selectedServerGroupStore.loadData(serverStores[context.record.get('servers')]);
         //log(context.value);
         //log(selectedServerGroupStore.getData());
@@ -301,7 +304,7 @@ Ext.onReady(function () {
           serverPoolIPs !== 'CLG Pool Testing' &&
           record.get('servers') !== '10.168.109.6'
         ) {
-          
+
           // send to grid domain two columns
           selectedWhiteLabelName = record.get('name');
           selectedSpecificServer = record.get('specificServer');
@@ -310,11 +313,11 @@ Ext.onReady(function () {
           let whiteLabelName = record.get('name'),
             domainType = getDomainType().toLowerCase(),
             useDomainTypeFromPX1 = true;
-          if(!isMobileDevice())  Ext.getCmp('txtNameWLsDomain').getStore().loadData(listNameWLs);
-         
-          if(isMobileDevice())
+          if (!isMobileDevice()) Ext.getCmp('txtNameWLsDomain').getStore().loadData(listNameWLs);
+
+          if (isMobileDevice())
             //window.open('domains.html?wl=' + selectedWhiteLabelName, '_blank');
-          parent.openModal(selectedWhiteLabelName +'\'s Domains','domains.html?wl=' + selectedWhiteLabelName);
+            parent.openModal(selectedWhiteLabelName + '\'s Domains', 'domains.html?wl=' + selectedWhiteLabelName);
           else {
             Ext.getCmp('gridWLs').setDisabled(true);
             showDomainGridDataByWhitelabel({
@@ -336,9 +339,9 @@ Ext.onReady(function () {
             Ext.getCmp('cbbBorderPx1Url').getValue().indexOf('22365') > -1
               ? 'ip'
               : 'name';
-          if(!isMobileDevice()) loadScript('js/domainGrid.js?v=' + currentVersion());
+          if (!isMobileDevice()) loadScript('js/domainGrid.js?v=' + currentVersion());
         }, 1000);
-        if (getQueryParam('tm') == 1) {
+        if (isTestMode()) {
           // enable test mode
           Ext.getCmp('cbbColumn').setHidden(false);
           Ext.getCmp('txtStartIndex').setHidden(false);
@@ -672,10 +675,10 @@ Ext.onReady(function () {
               setTimeout(() => {
                 alert(
                   'Sync domain ' +
-                    getDomainType() +
-                    ' of ' +
-                    getSiteTypeName() +
-                    ' site done !'
+                  getDomainType() +
+                  ' of ' +
+                  getSiteTypeName() +
+                  ' site done !'
                 );
                 btn.setDisabled(false);
                 let store = Ext.getCmp('gridWLs').getStore();
@@ -719,11 +722,11 @@ Ext.onReady(function () {
         },
         handler: (button, event) => {
           let data = {
-              Member:
-                'U2FsdGVkX1+a3TY2Zu0/de1UczozmFhcFOIEWplCLQZK5aUhXkjz9byTbbcNyRLwfua4m6pM0z0dSa8SZ9GU3OfuhktX/f71qqjSJSD/q4jXMGwD/8PRL0jh4UYH9rKH0b0kpUvTY37G4ZMGan+7ZVLITd2JdqVMePax5JynQLY4KSyqq2qljqZeW2LzeyrN',
-              Agent:
-                'U2FsdGVkX19qOAsLt5+SfyPMtkBhO3XTs7QSOhb5078R/glbOgg9TZYFmiR9IHIYmHKvzI+XZv+M5ebEuwSE5dgKMDODztOd5WOGn7/QaifVg8Bg530blvBJowlGfpzWkhXCT0TzgUMygQtLoPPw+vKLXYv3tqEuocf0G11XpxmciG89gUvWQxCzU4unvpg8',
-            },
+            Member:
+              'U2FsdGVkX1+a3TY2Zu0/de1UczozmFhcFOIEWplCLQZK5aUhXkjz9byTbbcNyRLwfua4m6pM0z0dSa8SZ9GU3OfuhktX/f71qqjSJSD/q4jXMGwD/8PRL0jh4UYH9rKH0b0kpUvTY37G4ZMGan+7ZVLITd2JdqVMePax5JynQLY4KSyqq2qljqZeW2LzeyrN',
+            Agent:
+              'U2FsdGVkX19qOAsLt5+SfyPMtkBhO3XTs7QSOhb5078R/glbOgg9TZYFmiR9IHIYmHKvzI+XZv+M5ebEuwSE5dgKMDODztOd5WOGn7/QaifVg8Bg530blvBJowlGfpzWkhXCT0TzgUMygQtLoPPw+vKLXYv3tqEuocf0G11XpxmciG89gUvWQxCzU4unvpg8',
+          },
             siteType = Ext.getCmp('cbbSiteType').getRawValue();
           let encryptedLink = data[siteType];
           window.open(
@@ -782,10 +785,10 @@ Ext.onReady(function () {
               }
             }
           }
-          let rows = [['name', 'compType', 'headerNumber']];
+          let rows = [['Agent', 'Name', 'Domain']];
           for (let i = 0; i < data.length; i++) {
             let record = data[i];
-            rows.push([record.name, record.compType, record.headerNumber]);
+            rows.push([record.prefix, record.name, record.workableUrl]);
           }
           exportToCsv('WLs.csv', rows);
         },
@@ -987,8 +990,8 @@ Ext.onReady(function () {
               return isSpinning ? 'spinner' : 'serverInfo';
             },
             handler: function (grid, rowIndex, colIndex, item, e, record) {
-              handlefindFirstValidDomain({grid, rowIndex, record, spinnerField:'specificServerSpinner'},
-                 (domain) => fetchHtmlContentOfTempPage(domain))  
+              handlefindFirstValidDomain({ grid, rowIndex, record, spinnerField: 'specificServerSpinner' },
+                (domain) => fetchHtmlContentOfTempPage(domain))
             },
           },
         ],
@@ -1012,7 +1015,7 @@ Ext.onReady(function () {
           valueField: 'name',
           queryMode: 'local',
         },
-        hidden: true,
+        hidden: false,
         hideable: false,
         menuDisabled: true,
       },
@@ -1029,7 +1032,7 @@ Ext.onReady(function () {
         width: 30,
         tooltip: 'Open site by valid domain',
         text: 'O',
-        hidden: true,
+        hidden: !isTestMode(),
         items: [
           {
             iconCls: 'openLink',
@@ -1038,7 +1041,7 @@ Ext.onReady(function () {
               return isSpinning ? 'spinner' : 'openLink';
             },
             handler: function (grid, rowIndex, colIndex, item, e, record) {
-              handlefindFirstValidDomain({grid, rowIndex, record, spinnerField:'openSiteSpinner'}, openSite)
+              handlefindFirstValidDomain({ grid, rowIndex, record, spinnerField: 'openSiteSpinner' }, openSite)
             },
           },
         ],
@@ -1150,12 +1153,42 @@ Ext.onReady(function () {
                   '://' +
                   defaultDomain.toLowerCase() +
                   '/pgajax.axd?T=SetCacheGameImageVersion';
-                  window.open(url, '_blank');
-               
+                window.open(url, '_blank');
+
               } else
-                handlefindFirstValidDomain({grid, rowIndex, record, spinnerField:'refreshImgCacheSpinner'}, (domain) => {
+                handlefindFirstValidDomain({ grid, rowIndex, record, spinnerField: 'refreshImgCacheSpinner' }, (domain) => {
                   refreshImgCacheVersion(`${domain}/pgajax.axd?T=SetCacheGameImageVersion`);
                 })
+            },
+          },
+        ],
+      },
+      {
+        text: 'Workable url',
+        width: 200,
+        dataIndex: 'workableUrl',
+        editor: {
+          field: {
+            xtype: 'textfield',
+            allowBlank: true,
+          },
+        },
+      },
+      {
+        xtype: 'actioncolumn',
+        width: 30,
+        tooltip: 'get valid domain',
+        text: 'O',
+        hidden: !isTestMode(),
+        items: [
+          {
+            iconCls: 'checkCls',
+            getClass: function (value, meta, record, rowIndex, colIndex) {
+              var isSpinning = record.get('openSiteSpinner');
+              return isSpinning ? 'spinner' : 'syncDomainCls';
+            },
+            handler: function (grid, rowIndex, colIndex, item, e, record) {
+              handlefindFirstValidDomain({ grid, rowIndex, record, spinnerField: 'openSiteSpinner' }, (domain) => { record.set('workableUrl', domain) })
             },
           },
         ],
@@ -1180,9 +1213,9 @@ Ext.onReady(function () {
     },
   });
   function resizeGrid() {
-      var iframeWidth =  Ext.getBody().getViewSize().width;
-      var iframeHeight = Ext.getBody().getViewSize().height;
-      girdWLs.setSize(iframeWidth, iframeHeight);
+    var iframeWidth = Ext.getBody().getViewSize().width;
+    var iframeHeight = Ext.getBody().getViewSize().height;
+    girdWLs.setSize(iframeWidth, iframeHeight);
   }
   Ext.EventManager.onWindowResize(resizeGrid);
 });
@@ -1460,7 +1493,7 @@ function loadDomainStoreFromUrl({
           if (!result.success) {
             if (
               result.message.indexOf("Cannot read property 'id' of undefined") >
-                -1 ||
+              -1 ||
               result.message.indexOf('Cannot read properties of undefined') > -1
             )
               Ext.Msg.alert(result.message, 'NO DATA');
@@ -1599,7 +1632,7 @@ function fetchGlobalValidDomainByWhitelabelName(
     failure: function (response) {
       log(
         'fetchGlobalValidDomainByWhitelabelName failure with status code ' +
-          response.status
+        response.status
       );
       callback(null);
     },
@@ -1610,7 +1643,7 @@ function fetchDomainsBySiteName(record, callback) {
   let siteTypeValue = getSiteTypeValue(),
     whiteLabelName = record.get('name'),
     domainType = getDomainType(),
-    siteName =btoa(siteTypeValue + whiteLabelName.toLowerCase() + '.bpx');
+    siteName = btoa(siteTypeValue + whiteLabelName.toLowerCase() + '.bpx');
   Ext.Ajax.request({
     method: 'GET',
     //withCredentials: true,
@@ -1738,7 +1771,10 @@ function openSite(domain) {
   let url = domain + '/' + getSelectedPage();
   window.open(url, '_blank');
 }
-function handlefindFirstValidDomain({grid, rowIndex, record, spinnerField}, callback){
+function fillValidUrl(domain) {
+  alert(domain);
+}
+function handlefindFirstValidDomain({ grid, rowIndex, record, spinnerField }, callback) {
   rowIndex = grid.getStore().indexOf(record);
   record = grid.getStore().getAt(rowIndex);
   record.set(spinnerField, true);
@@ -1771,14 +1807,14 @@ function openSite2(rowIndex, spinnerField = 'openSiteSpinner') {
 }
 
 
-function refreshImgCacheVersion(url){
+function refreshImgCacheVersion(url) {
   Ext.Ajax.request({
     url: url,
     success: (response) => {
-        alert(response.responseText)
+      alert(response.responseText)
     },
     failure: function (response) {
-        alert(response.responseText)
+      alert(response.responseText)
     },
   });
 }
