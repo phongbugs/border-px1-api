@@ -787,10 +787,15 @@ Ext.onReady(function () {
               }
             }
           }
-          let rows = [['Agent', 'Name', 'Domain']];
+          let rows = [['No.', 'CTId', 'Agent', 'Name', 'Domain']];
+          let count = 0;
           for (let i = 0; i < data.length; i++) {
             let record = data[i];
-            rows.push([record.prefix, record.name, record.workableUrl]);
+            if (record.status === '🙂') {
+              count = count + 1;
+              rows.push([count, record.compType, record.prefix, record.name, record.workableUrl]);
+            }
+
           }
           exportToCsv('WLs.csv', rows);
         },
@@ -1574,7 +1579,7 @@ function findFirstValidDomain({ index, record, domains }, callback) {
         if (isValid)
           callback({
             domain: getProtocol() + '://' + domains[index],
-            folderPath: path.replace(/\//g, '\\'),
+            folderPath: path ? path.replace(/\//g, '\\') : null,
           });
         else if (++index > domains.length) callback({ domain: null });
         else findFirstValidDomain({ index, record, domains }, callback);
@@ -1586,7 +1591,7 @@ function findFirstValidDomain({ index, record, domains }, callback) {
       if (isValid)
         callback({
           domain: getProtocol() + '://' + domains[index],
-          folderPath: path.replace(/\//g, '\\'),
+          folderPath: path ? path.replace(/\//g, '\\') : null,
         });
       else if (++index > domains.length) callback({ domain: null });
       else findFirstValidDomain({ index, record, domains }, callback);
@@ -1774,7 +1779,8 @@ function fetchHtmlContentOfTempPage(domain) {
 }
 
 function openSite(domain) {
-  let url = domain + '/' + getSelectedPage();
+  let siteType = getSiteTypeName();
+  let url = domain + '/' + (siteType === 'mobile' ? '' : getSelectedPage());
   window.open(url, '_blank');
 }
 function handlefindFirstValidDomain({ grid, rowIndex, record, spinnerField }, callback) {
