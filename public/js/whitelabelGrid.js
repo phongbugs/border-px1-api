@@ -924,11 +924,11 @@ Ext.onReady(function () {
               name +
               '</del><br/>';
           rowIndex = store.indexOf(record);
-          let onclickStr = `openSite2(${rowIndex})`
+          let onclickStr = `openSite2(this,${rowIndex}); return false;`;
           return (
             Ext.String.format(
               //'<a target="_blank" href="{0}://{1}">{2}</a> {3} {4} {5} {6} {7}<br />',
-              `<a href="#" onclick="${onclickStr}">{2}</a> {3} {4} {5} {6} {7}<br />`,
+              `<a style="text-decoration:none;" href="#" onclick="${onclickStr}">{2} <img src="../img/open.png" style="vertical-align:text-bottom"/> </a> {3} {4} {5} {6} {7}<br />`,
               protocol,
               defaultDomain.toLowerCase(),
               val,
@@ -1782,6 +1782,7 @@ function openSite(domain) {
   let siteType = getSiteTypeName();
   let url = domain + '/' + (siteType === 'mobile' ? '' : getSelectedPage());
   window.open(url, '_blank');
+  return false;
 }
 function handlefindFirstValidDomain({ grid, rowIndex, record, spinnerField }, callback) {
   rowIndex = grid.getStore().indexOf(record);
@@ -1799,15 +1800,18 @@ function handlefindFirstValidDomain({ grid, rowIndex, record, spinnerField }, ca
   );
 }
 
-function openSite2(rowIndex, spinnerField = 'openSiteSpinner') {
+function openSite2(e, rowIndex, spinnerField = 'openSiteSpinner') {
   let grid = Ext.getCmp('gridWLs')
   let record = grid.getStore().getAt(rowIndex);
-  record.set(spinnerField, true);
+  var tdRecord = $(e).parent().parent()
+  tdRecord.addClass('yingyang');
+  //record.set(spinnerField, true);
   findFirstValidDomain(
     { index: 0, record: record },
     ({ domain }) => {
       log('valid domain of %s: %s', record.get('name'), domain);
       if (domain) {
+        tdRecord.removeClass('yingyang');
         openSite(domain);
       } else log('-> Cannot find any a valid domain');
       record.set(spinnerField, false);

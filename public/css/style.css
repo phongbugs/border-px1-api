@@ -147,3 +147,11 @@ html {
       no-repeat center;
   }
  .x-grid-cell-inner-row-numberer{color:#000 !important}
+
+ .yingyang{
+    text-decoration: none;
+    background: url(../img/yinyang.gif);
+    background-position: 157PX 5PX;
+    background-size: 16PX 16PX;
+    BACKGROUND-REPEAT: NO-REPEAT;
+ }
